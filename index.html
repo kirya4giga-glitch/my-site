@@ -3,230 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super App v8 - Profiles & Ranks</title>
-    <script src="https://js-dos.com/v7/build/releases/latest/js-dos.js"></script>
+    <title>Super App v9 - Chess & Real Persistence</title>
     <style>
         :root { --bg: #0a0a0a; --main: #0F0; --box: rgba(10, 25, 10, 0.7); --txt: #0F0; }
-        body.theme-tg { --bg: #17212b; --main: #5288c1; --box: #242f3d; --txt: #fff; }
+        body.theme-tg { --bg: #1e2a3d; --main: #5288c1; --box: #242f3d; --txt: #fff; }
         body.theme-light { --bg: #f0f2f5; --main: #0088cc; --box: #ffffff; --txt: #000; }
         body.theme-retro { --bg: #1a1200; --main: #ffb000; --box: #2b1d00; --txt: #ffb000; }
         body.theme-cyber { --bg: #0d0015; --main: #ff00ff; --box: #1a0029; --txt: #00ffff; }
-        body.theme-snow { --bg: #001529; --main: #ffffff; --box: rgba(255,255,255,0.1); --txt: #ffffff; }
-        body { font-family: 'Consolas', monospace; text-align: center; padding: 20px; background-color: var(--bg); color: var(--txt); margin: 0; transition: 0.3s; overflow-x: hidden; }
-        .settings-btn { position: fixed; top: 15px; right: 15px; z-index: 100; cursor: pointer; background: var(--box); padding: 8px; border-radius: 10px; border: 1px solid var(--main); }
-        .settings-menu, .profile-card { display: none; position: fixed; top: 60px; right: 15px; z-index: 101; background: var(--box); padding: 15px; border-radius: 10px; border: 1px solid var(--main); text-align: left; width: 240px; box-shadow: 0 0 20px #000; }
-        .profile-card { top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
-        .game-box { background: var(--box); padding: 20px; border-radius: 15px; display: inline-block; margin-bottom: 30px; width: 95%; max-width: 450px; border: 1px solid var(--main); position: relative; z-index: 5; }
-        .button-tea { display: inline-block; padding: 10px 20px; background: rgba(0,0,0,0.3); color: var(--main); border: 1px solid var(--main); border-radius: 8px; margin: 5px 0; cursor: pointer; font-weight: bold; }
-        #cList { height: 250px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; border: 1px solid var(--main); margin-bottom: 10px; }
-        .msg { margin-bottom: 8px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.05); text-align: left; }
-        .ttt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; width: 210px; margin: 15px auto; }
-        .ttt-cell { width: 65px; height: 65px; border: 1px solid var(--main); background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; }
+        body.theme-snow { --bg: #001c3d; --main: #ffffff; --box: rgba(255,255,255,0.15); --txt: #fff; }
+        
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; padding: 20px; background: var(--bg); color: var(--txt); margin: 0; transition: 0.3s; }
+        .game-box { background: var(--box); padding: 20px; border-radius: 15px; display: inline-block; margin-bottom: 20px; width: 95%; max-width: 450px; border: 1px solid var(--main); position: relative; z-index: 5; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        .button-tea { padding: 10px 20px; background: transparent; color: var(--main); border: 1px solid var(--main); border-radius: 8px; cursor: pointer; font-weight: bold; margin: 5px; transition: 0.2s; }
+        .button-tea:hover { background: var(--main); color: #000; }
+        
+        #cList { height: 200px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px; margin-bottom: 10px; text-align: left; border: 1px solid var(--main); }
+        .msg { background: rgba(255,255,255,0.05); padding: 8px; border-radius: 8px; margin-bottom: 5px; border-left: 3px solid var(--main); }
+        
+        /* Шахматная доска */
+        .chess-board { display: grid; grid-template-columns: repeat(8, 1fr); width: 320px; height: 320px; margin: 10px auto; border: 2px solid var(--main); }
+        .chess-cell { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; }
+        .cell-white { background: #eee; color: #333; }
+        .cell-black { background: #666; color: #fff; }
+        .selected { background: yellow !important; color: #000 !important; }
+
+        .settings-btn { position: fixed; top: 15px; right: 15px; z-index: 100; cursor: pointer; background: var(--box); border: 1px solid var(--main); padding: 8px; border-radius: 50%; }
         #matrixCanvas, #snowCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-        .rank { font-size: 10px; padding: 2px 5px; border-radius: 4px; background: var(--main); color: #000; margin-left: 5px; vertical-align: middle; }
+        .hidden { display: none; }
     </style>
 </head>
 <body class="theme-hacker">
     <canvas id="matrixCanvas"></canvas>
-    <canvas id="snowCanvas" style="display:none"></canvas>
+    <canvas id="snowCanvas" class="hidden"></canvas>
 
-    <div class="settings-btn" onclick="toggleSettings()">⚙️ Настройки</div>
-    
-    <div class="settings-menu" id="sMenu">
-        <label>Тема:</label>
-        <select onchange="changeTheme(this.value)"><option value="hacker">Hacker</option><option value="tg">Telegram</option><option value="light">Light</option><option value="retro">Retro</option><option value="cyber">Cyberpunk</option><option value="snow">Новый Год ❄️</option></select>
-        <hr>
-        <div id="my-profile-info" style="font-size:12px"></div>
-        <input type="text" id="statusInp" placeholder="Твой статус..." style="width:90%; background:#000; color:#0F0; border:1px solid #0F0; margin-top:5px">
-        <button class="button-tea" onclick="updateStatus()" style="width:100%">Сохранить статус</button>
+    <div class="settings-btn" onclick="document.getElementById('sMenu').classList.toggle('hidden')">⚙️</div>
+    <div id="sMenu" class="game-box hidden" style="position:fixed; top:60px; right:15px; width:200px; z-index:1000">
+        Темы: <select onchange="changeTheme(this.value)">
+            <option value="hacker">Hacker</option>
+            <option value="tg">Telegram</option>
+            <option value="snow">Новый Год ❄️</option>
+            <option value="cyber">Cyberpunk</option>
+        </select>
+        <button class="button-tea" onclick="logout()" style="width:100%">Выйти из аккаунта</button>
     </div>
 
-    <div class="profile-card" id="pCard">
-        <h2 id="pc-name">Имя</h2>
-        <div id="pc-rank" class="rank">Ранг</div>
-        <p id="pc-status">"Статус"</p>
-        <div style="text-align:left; font-size:14px">
-            Кликнул раз: <span id="pc-clicks">0</span><br>
-            Побед в X/O: <span id="pc-wins">0</span>
-        </div>
-        <button class="button-tea" onclick="document.getElementById('pCard').style.display='none'">Закрыть</button>
-    </div>
-
-    <h1 id="h-title">Мой первый сайт</h1>
-    <h2 style="font-size:14px; opacity:0.7">Делал сам честно!</h2>
+    <h1>Super Game Center</h1>
+    <div id="auth-info" style="margin-bottom:10px; font-weight:bold"></div>
 
     <div class="game-box">
         <h3>Чат</h3>
         <div id="cList"></div>
         <div style="display:flex; gap:5px">
-            <input type="text" id="nInp" placeholder="Имя" style="width:70px; background:#000; color:#0F0; border:1px solid #0F0; padding:5px">
-            <input type="text" id="mInp" placeholder="Текст..." style="flex:1; background:#000; color:#0F0; border:1px solid #0F0; padding:5px">
-            <button class="button-tea" style="margin:0" onclick="addC()">></button>
+            <input type="text" id="mInp" placeholder="Сообщение..." style="flex:1; background:transparent; color:inherit; border:1px solid var(--main); border-radius:5px; padding:5px">
+            <button class="button-tea" onclick="sendMsg()">></button>
         </div>
     </div>
 
     <div class="game-box">
         <h3>Кликер</h3>
-        <div id="score" style="font-size:40px">0</div>
-        <button class="button-tea" onclick="addScore()" style="padding:20px 40px; font-size:20px">КЛИКНИ!</button>
-        <div id="leader-list" style="font-size:12px; text-align:left; margin-top:10px; border-top:1px solid var(--main)"></div>
+        <div id="scoreDisplay" style="font-size:40px">0</div>
+        <button class="button-tea" onclick="clickBtn()" style="padding:15px 30px">КЛИК!</button>
+        <div id="topList" style="text-align:left; font-size:12px; margin-top:10px"></div>
     </div>
 
     <div class="game-box">
-        <h3>Online Дуэли</h3>
-        <div id="active-rooms" style="font-size:12px; margin-bottom:10px"></div>
-        <div id="mp-status">Войдите в чат</div>
-        <button class="button-tea" id="find-btn" onclick="findGame()">ПОИСК ИГРЫ</button>
-        <div id="game-area" style="display:none">
-            <div id="player-role"></div>
-            <div class="ttt-grid" id="ttt-grid"></div>
-            <div id="turn-info"></div>
+        <h3>Шахматы ONLINE</h3>
+        <div id="chess-status">Войдите в систему</div>
+        <button class="button-tea" id="find-chess" onclick="startMatchmaking()">Найти соперника</button>
+        <div id="chess-container" class="hidden">
+            <div id="chess-info"></div>
+            <div class="chess-board" id="board"></div>
+            <div id="turn-display"></div>
         </div>
     </div>
 
-    <div class="game-box"><h3>DOOM</h3><div id="doom-container" style="height:200px"></div></div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push, onValue, set, get, update, remove, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, set, get, update, push, onValue, remove, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const conf = { apiKey: "AIzaSyChSk0gETRBQ391e4BjPqFsKc_dzjBmT58", databaseURL: "https://my-chat-52203-default-rtdb.firebaseio.com", projectId: "my-chat-52203" };
         const app = initializeApp(conf);
         const db = getDatabase(app);
-        let pass = "", myName = "", myRole = "", currentGameId = null;
 
-        const getRank = (s) => {
-            if(s > 1000) return "Программист 💻";
-            if(s > 500) return "Мастер 🏆";
-            if(s > 100) return "Продвинутый ⚡";
-            return "Новичок 🌱";
+        let user = JSON.parse(localStorage.getItem('user')) || null;
+        let currentGame = null, myColor = '', selectedSq = null;
+
+        const pieces = { 
+            'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟',
+            'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔', 'P': '♙'
         };
 
-        window.showProfile = async (name) => {
-            const s = await get(ref(db, 'users/'+name));
-            if(!s.exists()) return;
-            const d = s.val();
-            document.getElementById('pc-name').innerText = name;
-            document.getElementById('pc-rank').innerText = getRank(d.score || 0);
-            document.getElementById('pc-status').innerText = d.status || "Нет статуса";
-            document.getElementById('pc-clicks').innerText = d.score || 0;
-            document.getElementById('pc-wins').innerText = d.wins || 0;
-            document.getElementById('pCard').style.display = 'block';
-        };
-
-        window.addC = async () => {
-            const n = document.getElementById('nInp'), m = document.getElementById('mInp');
-            if(!n.value || !m.value) return;
-            if(!pass) {
-                const s = await get(ref(db, 'users/'+n.value));
-                if(s.exists()){
-                    let p = prompt("Пароль:"); if(p !== s.val().password) return alert("Error!"); pass = p;
+        async function init() {
+            if(!user) {
+                let name = prompt("Введите имя:");
+                if(!name) return;
+                let pass = prompt("Пароль:");
+                const s = await get(ref(db, 'users/'+name));
+                if(s.exists()) {
+                    if(s.val().password !== pass) return alert("Неверно!");
+                    user = {name, ...s.val()};
                 } else {
-                    let p = prompt("Пароль:"); if(!p) return;
-                    await set(ref(db, 'users/'+n.value), {password: p, score: 0, wins: 0, status: "Всем привет!"}); pass = p;
+                    user = {name, password: pass, score: 0, wins: 0};
+                    await set(ref(db, 'users/'+name), user);
                 }
-                n.readOnly = true; myName = n.value;
-                document.getElementById('mp-status').innerText = "Готов к бою";
-                document.getElementById('my-profile-info').innerText = `Вы: ${myName}`;
+                localStorage.setItem('user', JSON.stringify(user));
             }
-            push(ref(db, 'msgs'), {name: myName, text: m.value}); m.value = "";
-        };
-
-        window.updateStatus = () => {
-            const st = document.getElementById('statusInp').value;
-            if(!myName) return alert("Войди!");
-            update(ref(db, 'users/'+myName), {status: st}); alert("Статус обновлен!");
-        };
-
-        window.addScore = () => {
-            if(!pass) return alert("Войди!");
-            let s = document.getElementById('score'), cur = parseInt(s.innerText) + 1;
-            s.innerText = cur; update(ref(db, 'users/'+myName), {score: cur});
-        };
-
-        // МУЛЬТИПЛЕЕР С ПОБЕДАМИ
-        window.findGame = async () => {
-            if(!pass) return alert("Войди!");
-            document.getElementById('find-btn').style.display = 'none';
-            const queueRef = ref(db, 'queue');
-            const snap = await get(queueRef);
-            if(snap.exists() && snap.val().name !== myName) {
-                const gameId = 'game_' + Date.now();
-                myRole = 'O';
-                await set(ref(db, 'games/' + gameId), { p1: snap.val().name, p2: myName, board: Array(9).fill(""), turn: 'X' });
-                await remove(queueRef); initGame(gameId);
-            } else {
-                myRole = 'X'; set(queueRef, { name: myName });
-                onValue(ref(db, 'games'), (s) => { s.forEach(g => { if(g.val().p1 === myName) initGame(g.key); }); });
-            }
-        };
-
-        function initGame(gid) {
-            currentGameId = gid;
-            document.getElementById('game-area').style.display = 'block';
-            onValue(ref(db, 'games/' + gid), async (s) => {
-                const data = s.val(); if(!data) return;
-                const grid = document.getElementById('ttt-grid'); grid.innerHTML = "";
-                data.board.forEach((val, i) => {
-                    const cell = document.createElement('div'); cell.className = 'ttt-cell';
-                    cell.innerText = val; cell.onclick = () => makeMove(i, data); grid.appendChild(cell);
-                });
-                document.getElementById('turn-info').innerText = (data.turn === myRole) ? "ТВОЙ ХОД!" : "Ждем оппонента...";
-                
-                const win = checkWin(data.board);
-                if(win) {
-                    if(data.turn !== myRole) { // Тот кто НЕ ходит сейчас - победил
-                        alert("ТЫ ПОБЕДИЛ!");
-                        const userSnap = await get(ref(db, 'users/'+myName));
-                        update(ref(db, 'users/'+myName), {wins: (userSnap.val().wins || 0) + 1});
-                    } else { alert("ТЫ ПРОИГРАЛ!"); }
-                    remove(ref(db, 'games/' + gid)); location.reload();
-                }
-            });
+            document.getElementById('auth-info').innerText = `Игрок: ${user.name} | Побед: ${user.wins || 0}`;
+            document.getElementById('scoreDisplay').innerText = user.score;
+            loadLeaderboard();
         }
 
-        async function makeMove(i, data) {
-            if(data.turn !== myRole || data.board[i] !== "") return;
-            data.board[i] = myRole; data.turn = (myRole === 'X') ? 'O' : 'X';
-            update(ref(db, 'games/' + currentGameId), data);
-        }
+        window.logout = () => { localStorage.clear(); location.reload(); };
 
-        function checkWin(b) {
-            const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-            return wins.some(w => b[w[0]] && b[w[0]]==b[w[1]] && b[w[0]]==b[w[2]]);
-        }
+        window.clickBtn = () => {
+            if(!user) return;
+            user.score++;
+            document.getElementById('scoreDisplay').innerText = user.score;
+            update(ref(db, 'users/'+user.name), {score: user.score});
+            localStorage.setItem('user', JSON.stringify(user));
+        };
+
+        window.sendMsg = () => {
+            const m = document.getElementById('mInp');
+            if(!m.value) return;
+            push(ref(db, 'msgs'), {name: user.name, text: m.value, time: Date.now()});
+            m.value = "";
+        };
 
         onValue(ref(db, 'msgs'), (s) => {
             const l = document.getElementById('cList'); l.innerHTML = "";
-            s.forEach(m => {
-                const d = m.val();
-                l.innerHTML += `<div class="msg"><b style="cursor:pointer" onclick="showProfile('${d.name}')">${d.name}</b>: ${d.text}</div>`;
+            let msgs = []; s.forEach(d => msgs.push(d.val()));
+            msgs.slice(-20).forEach(m => {
+                l.innerHTML += `<div class="msg"><b>${m.name}:</b> ${m.text}</div>`;
             });
             l.scrollTop = l.scrollHeight;
         });
 
-        onValue(query(ref(db, 'users'), orderByChild('score'), limitToLast(5)), (s) => {
-            const l = document.getElementById('leader-list'); l.innerHTML = "<b>ТОП (кликни на имя):</b><br>";
-            let a = []; s.forEach(u => a.push({n:u.key, s:u.val().score}));
-            a.sort((x,y)=>y.s-x.s).forEach(u => l.innerHTML += `<span style="cursor:pointer" onclick="showProfile('${u.n}')">${u.n}</span>: ${u.s} [${getRank(u.s)}]<br>`);
-        });
+        function loadLeaderboard() {
+            onValue(query(ref(db, 'users'), orderByChild('score'), limitToLast(10)), (s) => {
+                const list = document.getElementById('topList');
+                list.innerHTML = "<b>ТОП ИГРОКОВ:</b><br>";
+                let arr = []; s.forEach(u => arr.push({n: u.key, s: u.val().score}));
+                arr.reverse().forEach((u, i) => list.innerHTML += `${i+1}. ${u.n} — ${u.s} кликов<br>`);
+            });
+        }
 
-        onValue(ref(db, 'games'), (s) => {
-            const list = document.getElementById('active-rooms'); list.innerHTML = "";
-            s.forEach(g => { const d = g.val(); list.innerHTML += `${d.p1} VS ${d.p2} (Идет игра)<br>`; });
-        });
+        // ШАХМАТНАЯ ЛОГИКА
+        window.startMatchmaking = async () => {
+            document.getElementById('find-chess').innerText = "Поиск...";
+            const qRef = ref(db, 'chess_queue');
+            const snap = await get(qRef);
+            if(snap.exists() && snap.val() !== user.name) {
+                const gid = 'ch_' + Date.now();
+                await set(ref(db, 'chess_games/'+gid), {
+                    white: snap.val(), black: user.name,
+                    board: "rnbqkbnrpppppppp................................PPPPPPPPRNBQKBNR",
+                    turn: 'white'
+                });
+                await remove(qRef);
+                joinGame(gid, 'black');
+            } else {
+                set(qRef, user.name);
+                onValue(ref(db, 'chess_games'), (s) => {
+                    s.forEach(g => { if(g.val().white === user.name) joinGame(g.key, 'white'); });
+                });
+            }
+        };
+
+        function joinGame(gid, color) {
+            currentGame = gid; myColor = color;
+            document.getElementById('find-chess').classList.add('hidden');
+            document.getElementById('chess-container').classList.remove('hidden');
+            onValue(ref(db, 'chess_games/'+gid), (s) => {
+                const data = s.val(); if(!data) return;
+                renderBoard(data.board);
+                document.getElementById('turn-display').innerText = data.turn === 'white' ? "Ход белых" : "Ход черных";
+                if(data.winner) { alert("Конец игры!"); remove(ref(db, 'chess_games/'+gid)); location.reload(); }
+            });
+        }
+
+        function renderBoard(fen) {
+            const b = document.getElementById('board'); b.innerHTML = "";
+            for(let i=0; i<64; i++) {
+                const cell = document.createElement('div');
+                const isBlack = (Math.floor(i/8) + i%8) % 2 === 1;
+                cell.className = `chess-cell ${isBlack?'cell-black':'cell-white'}`;
+                const char = fen[i];
+                cell.innerText = pieces[char] || "";
+                cell.onclick = () => handleCellClick(i, fen);
+                if(selectedSq === i) cell.classList.add('selected');
+                b.appendChild(cell);
+            }
+        }
+
+        async function handleCellClick(i, fen) {
+            const gRef = ref(db, 'chess_games/'+currentGame);
+            const snap = await get(gRef);
+            const data = snap.val();
+            if(data.turn !== myColor) return;
+
+            if(selectedSq === null) {
+                if(fen[i] !== '.') selectedSq = i;
+            } else {
+                let newBoard = fen.split('');
+                newBoard[i] = newBoard[selectedSq];
+                newBoard[selectedSq] = '.';
+                await update(gRef, { board: newBoard.join(''), turn: myColor === 'white' ? 'black' : 'white' });
+                selectedSq = null;
+            }
+            renderBoard(fen);
+        }
+
+        init();
     </script>
 
     <script>
-        function changeTheme(v) { document.body.className = 'theme-' + v; document.getElementById('matrixCanvas').style.display = (v==='hacker')?'block':'none'; document.getElementById('snowCanvas').style.display = (v==='snow')?'block':'none'; }
-        function toggleSettings() { const s = document.getElementById('sMenu'); s.style.display = s.style.display==='block'?'none':'block'; }
-        
+        function changeTheme(v) {
+            document.body.className = 'theme-' + v;
+            document.getElementById('matrixCanvas').classList.toggle('hidden', v !== 'hacker');
+            document.getElementById('snowCanvas').classList.toggle('hidden', v !== 'snow');
+        }
+
+        // Матрица
         const mC = document.getElementById('matrixCanvas'), mX = mC.getContext('2d');
         mC.width = window.innerWidth; mC.height = window.innerHeight;
         const drops = Array(Math.floor(mC.width/16)).fill(1);
-        setInterval(() => { mX.fillStyle = 'rgba(0,0,0,0.05)'; mX.fillRect(0,0,mC.width,mC.height); mX.fillStyle = '#0F0'; mX.font = '16px monospace'; drops.forEach((y, i) => { mX.fillText(Math.random()>0.5?'0':'1', i*16, y*16); if(y*16>mC.height && Math.random()>0.975) drops[i]=0; drops[i]++; }); }, 33);
-        
-        window.onload = () => { Dos(document.getElementById("doom-container")).run("https://js-dos.com/v7/build/archive/doom.zip"); };
+        setInterval(() => {
+            mX.fillStyle = 'rgba(0,0,0,0.05)'; mX.fillRect(0,0,mC.width,mC.height);
+            mX.fillStyle = '#0F0'; mX.font = '16px monospace';
+            drops.forEach((y, i) => {
+                mX.fillText(Math.random()>0.5?'0':'1', i*16, y*16);
+                if(y*16>mC.height && Math.random()>0.975) drops[i]=0; drops[i]++;
+            });
+        }, 33);
     </script>
 </body>
 </html>
+
