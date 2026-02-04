@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super App v20 - Message Time</title>
+    <title>Super App v21 - Economic System</title>
     <style>
         :root { --bg: #0a0a0a; --main: #0F0; --box: rgba(15, 30, 15, 0.9); --txt: #0F0; }
         body.theme-tg { --bg: #17212b; --main: #5288c1; --box: #242f3d; --txt: #fff; }
@@ -16,25 +16,21 @@
         
         #cList { height: 250px; overflow-y: auto; background: rgba(0,0,0,0.4); border-radius: 10px; padding: 10px; margin-bottom: 10px; text-align: left; border: 1px solid var(--main); }
         .msg { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-bottom: 8px; position: relative; border-left: 3px solid var(--main); cursor: pointer; }
-        .del-btn { position: absolute; top: 5px; right: 5px; color: #ff4d4d; cursor: pointer; font-size: 10px; border: 1px solid #ff4d4d; border-radius: 3px; padding: 0 3px; }
+        .msg-time { position: absolute; bottom: 5px; right: 10px; font-size: 10px; opacity: 0.5; }
         
-        /* Стиль для времени сообщения */
-        .msg-time { position: absolute; bottom: 5px; right: 10px; font-size: 10px; opacity: 0.5; font-style: italic; }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--box); border: 2px solid var(--main); padding: 25px; border-radius: 15px; z-index: 2000; width: 320px; box-shadow: 0 0 50px #000; max-height: 80vh; overflow-y: auto; }
         
-        .top-del { color: #ff4d4d; font-size: 9px; cursor: pointer; margin-left: 5px; border: 1px solid #ff4d4d; padding: 0 2px; border-radius: 3px; }
-        .top-mute { color: #ffa500; font-size: 9px; cursor: pointer; margin-left: 5px; border: 1px solid #ffa500; padding: 0 2px; border-radius: 3px; }
+        .shop-item { border-bottom: 1px solid var(--main); padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
+        .prefix { font-size: 10px; padding: 2px 4px; border-radius: 4px; margin-right: 5px; background: var(--main); color: #000; font-weight: bold; }
         
-        .react-bar { margin-top: 5px; font-size: 12px; display: flex; gap: 5px; flex-wrap: wrap; padding-right: 40px; }
-        .react-item { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 10px; border: 1px solid var(--main); }
-
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--box); border: 2px solid var(--main); padding: 25px; border-radius: 15px; z-index: 2000; width: 300px; box-shadow: 0 0 50px #000; }
+        .top-del { color: #ff4d4d; font-size: 9px; cursor: pointer; margin-left: 5px; }
+        .top-mute { color: #ffa500; font-size: 9px; cursor: pointer; margin-left: 5px; }
         
         .chess-board, .ttt-grid { display: grid; margin: 10px auto; border: 1px solid var(--main); background: #000; }
         .chess-board { grid-template-columns: repeat(8, 1fr); width: 280px; height: 280px; }
         .ttt-grid { grid-template-columns: repeat(3, 1fr); width: 210px; height: 210px; }
         .cell { display: flex; align-items: center; justify-content: center; border: 0.1px solid #333; cursor: pointer; font-size: 20px; }
-        .cell-w { background: #eee; color: #111; } .cell-b { background: #444; color: #fff; }
-
+        
         #matrixCanvas, #snowCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
         #reactPicker { display: none; position: fixed; background: #111; border: 1px solid var(--main); padding: 10px; border-radius: 50px; z-index: 3000; gap: 10px; font-size: 24px; }
         .hidden { display: none; }
@@ -44,26 +40,53 @@
     <canvas id="matrixCanvas"></canvas>
     <canvas id="snowCanvas" class="hidden"></canvas>
 
-    <div style="position:fixed; top:15px; right:15px; z-index:1001">
+    <div style="position:fixed; top:15px; right:15px; z-index:1001; display:flex; gap:10px;">
+        <button class="button-tea" onclick="openMod('shopWin')">🛒 Магазин</button>
         <button class="button-tea" onclick="openMod('sMenu')">⚙️</button>
     </div>
 
-    <h1>Мой первый сайт</h1>
-    <h3>v20: Time Edition</h3>
+    <h1>Kiru Economy v21</h1>
+    <h3>Твой баланс: <span id="userBalance">0</span> 💰</h3>
+
+    <div id="shopWin" class="modal">
+        <h3>🛒 Market</h3>
+        <div class="shop-item">
+            <span>[VIP] Префикс</span>
+            <button class="button-tea" onclick="buy('prefix', 100, 'VIP')">100 💰</button>
+        </div>
+        <div class="shop-item">
+            <span>[ELITE] Статус</span>
+            <button class="button-tea" onclick="buy('prefix', 500, 'ELITE')">500 💰</button>
+        </div>
+        <div class="shop-item">
+            <span>🎨 Синий ник</span>
+            <button class="button-tea" onclick="buy('color', 300, '#00F')">300 💰</button>
+        </div>
+        <div class="shop-item">
+            <span>🛡️ Анти-Мут (1 раз)</span>
+            <button class="button-tea" onclick="buy('item', 1000, 'shield')">1000 💰</button>
+        </div>
+        <button class="button-tea" onclick="closeMod('shopWin')">Закрыть</button>
+    </div>
 
     <div id="pCard" class="modal">
         <h2 id="pc-name">Игрок</h2>
-        <div id="pc-stats" style="text-align:left; line-height:1.6; margin-bottom:15px"></div>
-        <button class="button-tea" onclick="resetScore()" style="color:red; border-color:red">Сбросить клики</button>
+        <div id="pc-stats" style="text-align:left; font-size: 14px;"></div>
+        <hr>
+        <div id="admin-actions">
+            <button class="button-tea" onclick="sendMoneyPrompt()" style="color:gold; border-color:gold">💸 Перевести деньги</button>
+            <button class="button-tea" onclick="resetScore()" style="color:red; border-color:red">Сброс кликов</button>
+        </div>
         <button class="button-tea" onclick="closeMod('pCard')">Закрыть</button>
     </div>
 
     <div id="sMenu" class="modal">
-        <h3>Настройки</h3>
-        Тема: <select onchange="changeTheme(this.value)"><option value="hacker">Hacker</option><option value="tg">Telegram</option><option value="snow">Snow</option><option value="cyber">Cyber</option></select><br><br>
-        Язык: <select onchange="changeLang(this.value)"><option value="ru">RU</option><option value="en">EN</option><option value="ua">UA</option></select>
+        <h3>⚙️ Настройки</h3>
+        Тема: <select onchange="changeTheme(this.value)"><option value="hacker">Hacker</option><option value="tg">Telegram</option><option value="snow">Snow</option><option value="cyber">Cyber</option></select>
         <hr>
-        <button class="button-tea" onclick="alert('Чай: +79216274225')">Поддержать</button>
+        <h4>🙏 Особая благодарность:</h4>
+        <p style="font-size: 12px; color: yellow;">Будущему программисту (автору)<br>Мусе ❤️<br>Всем тестерам v21</p>
+        <button class="button-tea" onclick="alert('Чай автору: +79216274225')">Поддержать</button>
         <button class="button-tea" onclick="logout()">Выход</button>
         <button class="button-tea" onclick="closeMod('sMenu')">X</button>
     </div>
@@ -78,24 +101,10 @@
     </div>
 
     <div class="game-box">
-        <h3>Кликер</h3>
-        <div id="score" style="font-size:55px; font-weight:bold">0</div>
-        <button class="button-tea" onclick="doClick()" style="padding:15px 35px; font-size:20px">КЛИК!</button>
+        <h3>Ферма коинов</h3>
+        <div id="score" style="font-size:45px; font-weight:bold">0</div>
+        <button class="button-tea" onclick="doClick()" style="padding:15px 35px; font-size:20px">МАЙНИТЬ (КЛИК!)</button>
         <div id="topList" style="text-align:left; font-size:13px; margin-top:10px; border-top:1px solid var(--main); padding-top:10px"></div>
-    </div>
-
-    <div class="game-box">
-        <h3>Игры</h3>
-        <div id="active-list" style="font-size:11px; color:yellow; margin-bottom:10px"></div>
-        <div id="lobby">
-            <button class="button-tea" onclick="startMM('ttt')">Крестики-Нолики</button>
-            <button class="button-tea" onclick="startMM('chess')">Шахматы</button>
-        </div>
-        <div id="game-area" class="hidden">
-            <div id="g-info"></div>
-            <div id="board-container"></div>
-            <button class="button-tea" onclick="stopMM()">Отмена</button>
-        </div>
     </div>
 
     <div id="reactPicker">
@@ -105,13 +114,13 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, get, update, push, onValue, remove, query, orderByChild, limitToLast, off, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, set, get, update, push, onValue, remove, off, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const conf = { apiKey: "AIzaSyChSk0gETRBQ391e4BjPqFsKc_dzjBmT58", databaseURL: "https://my-chat-52203-default-rtdb.firebaseio.com", projectId: "my-chat-52203" };
         const db = getDatabase(initializeApp(conf));
 
-        let user = JSON.parse(localStorage.getItem('user_v20'));
-        let selId = null, gid = null, myRole = '', mmSub = null;
+        let user = JSON.parse(localStorage.getItem('user_v21'));
+        let selId = null, viewUser = null;
 
         async function init() {
             if(!user) {
@@ -119,17 +128,38 @@
                 let p = prompt("Пароль:");
                 const s = await get(ref(db, 'users/'+n));
                 if(s.exists()){ if(s.val().password !== p) return location.reload(); user = {name: n, ...s.val()}; }
-                else { user = {name: n, password: p, score: 0, wins_ttt: 0, wins_chess: 0, muteUntil: 0}; await set(ref(db, 'users/'+n), user); }
-                localStorage.setItem('user_v20', JSON.stringify(user));
+                else { user = {name: n, password: p, score: 0, prefix: '', color: '', shield: 0}; await set(ref(db, 'users/'+n), user); }
+                localStorage.setItem('user_v21', JSON.stringify(user));
             }
-            document.getElementById('score').innerText = user.score;
-            loadTop(); loadChat(); loadActive();
+            syncUser(); loadTop(); loadChat();
+        }
+
+        async function syncUser() {
+            onValue(ref(db, 'users/'+user.name), (s) => {
+                const d = s.val(); if(!d) return;
+                user = {name: user.name, ...d};
+                document.getElementById('userBalance').innerText = d.score;
+                document.getElementById('score').innerText = d.score;
+                localStorage.setItem('user_v21', JSON.stringify(user));
+            });
         }
 
         window.doClick = () => {
-            user.score++; document.getElementById('score').innerText = user.score;
-            update(ref(db, 'users/'+user.name), {score: user.score});
-            localStorage.setItem('user_v20', JSON.stringify(user));
+            update(ref(db, 'users/'+user.name), {score: user.score + 1});
+        };
+
+        window.sendMsg = async () => {
+            const i = document.getElementById('mInp'); if(!i.value) return;
+            const s = await get(ref(db, 'users/'+user.name));
+            if(s.val().muteUntil > Date.now()) return alert("Вы в муте!");
+            push(ref(db, 'msgs'), {
+                n: user.name, 
+                t: i.value, 
+                time: serverTimestamp(),
+                pref: s.val().prefix || '',
+                col: s.val().color || ''
+            });
+            i.value="";
         };
 
         function loadChat() {
@@ -137,132 +167,104 @@
                 const l = document.getElementById('cList'); l.innerHTML = "";
                 s.forEach(d => {
                     const m = d.val();
-                    let timeStr = "";
-                    if(m.time) {
-                        const date = new Date(m.time);
-                        timeStr = date.getHours().toString().padStart(2,'0') + ":" + date.getMinutes().toString().padStart(2,'0');
-                    }
-
-                    let rb = '<div class="react-bar">';
-                    if(m.r) Object.entries(m.r).forEach(([emoji, voters]) => {
-                        let count = Object.keys(voters).length;
-                        if(count > 0) rb += `<span class="react-item">${emoji} ${count}</span>`;
-                    });
-                    rb += '</div>';
-
+                    const date = m.time ? new Date(m.time) : new Date();
+                    const ts = date.getHours().toString().padStart(2,'0') + ":" + date.getMinutes().toString().padStart(2,'0');
                     const div = document.createElement('div'); div.className = 'msg';
-                    div.innerHTML = `<span class="del-btn" onclick="event.stopPropagation(); delM('${d.key}')">X</span>
-                                     <b onclick="event.stopPropagation(); showP('${m.n}')">${m.n}</b>: ${m.t} 
-                                     ${rb}
-                                     <span class="msg-time">${timeStr}</span>`;
-                    div.onclick = (e) => { selId = d.key; const p = document.getElementById('reactPicker'); p.style.display = 'flex'; p.style.top = (e.clientY-40)+'px'; p.style.left = e.clientX+'px'; };
+                    const pfx = m.pref ? `<span class="prefix">${m.pref}</span>` : "";
+                    div.innerHTML = `
+                        <span class="del-btn" onclick="event.stopPropagation(); delM('${d.key}')">X</span>
+                        ${pfx}<b style="color:${m.col || 'inherit'}" onclick="event.stopPropagation(); showP('${m.n}')">${m.n}</b>: ${m.t}
+                        <span class="msg-time">${ts}</span>
+                    `;
+                    div.onclick = (e) => { selId = d.key; const p = document.getElementById('reactPicker'); p.style.display='flex'; p.style.top=(e.clientY-40)+'px'; p.style.left=e.clientX+'px'; };
                     l.appendChild(div);
                 });
                 l.scrollTop = l.scrollHeight;
             });
         }
 
-        window.sendMsg = async () => {
-            const i = document.getElementById('mInp'); if(!i.value) return;
-            const s = await get(ref(db, 'users/'+user.name));
-            if(s.val().muteUntil && s.val().muteUntil > Date.now()) {
-                alert(`Вы в муте!`); return;
-            }
-            // Добавляем время сервера в сообщение
-            push(ref(db, 'msgs'), {n:user.name, t:i.value, time: serverTimestamp()}); 
-            i.value="";
+        window.buy = async (type, price, val) => {
+            if(user.score < price) return alert("Недостаточно коинов!");
+            const up = { score: user.score - price };
+            if(type === 'prefix') up.prefix = val;
+            if(type === 'color') up.color = val;
+            if(type === 'item') up.shield = (user.shield || 0) + 1;
+            
+            await update(ref(db, 'users/'+user.name), up);
+            push(ref(db, 'msgs'), {n: 'СИСТЕМА', t: `🎉 ${user.name} купил ${val}!`, time: serverTimestamp()});
+            alert("Успешная покупка!");
         };
 
-        window.applyR = (e) => {
-            const path = `msgs/${selId}/r/${e}/${user.name}`;
-            get(ref(db, path)).then(s => { if(s.exists()) remove(ref(db, path)); else set(ref(db, path), true); });
-            document.getElementById('reactPicker').style.display = 'none';
-        };
+        window.sendMoneyPrompt = async () => {
+            let target = viewUser;
+            let amount = parseInt(prompt(`Сколько перевести ${target}? (Комиссия 5%)`));
+            if(isNaN(amount) || amount <= 0 || amount > user.score) return alert("Ошибка суммы!");
+            
+            const tax = Math.ceil(amount * 0.05);
+            const final = amount - tax;
 
-        window.delM = (id) => { if(prompt("Pass:") === "8070") remove(ref(db, 'msgs/'+id)); };
-        window.delUser = (name) => { if(prompt(`Удалить ${name}? Pass:`) === "8070") remove(ref(db, 'users/'+name)); };
+            const tSnap = await get(ref(db, 'users/'+target));
+            if(!tSnap.exists()) return;
+
+            await update(ref(db, 'users/'+user.name), { score: user.score - amount });
+            await update(ref(db, 'users/'+target), { score: (tSnap.val().score || 0) + final });
+
+            push(ref(db, 'msgs'), {n: 'БАНК', t: `💸 ${user.name} перевел ${target} ${final} коинов (налог ${tax} сожжен)`, time: serverTimestamp()});
+            closeMod('pCard');
+        };
 
         window.toggleMute = async (name) => {
             const s = await get(ref(db, 'users/'+name));
-            const isMuted = s.val().muteUntil && s.val().muteUntil > Date.now();
-            if(isMuted) { if(prompt(`Размутить? Pass:`) === "8070") update(ref(db, 'users/'+name), {muteUntil: 0});
-            } else { let m = prompt(`Минуты:`); if(m && prompt("Pass:") === "8070") update(ref(db, 'users/'+name), {muteUntil: Date.now() + (m * 60000)}); }
+            if(s.val().shield > 0) {
+                await update(ref(db, 'users/'+name), { shield: s.val().shield - 1 });
+                return alert("У игрока был ЩИТ! Мут аннулирован, щит сломан.");
+            }
+            let m = prompt("Минуты:");
+            if(m && prompt("Админ-код:") === "8070") {
+                update(ref(db, 'users/'+name), { muteUntil: Date.now() + (m * 60000) });
+            }
         };
 
         window.showP = async (n) => {
-            const s = await get(ref(db, 'users/'+n)); if(!s.exists()) return;
-            const d = s.val();
-            document.getElementById('pc-name').innerText = n;
-            document.getElementById('pc-stats').innerHTML = `🔘 Кликов: <b>${d.score}</b><br>❌ Побед X/O: <b>${d.wins_ttt||0}</b><br>♟ Побед Chess: <b>${d.wins_chess||0}</b>`;
+            viewUser = n;
+            const s = await get(ref(db, 'users/'+n)); const d = s.val();
+            document.getElementById('pc-name').innerText = (d.prefix ? `[${d.prefix}] ` : "") + n;
+            document.getElementById('pc-stats').innerHTML = `
+                💰 Баланс: <b>${d.score}</b><br>
+                🛡️ Защита: <b>${d.shield || 0}</b><br>
+                🤐 Статус: <b>${d.muteUntil > Date.now() ? "В МУТЕ" : "СВОБОДЕН"}</b>
+            `;
             openMod('pCard');
         };
 
-        function loadTop() {
+        window.loadTop = () => {
             onValue(ref(db, 'users'), (s) => {
-                const t = document.getElementById('topList'); t.innerHTML = "<b>ТОП ЛИДЕРОВ:</b><br>";
-                let a = []; s.forEach(u => { if(u.val().score !== undefined) a.push({n:u.key, s:u.val().score, m: u.val().muteUntil}); });
+                const t = document.getElementById('topList'); t.innerHTML = "<b>ТОП БОГАЧЕЙ:</b><br>";
+                let a = []; s.forEach(u => a.push({n:u.key, s:u.val().score || 0, m:u.val().muteUntil}));
                 a.sort((x,y) => y.s - x.s).slice(0, 10).forEach((u,i) => {
-                    const muteTxt = u.m > Date.now() ? "🤐" : "[MUTE]";
-                    t.innerHTML += `<div style="margin-bottom:3px; color:${u.n===user.name?'#fff':'inherit'}">
+                    t.innerHTML += `<div style="margin-bottom:5px">
                         <span onclick="showP('${u.n}')" style="cursor:pointer">${i+1}. ${u.n} — <b>${u.s}</b></span>
-                        <span class="top-mute" onclick="toggleMute('${u.n}')">${muteTxt}</span>
-                        <span class="top-del" onclick="delUser('${u.n}')">[DEL]</span>
+                        <span class="top-mute" onclick="toggleMute('${u.n}')">🤐</span>
+                        <span class="top-del" onclick="delUser('${u.n}')">[X]</span>
                     </div>`;
                 });
             });
-        }
-
-        window.startMM = async (type) => {
-            document.getElementById('lobby').classList.add('hidden'); document.getElementById('game-area').classList.remove('hidden');
-            const qRef = ref(db, 'queue_'+type); const snap = await get(qRef);
-            if(snap.exists() && snap.val() !== user.name) {
-                gid = 'g_'+Date.now();
-                await set(ref(db, 'games/'+gid), { p1: snap.val(), p2: user.name, type, turn: 'p1', board: type==='ttt' ? Array(9).fill("") : "rnbqkbnrpppppppp................................PPPPPPPPRNBQKBNR" });
-                await remove(qRef); join(gid, 'p2');
-            } else { set(qRef, user.name); mmSub = onValue(ref(db, 'games'), (s) => { s.forEach(g => { if(g.val().p1 === user.name) join(g.key, 'p1'); }); }); }
         };
-        window.stopMM = () => location.reload();
-        window.watch = (id) => join(id, 'spectator');
-        function join(id, role) {
-            if(mmSub) off(ref(db, 'games')); gid = id; myRole = role;
-            document.getElementById('lobby').classList.add('hidden'); document.getElementById('game-area').classList.remove('hidden');
-            onValue(ref(db, 'games/'+id), (s) => {
-                const d = s.val(); if(!d) return location.reload(); draw(d);
-                document.getElementById('g-info').innerText = role==='spectator' ? `👀 ${d.p1} vs ${d.p2}` : (d.turn===(role==='p1'?'p1':'p2') ? "ТВОЙ ХОД!" : "ЖДИ...");
-            });
-        }
-        function draw(d) {
-            const cont = document.getElementById('board-container'); cont.innerHTML = "";
-            const board = document.createElement('div'); board.className = d.type==='ttt'?'ttt-grid':'chess-board';
-            const bArr = typeof d.board === 'string' ? d.board.split('') : d.board;
-            bArr.forEach((v, i) => {
-                const c = document.createElement('div'); c.className = 'cell ' + (d.type==='chess' ? ((Math.floor(i/8)+i%8)%2 ? 'cell-b' : 'cell-w') : '');
-                c.innerText = d.type==='chess' ? ({"r":"♜","n":"♞","b":"♝","q":"♛","k":"♚","p":"♟","R":"♖","N":"♘","B":"♗","Q":"♕","K":"♔","P":"♙"}[v]||"") : v;
-                c.onclick = () => move(i, d); board.appendChild(c);
-            });
-            cont.appendChild(board);
-        }
-        async function move(i, d) {
-            if(myRole === 'spectator' || d.turn !== (myRole==='p1'?'p1':'p2')) return;
-            let nb = typeof d.board === 'string' ? d.board.split('') : [...d.board];
-            if(d.type === 'ttt') { if(nb[i] !== '') return; nb[i] = myRole === 'p1' ? 'X' : 'O'; }
-            else { let sel = localStorage.getItem('cs'); if(!sel) { if(nb[i] !== '.') localStorage.setItem('cs', i); return; } nb[i] = nb[sel]; nb[sel] = '.'; localStorage.removeItem('cs'); }
-            update(ref(db, 'games/'+gid), {board: typeof d.board === 'string' ? nb.join('') : nb, turn: d.turn === 'p1' ? 'p2' : 'p1'});
-        }
-        function loadActive() { onValue(ref(db, 'games'), (s) => {
-            const al = document.getElementById('active-list'); al.innerHTML = "";
-            s.forEach(g => { const d = g.val(); al.innerHTML += `🎮 ${d.p1} vs ${d.p2} <button class="button-tea" style="padding:2px; font-size:9px" onclick="watch('${g.key}')">Смотреть</button><br>`; });
-        }); }
 
+        window.delM = (id) => { if(prompt("Pass:") === "8070") remove(ref(db, 'msgs/'+id)); };
+        window.delUser = (name) => { if(prompt("Admin Pass:") === "8070") remove(ref(db, 'users/'+name)); };
         window.openMod = (id) => document.getElementById(id).style.display = 'block';
         window.closeMod = (id) => document.getElementById(id).style.display = 'none';
         window.logout = () => { localStorage.clear(); location.reload(); };
-        window.changeTheme = (v) => { document.body.className = 'theme-'+v; document.getElementById('matrixCanvas').classList.toggle('hidden', v !== 'hacker'); document.getElementById('snowCanvas').classList.toggle('hidden', v !== 'snow'); };
+        window.changeTheme = (v) => { document.body.className = 'theme-'+v; };
+        
         init();
         window.onclick = (e) => { if(!e.target.closest('.msg')) document.getElementById('reactPicker').style.display='none'; };
     </script>
 </body>
 </html>
+
+
 
 
 
