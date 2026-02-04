@@ -69,7 +69,7 @@
 
     <div class="game-box">
         <h3 id="h-click">Кликер</h3>
-        <div id="score" style="font-size: 24px; font-weight: bold; min-height: 40px;">0</div>
+        <div id="score" style="font-size: 35px; font-weight: bold;">0</div>
         <button class="button-tea" onclick="addScore()" id="btn-click">КЛИКНИ!</button>
         <div style="color: #ff4d4d; text-decoration: underline; cursor: pointer; font-size: 11px; margin-top: 5px;" onclick="resetScore()">обнулить мой рекорд</div>
         
@@ -114,14 +114,12 @@
         let currentSessionPass = ""; 
         let userClicks = 0;
 
-        // Вход в систему (через чат)
         window.addC = async function() {
             const n = document.getElementById('nInp').value.trim();
             let m = document.getElementById('mInp').value.trim();
             if(!n || !m) return;
             const uRef = ref(db, 'users/' + n);
             const snap = await get(uRef);
-
             if (!currentSessionPass) {
                 if(snap.exists()){
                     const p = prompt("Пароль:");
@@ -137,7 +135,6 @@
                     userClicks = 0;
                 }
             }
-
             let imgUrl = null;
             if (m.match(/\.(jpeg|jpg|gif|png)$/) != null) { imgUrl = m; m = ""; }
             const now = new Date();
@@ -145,50 +142,41 @@
             document.getElementById('mInp').value = "";
         };
 
-        // КЛИКЕР
         window.addScore = async function() {
             userClicks++;
-            const scoreDisplay = document.getElementById('score');
+            document.getElementById('score').innerText = userClicks;
             
-            if(userClicks >= 100) {
-                scoreDisplay.innerText = "100 кликов! Иди траву потрогай";
-                scoreDisplay.style.fontSize = "16px";
-            } else {
-                scoreDisplay.innerText = userClicks;
-                scoreDisplay.style.fontSize = "24px";
+            // ВСПЛЫВАЮЩАЯ ПАСХАЛКА
+            if(userClicks === 100) {
+                alert("100 кликов! Иди траву потрогай");
             }
 
             const n = document.getElementById('nInp').value.trim();
             if(n && currentSessionPass) {
-                // Сразу сохраняем в базу при каждом клике
                 set(ref(db, 'users/' + n + '/score'), userClicks);
             }
         };
 
         window.resetScore = async function() {
             const n = document.getElementById('nInp').value.trim();
-            if(!n || !currentSessionPass) return alert("Сначала войди (введи имя в чате)!");
-            if(confirm("Обнулить твой рекорд?")) {
+            if(!n || !currentSessionPass) return alert("Сначала войди через чат!");
+            if(confirm("Обнулить рекорд?")) {
                 userClicks = 0;
                 document.getElementById('score').innerText = 0;
                 await set(ref(db, 'users/' + n + '/score'), 0);
             }
         };
 
-        // ТАБЛИЦА ТОП
         const topQ = query(ref(db, 'users'), orderByChild('score'), limitToLast(5));
         onValue(topQ, (s) => {
             const list = document.getElementById('leaders-list');
             list.innerHTML = ""; let arr = [];
-            s.forEach(c => { 
-                if(c.val().score !== undefined) arr.push({name: c.key, score: c.val().score}); 
-            });
+            s.forEach(c => { if(c.val().score !== undefined) arr.push({name: c.key, score: c.val().score}); });
             arr.sort((a,b) => b.score - a.score).forEach((u, i) => {
                 list.innerHTML += `<div class="leader-item"><span>${i+1}. ${u.name}</span> <b>${u.score} кликов</b></div>`;
             });
         });
 
-        // Чат и Удаление
         onValue(ref(db, 'chat_messages'), (s) => {
             const list = document.getElementById('cList');
             list.innerHTML = ""; const data = s.val();
@@ -217,7 +205,6 @@
             document.getElementById('h-top').innerText = langs[l].top;
         }
 
-        // ЗМЕЙКА
         const sCanvas = document.getElementById("snakeGame"); const sCtx = sCanvas.getContext("2d");
         let snake = [{x: 200, y: 200}], food = {x: 100, y: 100}, d = "";
         window.setD = (v) => d = v;
@@ -239,7 +226,6 @@
         }
         setInterval(drawS, 150);
 
-        // МАТРИЦА
         const mCanvas = document.getElementById('matrixCanvas'); const mCtx = mCanvas.getContext('2d');
         mCanvas.width = window.innerWidth; mCanvas.height = window.innerHeight;
         const drops = Array(Math.floor(mCanvas.width/16)).fill(1);
