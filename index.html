@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Мой хакерский сайт</title>
+    <title>Мой сайт</title>
     <script src="https://js-dos.com/v7/build/releases/latest/js-dos.js"></script>
     <style>
         /* --- ГЛОБАЛЬНЫЕ СТИЛИ --- */
@@ -99,14 +99,14 @@
 
     <canvas id="matrixCanvas"></canvas>
     
-    <h1>Мой хакерский сайт</h1>
-    <h2>взлом системы... или просто сайт.</h2>
-    <div class="button-tea" onclick="alert('Спасибо за донат!\n+79216274225 Сбербанк')">Скинуть на чай ☕</div>
+    <h1>Мой первый сайт</h1>
+    <h2>Делал сам честно!</h2>
+    <div class="button-tea" onclick="alert(скинуть на чай будущему программисту:\n+79216274225 Сбербанк')">Нажми!</div>
 
     <hr>
 
     <div class="game-box">
-        <h3>чат (прототип номер 1)</h3>
+        <h3>чат (прототип номер 3)</h3>
         <div id="cList"></div>
         <div class="chat-input-area">
             <input type="text" id="nInp" placeholder="Имя" style="width: 70px;">
@@ -116,14 +116,14 @@
     </div>
 
     <div class="game-box">
-        <h3>Кликер (100 кликов = easter egg)</h3>
+        <h3>Кликер </h3>
         <div id="score">0</div>
-        <button class="click-btn" onclick="addScore()">КЛИК!</button>
+        <button class="click-btn" onclick="addScore()">КЛИКНИ!</button>
         <span class="reset-link" onclick="resetScore()">обнулить счет</span>
     </div>
 
     <div class="game-box">
-        <h3>Змейка (классика)</h3>
+        <h3>Змейка </h3>
         <canvas id="snakeGame" width="400" height="400"></canvas>
         <div class="snake-ctrl">
             <div></div><button class="s-btn" onclick="setD('up')">▲</button><div></div>
@@ -136,7 +136,7 @@
     <div class="game-box">
         <h3>DOOM (1993) - Загрузка...</h3>
         <div id="doom-container"></div>
-        <p style="font-size: 10px; color: #0F0;">Управление: стрелки, Ctrl (стрельба), Alt (страйф), Пробел (открыть).<br>Нажми на игровое окно, чтобы начать.</p>
+        <p style="font-size: 10px; color: #0F0;">Управление: стрелки, Ctrl (стрельба), Alt (страйф), Пробел (открыть).<br>Нажми на игровое окно, чтобы начать. РАБОТАЕТ ТОЛЬКО НА ПК!</p>
     </div>
 
     <script type="module">
@@ -171,7 +171,7 @@
 
         window.deleteMsg = function(id) {
             const password = prompt("Пароль админа:");
-            if (password === "1234") { // <--- ЗАМЕНИ 1234 НА СВОЙ СЕКРЕТНЫЙ ПАРОЛЬ
+            if (password === "8070") { // <--- ЗАМЕНИ 1234 НА СВОЙ СЕКРЕТНЫЙ ПАРОЛЬ
                 remove(ref(db, 'chat_messages/' + id));
             } else {
                 alert("Неверно!");
@@ -298,3 +298,4 @@
     </script>
 </body>
 </html>
+
