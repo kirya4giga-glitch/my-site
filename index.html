@@ -20,24 +20,28 @@
             border-radius: 15px; cursor: pointer; font-weight: bold; touch-action: manipulation; width: 80%; 
         }
         
+        /* Змейка */
+        canvas { background: #000; border: 3px solid #333; display: block; margin: 10px auto; width: 280px; height: 280px; touch-action: none; }
+        .snake-ctrl { display: grid; grid-template-columns: repeat(3, 60px); gap: 10px; justify-content: center; margin-top: 10px; }
+        .s-btn { width: 60px; height: 60px; background: #fff; border: 1px solid #ccc; border-radius: 10px; font-size: 20px; cursor: pointer; }
+
+        /* Магический шар */
         .magic-ball {
-            width: 150px; height: 150px; background: radial-gradient(circle at 30% 30%, #444, #000);
+            width: 140px; height: 140px; background: radial-gradient(circle at 30% 30%, #444, #000);
             border-radius: 50%; margin: 15px auto; display: flex; align-items: center; 
-            justify-content: center; color: white; font-size: 16px; cursor: pointer;
+            justify-content: center; color: white; font-size: 14px; cursor: pointer;
             box-shadow: 0 10px 20px rgba(0,0,0,0.3); transition: 0.2s; padding: 10px;
         }
 
         input { width: 80%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; }
-        .comment-item { background: #f9f9f9; border-left: 4px solid lime; padding: 10px; margin-top: 10px; text-align: left; }
+        .comment-item { background: #f9f9f9; border-left: 4px solid lime; padding: 10px; margin-top: 10px; text-align: left; font-size: 14px; }
         .reset-link { color: red; text-decoration: underline; cursor: pointer; font-size: 14px; margin-top: 15px; display: block; }
     </style>
 </head>
 <body>
 
     <h1>Мой первый сайт!</h1>
-    <p>делал сам, честно!</p>
-    
-    <div class="button-tea" id="teaBtn">Нажми сюда</div>
+    <div class="button-tea" onclick="alert('скинуть будущему программисту на чай: +79216274225 сбербанк')">Нажми сюда</div>
 
     <hr>
 
@@ -49,76 +53,100 @@
     </div>
 
     <div class="game-box">
-        <h3>Игра №2: Магический Шар 🎱</h3>
-        <div class="magic-ball" id="magicBall">Жми!</div>
+        <h3>Игра №2: Змейка</h3>
+        <canvas id="snakeGame" width="400" height="400"></canvas>
+        <div class="snake-ctrl">
+            <div></div><button class="s-btn" onclick="setD('up')">▲</button><div></div>
+            <button class="s-btn" onclick="setD('left')">◀</button>
+            <button class="s-btn" onclick="setD('down')">▼</button>
+            <button class="s-btn" onclick="setD('right')">▶</button>
+        </div>
     </div>
 
     <div class="game-box">
-        <h3>Твои заметки</h3>
-        <input type="text" id="nameInp" placeholder="Твое имя">
-        <input type="text" id="msgInp" placeholder="Твоя мысль">
-        <button class="click-btn" style="font-size: 16px; padding: 10px;" id="addComBtn">Отправить</button>
-        <div id="commentsList"></div>
+        <h3>Игра №3: Магический Шар 🎱</h3>
+        <div class="magic-ball" id="magicBall">Задай вопрос и жми!</div>
+    </div>
+
+    <div class="game-box">
+        <h3>чат (прототип номер 1)</h3>
+        <input type="text" id="nInp" placeholder="Имя">
+        <input type="text" id="mInp" placeholder="Сообщение">
+        <button class="click-btn" style="font-size: 16px; padding: 10px;" onclick="addC()">Отправить</button>
+        <div id="cList"></div>
     </div>
 
     <script>
         // --- КЛИКЕР ---
         let count = parseInt(localStorage.getItem('myScore')) || 0;
-        const scoreDisplay = document.getElementById('score');
-        scoreDisplay.innerText = count;
-
-        document.getElementById('clickBtn').onclick = function() {
-            count++;
-            scoreDisplay.innerText = count;
+        document.getElementById('score').innerText = count;
+        document.getElementById('clickBtn').onclick = () => {
+            count++; document.getElementById('score').innerText = count;
             localStorage.setItem('myScore', count);
-            if(count === 100) alert("100 кликов! Иди потрогай траву)");
         };
+        document.getElementById('resetBtn').onclick = () => { if(confirm("Сбросить?")) { count=0; document.getElementById('score').innerText=0; localStorage.removeItem('myScore'); }};
 
-        document.getElementById('resetBtn').onclick = function() {
-            if(confirm("Обнулить?")) {
-                count = 0;
-                scoreDisplay.innerText = count;
-                localStorage.removeItem('myScore');
-            }
-        };
+        // --- ЗМЕЙКА ---
+        const canvas = document.getElementById("snakeGame");
+        const ctx = canvas.getContext("2d");
+        const box = 20;
+        let snake = [{x: 10 * box, y: 10 * box}];
+        let food = { x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box };
+        let d = "";
 
-        document.getElementById('teaBtn').onclick = function() {
-            alert('скинуть будущему программисту на чай: +79216274225 сбербанк');
-        };
-
-        // --- МАГИЧЕСКИЙ ШАР ---
-        const ball = document.getElementById('magicBall');
-        const answers = ["Да", "Нет", "Мимо", "100%", "Никогда", "Возможно", "Спроси завтра"];
-        ball.onclick = function() {
-            ball.innerText = "...";
-            setTimeout(() => {
-                ball.innerText = answers[Math.floor(Math.random() * answers.length)];
-            }, 400);
-        };
-
-        // --- ЗАМЕТКИ ---
-        let comments = JSON.parse(localStorage.getItem('myComs')) || [];
-        function showComs() {
-            const list = document.getElementById('commentsList');
-            list.innerHTML = "";
-            comments.slice().reverse().forEach(c => {
-                list.innerHTML += `<div class="comment-item"><b>${c.n}:</b> ${c.m}</div>`;
-            });
+        function setD(newD) {
+            if(newD=="left" && d!="right") d="left";
+            if(newD=="up" && d!="down") d="up";
+            if(newD=="right" && d!="left") d="right";
+            if(newD=="down" && d!="up") d="down";
         }
-        document.getElementById('addComBtn').onclick = function() {
-            const n = document.getElementById('nameInp').value;
-            const m = document.getElementById('msgInp').value;
-            if(n && m) {
-                comments.push({n: n, m: m});
-                localStorage.setItem('myComs', JSON.stringify(comments));
-                document.getElementById('nameInp').value = "";
-                document.getElementById('msgInp').value = "";
-                showComs();
+        document.addEventListener("keydown", (e) => {
+            if(e.keyCode==37) setD("left"); if(e.keyCode==38) setD("up");
+            if(e.keyCode==39) setD("right"); if(e.keyCode==40) setD("down");
+        });
+
+        function draw() {
+            ctx.fillStyle = "black"; ctx.fillRect(0,0,400,400);
+            ctx.fillStyle = "red"; ctx.fillRect(food.x, food.y, box, box);
+            for(let i=0; i<snake.length; i++) {
+                ctx.fillStyle = (i==0) ? "lime" : "green";
+                ctx.fillRect(snake[i].x, snake[i].y, box, box);
             }
+            let sX = snake[0].x; let sY = snake[0].y;
+            if(d=="left") sX-=box; if(d=="up") sY-=box; if(d=="right") sX+=box; if(d=="down") sY+=box;
+            if(sX==food.x && sY==food.y) {
+                food = { x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box };
+            } else if(d!="") { snake.pop(); }
+            if(d!="") {
+                let head = {x:sX, y:sY};
+                if(sX<0 || sX>=400 || sY<0 || sY>=400 || snake.some(s => s.x==head.x && s.y==head.y)) {
+                    d=""; snake=[{x: 10*box, y: 10*box}]; alert("Game Over!");
+                } else { snake.unshift(head); }
+            }
+        }
+        setInterval(draw, 150);
+
+        // --- ШАР ---
+        const ball = document.getElementById('magicBall');
+        const ans = ["Да", "Нет", "Возможно", "100%", "Никогда", "Попробуй снова"];
+        ball.onclick = () => {
+            ball.innerText = "...";
+            setTimeout(() => { ball.innerText = ans[Math.floor(Math.random()*ans.length)]; }, 400);
         };
-        showComs();
+
+        // --- ЧАТ ---
+        let coms = JSON.parse(localStorage.getItem('myComs')) || [];
+        function showC() {
+            const list = document.getElementById('cList');
+            list.innerHTML = "";
+            coms.slice().reverse().forEach(c => { list.innerHTML += `<div class="comment-item"><b>${c.n}:</b> ${c.m}</div>`; });
+        }
+        function addC() {
+            const n = document.getElementById('nInp').value;
+            const m = document.getElementById('mInp').value;
+            if(n && m) { coms.push({n:n, m:m}); localStorage.setItem('myComs', JSON.stringify(coms)); document.getElementById('nInp').value=""; document.getElementById('mInp').value=""; showC(); }
+        }
+        showC();
     </script>
 </body>
 </html>
-
-
