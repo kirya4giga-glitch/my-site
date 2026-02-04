@@ -1,111 +1,192 @@
-Манул, [04.02.2026 12:20]
+Манул, [04.02.2026 12:28]
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Моя Игра</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Мой сайт</title>
     <style>
-        body { font-family: sans-serif; text-align: center; background: #f0f0f0; margin: 0; padding: 20px; }
-        .box { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: inline-block; margin: 10px; min-width: 300px; }
-        #score { font-size: 40px; font-weight: bold; color: #2ecc71; }
-        button { cursor: pointer; user-select: none; touch-action: manipulation; }
-        .main-btn { padding: 20px 50px; font-size: 25px; background: #2ecc71; color: white; border: none; border-radius: 10px; width: 100%; }
-        canvas { background: #000; display: block; margin: 20px auto; border: 3px solid #333; width: 280px; height: 280px; }
-        .ctrl { display: grid; grid-template-columns: repeat(3, 70px); gap: 10px; justify-content: center; }
-        .d-btn { width: 70px; height: 70px; background: #ddd; border: 1px solid #ccc; font-size: 25px; border-radius: 10px; }
-        .tea-btn { background: #eee; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; border-radius: 5px; }
+        /* ТВОЙ СТАРЫЙ СТИЛЬ */
+        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f0f0f0; color: black; }
+        
+        .button { 
+            display: inline-block; 
+            padding: 10px 20px; 
+            background: #eee; 
+            text-decoration: none; 
+            color: black; 
+            border: 1px solid #ccc;
+            border-radius: 5px; 
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        #score { font-size: 35px; font-weight: bold; color: limegreen; margin: 10px 0; }
+
+        .click-btn {
+            padding: 15px 40px;
+            font-size: 20px;
+            background: lime;
+            border: 1px solid #333;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            touch-action: manipulation; /* Чтобы на телефоне сразу нажималось */
+        }
+
+        /* ЗМЕЙКА */
+        canvas { 
+            background: #000; 
+            border: 3px solid #333; 
+            display: block; 
+            margin: 20px auto; 
+            width: 280px; 
+            height: 280px; 
+            touch-action: none; 
+        }
+
+        .controls { 
+            display: grid; 
+            grid-template-columns: repeat(3, 70px); 
+            gap: 10px; 
+            justify-content: center; 
+            margin-top: 10px; 
+        }
+
+        .btn-dir { 
+            width: 70px; 
+            height: 70px; 
+            background: #eee; 
+            border: 1px solid #ccc; 
+            border-radius: 10px; 
+            font-size: 24px;
+            touch-action: manipulation;
+        }
+
+        .reset-link {
+            color: red;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 13px;
+            display: block;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
 
-    <button class="tea-btn" onclick="alert('Сбер: +79216274225')">На чай будущему программисту </button>
+    <h1>Мой первый сайт!</h1>
+    <p>делал сам честно!</p>
+    
+    <div class="button" id="teaBtn">Нажми сюда</div>
 
-    <div class="box">
-        <h2>Кликер</h2>
-        <div id="score">0</div>
-        <button class="main-btn" onclick="handleButtonClick()">КЛИКНИ!</button>
-        <p style="color: red; text-decoration: underline; cursor: pointer;" onclick="localStorage.clear(); location.reload();">сбросить всё</p>
-    </div>
+    <hr>
 
-    <div class="box">
-        <h2>Змейка</h2>
-        <canvas id="snakeGame" width="400" height="400"></canvas>
-        <div class="ctrl">
-            <div></div><button class="d-btn" onclick="move('up')">▲</button><div></div>
-            <button class="d-btn" onclick="move('left')">◀</button>
-            <button class="d-btn" onclick="move('down')">▼</button>
-            <button class="d-btn" onclick="move('right')">▶</button>
-        </div>
+    <h3>моя первая мини игра!</h3>
+    <div id="score">0</div>
+    <button class="click-btn" id="clickBtn">КЛИК!</button>
+    <span class="reset-link" id="resetBtn">обнулить счет</span>
+
+    <hr>
+
+    <h3>Змейка для телефона</h3>
+    <canvas id="snakeGame" width="400" height="400"></canvas>
+    
+    <div class="controls">
+        <div></div><button class="btn-dir" id="up">▲</button><div></div>
+        <button class="btn-dir" id="left">◀</button>
+        <button class="btn-dir" id="down">▼</button>
+        <button class="btn-dir" id="right">▶</button>
     </div>
 
     <script>
-        // ЛОГИКА КЛИКЕРА
-        let count = parseInt(localStorage.getItem('savedScore')) || 0;
-        const scoreElement = document.getElementById('score');
-        scoreElement.innerText = count;
+        // Использование ID напрямую для надежности
+        let count = parseInt(localStorage.getItem('myScore')) || 0;
+        const scoreDisplay = document.getElementById('score');
+        scoreDisplay.innerText = count;
 
-        function handleButtonClick() {
+        // КЛИКЕР
+        document.getElementById('clickBtn').onclick = function() {
             count++;
-            scoreElement.innerText = count;
-            localStorage.setItem('savedScore', count);
-            if(count === 100) alert("Ого, 100 кликов! Иди потрогай траву!");
-        }
+            scoreDisplay.innerText = count;
+            localStorage.setItem('myScore', count);
+            if (count === 100) alert("иди потрогай траву! задрот");
+        };
 
-        // ЛОГИКА ЗМЕЙКИ
+        // СБРОС
+        document.getElementById('resetBtn').onclick = function() {
+            if(confirm("Обнулить?")) {
+                count = 0;
+                scoreDisplay.innerText = count;
+                localStorage.removeItem('myScore');
+            }
+        };
+
+        // ЧАЙ
+        document.getElementById('teaBtn').onclick = function() {
+            alert('скинуть будущему программисту на чай: +79216274225 сбербанк');
+        };
+
+        // ЗМЕЙКА
         const canvas = document.getElementById("snakeGame");
         const ctx = canvas.getContext("2d");
-        const boxSize = 20;
-        let snake = [{x: 10 * boxSize, y: 10 * boxSize}];
-        let food = { x: Math.floor(Math.random()*19+1)*boxSize, y: Math.floor(Math.random()*19+1)*boxSize };
-        let currentDir = "";
+        const box = 20;
+        let snake = [{x: 10 * box, y: 10 * box}];
+        let food = { x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box };
+        let d = "";
 
-        function move(dir) {
-            if(dir === 'left' && currentDir !== 'right') currentDir = 'left';
-            if(dir === 'up' && currentDir !== 'down') currentDir = 'up';
-            if(dir === 'right' && currentDir !== 'left') currentDir = 'right';
-            if(dir === 'down' && currentDir !== 'up') currentDir = 'down';
-        }
+Манул, [04.02.2026 12:28]
+// Управление змейкой
+        document.getElementById('up').onclick = () => { if(d != "down") d = "up"; };
+        document.getElementById('down').onclick = () => { if(d != "up") d = "down"; };
+        document.getElementById('left').onclick = () => { if(d != "right") d = "left"; };
+        document.getElementById('right').onclick = () => { if(d != "left") d = "right"; };
 
-        function gameLoop() {
+        function draw() {
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+            
             ctx.fillStyle = "red";
-            ctx.fillRect(food.x, food.y, boxSize, boxSize);
+            ctx.fillRect(food.x, food.y, box, box);
 
-            for(let i = 0; i < snake.length; i++) {
-                ctx.fillStyle = (i === 0) ? "#2ecc71" : "#27ae60";
-                ctx.fillRect(snake[i].x, snake[i].y, boxSize, boxSize);
+            for(let i=0; i<snake.length; i++) {
+                ctx.fillStyle = (i==0) ? "lime" : "green";
+                ctx.fillRect(snake[i].x, snake[i].y, box, box);
             }
 
-            let headX = snake[0].x;
-            let headY = snake[0].y;
+            let sX = snake[0].x;
+            let sY = snake[0].y;
 
-            if(currentDir === "left") headX -= boxSize;
-            if(currentDir === "right") headX += boxSize;
-            if(currentDir === "up") headY -= boxSize;
-            if(currentDir === "down") headY += boxSize;
+            if(d == "left") sX -= box;
+            if(d == "up") sY -= box;
+            if(d == "right") sX += box;
+            if(d == "down") sY += box;
 
-Манул, [04.02.2026 12:20]
-if(headX === food.x && headY === food.y) {
-                food = { x: Math.floor(Math.random()*19+1)*boxSize, y: Math.floor(Math.random()*19+1)*boxSize };
-            } else if (currentDir !== "") {
+            if(sX == food.x && sY == food.y) {
+                food = { x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box };
+            } else if(d != "") {
                 snake.pop();
             }
 
-            if(currentDir !== "") {
-                let newHead = {x: headX, y: headY};
-                if(headX < 0  headX >= canvas.width  headY < 0  headY >= canvas.height  snake.some(s => s.x === newHead.x && s.y === newHead.y)) {
+            if(d != "") {
+                let head = {x: sX, y: sY};
+                if(sX < 0  sX >= canvas.width  sY < 0  sY >= canvas.height  collision(head, snake)) {
                     alert("Игра окончена!");
                     location.reload();
-                    return;
                 }
-                snake.unshift(newHead);
+                snake.unshift(head);
             }
         }
 
-        setInterval(gameLoop, 150);
+        function collision(head, array) {
+            for(let i=0; i<array.length; i++) {
+                if(head.x == array[i].x && head.y == array[i].y) return true;
+            }
+            return false;
+        }
+
+        setInterval(draw, 150);
     </script>
+
 </body>
 </html>
