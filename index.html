@@ -3,29 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super App v13</title>
+    <title>Super App v15 - Fixed & Final</title>
     <style>
-        :root { --bg: #0a0a0a; --main: #0F0; --box: rgba(10, 25, 10, 0.8); --txt: #0F0; }
+        :root { --bg: #0a0a0a; --main: #0F0; --box: rgba(15, 30, 15, 0.9); --txt: #0F0; }
         body.theme-tg { --bg: #17212b; --main: #5288c1; --box: #242f3d; --txt: #fff; }
         body.theme-snow { --bg: #001c3d; --main: #ffffff; --box: rgba(255,255,255,0.1); --txt: #fff; }
         body { font-family: 'Consolas', monospace; text-align: center; padding: 20px; background: var(--bg); color: var(--txt); margin: 0; transition: 0.3s; }
         
         .game-box { background: var(--box); padding: 15px; border-radius: 15px; display: inline-block; margin-bottom: 20px; width: 95%; max-width: 450px; border: 1px solid var(--main); position: relative; z-index: 5; }
-        .button-tea { padding: 10px 15px; background: transparent; color: var(--main); border: 1px solid var(--main); border-radius: 8px; cursor: pointer; font-weight: bold; margin: 5px; }
+        .button-tea { padding: 8px 12px; background: transparent; color: var(--main); border: 1px solid var(--main); border-radius: 8px; cursor: pointer; font-weight: bold; margin: 5px; font-size: 13px; }
         
-        #cList { height: 250px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 10px; margin-bottom: 10px; text-align: left; border: 1px solid var(--main); }
-        .msg { background: rgba(255,255,255,0.05); padding: 8px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; border-left: 3px solid var(--main); position: relative; }
+        #cList { height: 250px; overflow-y: auto; background: rgba(0,0,0,0.4); border-radius: 10px; padding: 10px; margin-bottom: 10px; text-align: left; border: 1px solid var(--main); }
+        .msg { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-bottom: 8px; position: relative; border-left: 3px solid var(--main); cursor: pointer; }
+        .del-btn { position: absolute; top: 5px; right: 5px; color: #ff4d4d; font-size: 12px; cursor: pointer; border: 1px solid #ff4d4d; border-radius: 3px; padding: 0 4px; }
         
-        .react-menu { display: none; position: absolute; background: #222; border: 1px solid var(--main); padding: 5px; border-radius: 10px; z-index: 100; gap: 5px; }
-        .rank { font-size: 10px; background: var(--main); color: #000; padding: 2px 5px; border-radius: 4px; margin-left: 5px; }
+        .react-bar { margin-top: 5px; font-size: 12px; display: flex; gap: 8px; opacity: 0.8; }
+        .react-item { background: rgba(255,255,255,0.1); padding: 2px 5px; border-radius: 5px; }
+
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--box); border: 2px solid var(--main); padding: 25px; border-radius: 15px; z-index: 2000; width: 280px; box-shadow: 0 0 50px #000; }
+        .rank { font-size: 11px; background: var(--main); color: #000; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
         
-        /* Модальные окна */
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--box); border: 2px solid var(--main); padding: 20px; border-radius: 15px; z-index: 2000; width: 280px; box-shadow: 0 0 30px #000; }
-        
+        #reactPicker { display: none; position: fixed; background: #222; border: 1px solid var(--main); padding: 10px; border-radius: 50px; z-index: 3000; gap: 10px; font-size: 24px; box-shadow: 0 0 20px var(--main); }
         #matrixCanvas, #snowCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
         .hidden { display: none; }
-        .chess-board, .ttt-grid { display: grid; margin: 10px auto; border: 1px solid var(--main); width: 240px; height: 240px; }
-        .cell { display: flex; align-items: center; justify-content: center; border: 0.5px solid #333; cursor: pointer; font-size: 20px; }
     </style>
 </head>
 <body class="theme-hacker">
@@ -33,81 +33,66 @@
     <canvas id="snowCanvas" class="hidden"></canvas>
 
     <div style="position:fixed; top:15px; right:15px; z-index:1001">
-        <button class="button-tea" onclick="document.getElementById('sMenu').style.display='block'">⚙️</button>
-    </div>
-
-    <div id="sMenu" class="modal">
-        <h3 id="set-title">Настройки</h3>
-        <label id="l-theme">Тема:</label>
-        <select onchange="changeTheme(this.value)"><option value="hacker">Hacker</option><option value="tg">Telegram</option><option value="snow">Snow ❄️</option></select><br><br>
-        <label id="l-lang">Язык:</label>
-        <select onchange="changeLang(this.value)"><option value="ru">RU</option><option value="en">EN</option><option value="ua">UA</option></select>
-        <hr>
-        <button class="button-tea" onclick="alert('скинуть будущему программисту на чай: +79216274225 сбербанк')" id="b-support">Поддержи меня</button>
-        <button class="button-tea" onclick="logout()">Exit</button>
-        <button class="button-tea" onclick="this.parentElement.style.display='none'">X</button>
-    </div>
-
-    <div id="pCard" class="modal">
-        <h2 id="pc-name">Name</h2>
-        <div id="pc-rank" class="rank">Rank</div>
-        <p id="pc-stats">Stats...</p>
-        <button class="button-tea" onclick="this.parentElement.style.display='none'">OK</button>
+        <button class="button-tea" onclick="openMenu()">⚙️</button>
     </div>
 
     <h1 id="h-title">Мой первый сайт</h1>
     <h3 id="h-sub">сделал сам честно!</h3>
 
+    <div id="pCard" class="modal">
+        <h2 id="pc-name">User</h2>
+        <div id="pc-rank" class="rank">Rank</div>
+        <div id="pc-stats" style="margin: 15px 0; font-size:14px; text-align: left;"></div>
+        <button class="button-tea" onclick="resetScore()" style="color:red; border-color:red">Сбросить рекорд</button><br>
+        <button class="button-tea" onclick="closeModal('pCard')">Закрыть</button>
+    </div>
+
+    <div id="sMenu" class="modal">
+        <h3 id="h-settings">Настройки</h3>
+        Тема: <select onchange="changeTheme(this.value)"><option value="hacker">Hacker</option><option value="tg">Telegram</option><option value="snow">Snow</option></select><br><br>
+        Язык: <select onchange="changeLang(this.value)"><option value="ru">RU</option><option value="en">EN</option><option value="ua">UA</option></select>
+        <hr>
+        <button class="button-tea" onclick="alert('скинуть будущему программисту на чай: +79216274225 сбербанк')" id="b-support">Поддержи меня</button>
+        <button class="button-tea" onclick="logout()">Выход</button>
+        <button class="button-tea" onclick="closeModal('sMenu')">X</button>
+    </div>
+
     <div class="game-box">
         <h3 id="h-chat">Чат</h3>
         <div id="cList"></div>
         <div style="display:flex; gap:5px">
-            <input type="text" id="mInp" placeholder="..." style="flex:1; background:transparent; border:1px solid var(--main); color:inherit; padding:10px">
+            <input type="text" id="mInp" placeholder="Текст..." style="flex:1; background:transparent; border:1px solid var(--main); color:inherit; padding:10px; border-radius:8px">
             <button class="button-tea" onclick="sendMsg()">></button>
         </div>
     </div>
 
     <div class="game-box">
         <h3 id="h-click">Кликер</h3>
-        <div id="score" style="font-size:45px">0</div>
+        <div id="score" style="font-size:50px">0</div>
         <button class="button-tea" onclick="doClick()" id="b-click" style="padding:15px 30px">КЛИКНИ!</button>
         <div id="topList" style="text-align:left; font-size:12px; margin-top:15px; border-top:1px solid var(--main); padding-top:10px"></div>
     </div>
 
-    <div class="game-box">
-        <h3 id="h-games">Игровой Центр</h3>
-        <div id="active-list" style="font-size:11px; margin-bottom:10px"></div>
-        <div id="lobby">
-            <button class="button-tea" onclick="startMM('ttt')">X/O</button>
-            <button class="button-tea" onclick="startMM('chess')">Chess</button>
-        </div>
-        <div id="game-area" class="hidden">
-            <div id="g-info"></div>
-            <div id="board-container"></div>
-            <button class="button-tea" onclick="stopMM()" id="b-cancel">Отмена</button>
-        </div>
-    </div>
-
-    <div id="reactMenu" class="react-menu">
-        <span onclick="addReact('🔥')">🔥</span> <span onclick="addReact('😂')">😂</span>
-        <span onclick="addReact('❤️')">❤️</span> <span onclick="addReact('👍')">👍</span>
-        <span onclick="addReact('💀')">💀</span>
+    <div id="reactPicker">
+        <span onclick="applyReact('🔥')">🔥</span><span onclick="applyReact('❤️')">❤️</span>
+        <span onclick="applyReact('👍')">👍</span><span onclick="applyReact('😂')">😂</span>
+        <span onclick="applyReact('💀')">💀</span>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, get, update, push, onValue, remove, query, orderByChild, limitToLast, off } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, set, get, update, push, onValue, remove, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const conf = { apiKey: "AIzaSyChSk0gETRBQ391e4BjPqFsKc_dzjBmT58", databaseURL: "https://my-chat-52203-default-rtdb.firebaseio.com", projectId: "my-chat-52203" };
         const db = getDatabase(initializeApp(conf));
 
-        let user = JSON.parse(localStorage.getItem('app_user_v13'));
-        let selectedMsgId = null, currentGid = null, myRole = '', gType = '';
+        let user = JSON.parse(localStorage.getItem('user_v15'));
+        let selMsgId = null;
 
         const dict = {
-            ru: {title:"Мой первый сайт", sub:"сделал сам честно!", chat:"Чат", click:"Кликер", games:"Игровой Центр", support:"Поддержи меня", cancel:"Отмена", bclick: "КЛИКНИ!"},
-            en: {title:"My First Website", sub:"made it myself honestly!", chat:"Chat", click:"Clicker", games:"Game Center", support:"Support Me", cancel:"Cancel", bclick: "CLICK!"},
-            ua: {title:"Мій перший сайт", sub:"робив сам чесно!", chat:"Чат", click:"Клікер", games:"Ігровий Центр", support:"Підтримай мене", cancel:"Відміна", bclick: "КЛІКНИ!"}
+            ru: {title:"Мой первый сайт", sub:"сделал сам честно!", chat:"Чат", click:"Кликер", support:"Поддержи меня", bclick: "КЛИКНИ!", settings: "Настройки"},
+            en: {title:"My First App", sub:"honest work!", chat:"Chat", click:"Clicker", support:"Support me", bclick: "CLICK!", settings: "Settings"},
+            ua: {title:"Мій перший сайт", sub:"робив сам чесно!", chat:"Чат", click:"Клікер", support:"Підтримай мене", bclick: "КЛІКНИ!", settings: "Налаштування"}
         };
 
         window.changeLang = (l) => {
@@ -116,34 +101,22 @@
             document.getElementById('h-sub').innerText = t.sub;
             document.getElementById('h-chat').innerText = t.chat;
             document.getElementById('h-click').innerText = t.click;
-            document.getElementById('h-games').innerText = t.games;
             document.getElementById('b-support').innerText = t.support;
-            document.getElementById('b-cancel').innerText = t.cancel;
             document.getElementById('b-click').innerText = t.bclick;
+            document.getElementById('h-settings').innerText = t.settings;
         };
 
-        const getRank = (s) => {
-            if(s > 1000) return "Бог Кода ⚡";
-            if(s > 500) return "Профи 🔥";
-            if(s > 100) return "Игрок 🕹️";
-            return "Новичок 🌱";
-        };
-
-        async function login() {
+        async function init() {
             if(!user) {
                 let n = prompt("Имя:"); if(!n) return;
                 let p = prompt("Пароль:");
                 const s = await get(ref(db, 'users/'+n));
-                if(s.exists()){
-                    if(s.val().password !== p) return alert("Wrong pass!");
-                    user = {name: n, ...s.val()};
-                } else {
-                    user = {name: n, password: p, score: 0, wins: 0};
-                    await set(ref(db, 'users/'+n), user);
-                }
-                localStorage.setItem('app_user_v13', JSON.stringify(user));
+                if(s.exists()){ if(s.val().password !== p) return location.reload(); user = {name: n, ...s.val()}; }
+                else { user = {name: n, password: p, score: 0}; await set(ref(db, 'users/'+n), user); }
+                localStorage.setItem('user_v15', JSON.stringify(user));
             }
             document.getElementById('score').innerText = user.score;
+            loadChat();
             loadTop();
         }
 
@@ -152,124 +125,97 @@
             document.getElementById('score').innerText = user.score;
             if(user.score === 100) alert("Иди траву потрогай задрот 😂");
             update(ref(db, 'users/'+user.name), {score: user.score});
-            localStorage.setItem('app_user_v13', JSON.stringify(user));
+            localStorage.setItem('user_v15', JSON.stringify(user));
         };
 
         window.sendMsg = () => {
-            const i = document.getElementById('mInp');
-            if(!i.value) return;
-            push(ref(db, 'msgs'), {n: user.name, t: i.value, r: {}});
+            const i = document.getElementById('mInp'); if(!i.value) return;
+            push(ref(db, 'msgs'), {n: user.name, t: i.value, r: { '🔥':0,'❤️':0,'👍':0,'😂':0,'💀':0 }});
             i.value = "";
         };
 
-        onValue(ref(db, 'msgs'), (s) => {
-            const l = document.getElementById('cList'); l.innerHTML = "";
-            s.forEach(d => {
-                const m = d.val();
-                let rs = ""; if(m.r) Object.keys(m.r).forEach(e => { rs += ` ${e}${Object.keys(m.r[e]).length}`; });
-                const div = document.createElement('div');
-                div.className = 'msg';
-                div.innerHTML = `<b onclick="event.stopPropagation(); showP('${m.n}')">${m.n}</b>: ${m.t} <small>${rs}</small>`;
-                div.onclick = (e) => {
-                    selectedMsgId = d.key;
-                    const menu = document.getElementById('reactMenu');
-                    menu.style.display = 'flex'; menu.style.top = e.pageY + 'px'; menu.style.left = e.pageX + 'px';
-                };
-                l.appendChild(div);
-            });
-            l.scrollTop = l.scrollHeight;
-        });
+        function loadChat() {
+            onValue(ref(db, 'msgs'), (s) => {
+                const l = document.getElementById('cList'); l.innerHTML = "";
+                s.forEach(d => {
+                    const m = d.val();
+                    let rHtml = '<div class="react-bar">';
+                    if(m.r) Object.entries(m.r).forEach(([emoji, count]) => {
+                        if(count > 0) rHtml += `<span class="react-item">${emoji} ${count}</span>`;
+                    });
+                    rHtml += '</div>';
 
-        window.addReact = (e) => {
-            update(ref(db, `msgs/${selectedMsgId}/r/${e}/${user.name}`), true);
-            document.getElementById('reactMenu').style.display = 'none';
+                    const div = document.createElement('div');
+                    div.className = 'msg';
+                    div.innerHTML = `<span class="del-btn" onclick="event.stopPropagation(); deleteMsg('${d.key}')">X</span>
+                                     <b onclick="event.stopPropagation(); showP('${m.n}')">${m.n}</b>: ${m.t} ${rHtml}`;
+                    div.onclick = (e) => {
+                        selMsgId = d.key;
+                        const p = document.getElementById('reactPicker');
+                        p.style.display = 'flex'; p.style.top = (e.clientY - 40)+'px'; p.style.left = e.clientX+'px';
+                    };
+                    l.appendChild(div);
+                });
+                l.scrollTop = l.scrollHeight;
+            });
+        }
+
+        window.applyReact = (emoji) => {
+            const rRef = ref(db, `msgs/${selMsgId}/r/${emoji}`);
+            get(rRef).then(s => { update(ref(db, `msgs/${selMsgId}/r`), { [emoji]: (s.val() || 0) + 1 }); });
+            document.getElementById('reactPicker').style.display = 'none';
+        };
+
+        window.deleteMsg = (id) => { if(prompt("Pass:") === "8070") remove(ref(db, 'msgs/'+id)); };
+
+        window.resetScore = () => {
+            if(prompt("Введите пароль для сброса:") === "8070") {
+                user.score = 0;
+                update(ref(db, 'users/'+user.name), {score: 0});
+                document.getElementById('score').innerText = 0;
+                localStorage.setItem('user_v15', JSON.stringify(user));
+                alert("Рекорд очищен!");
+                location.reload();
+            }
         };
 
         window.showP = async (n) => {
-            const s = await get(ref(db, 'users/'+n));
-            const d = s.val();
+            const s = await get(ref(db, 'users/'+n)); const d = s.val();
             document.getElementById('pc-name').innerText = n;
-            document.getElementById('pc-rank').innerText = getRank(d.score);
-            document.getElementById('pc-stats').innerText = `Кликов: ${d.score}\nПобед: ${d.wins || 0}`;
+            document.getElementById('pc-rank').innerText = d.score > 500 ? "МАСТЕР 🔥" : "НОВИЧОК 🌱";
+            document.getElementById('pc-stats').innerHTML = `КЛИКОВ: <b>${d.score}</b><br>СТАТУС: Активен`;
             document.getElementById('pCard').style.display = 'block';
         };
 
         function loadTop() {
             onValue(query(ref(db, 'users'), orderByChild('score'), limitToLast(10)), (s) => {
-                const t = document.getElementById('topList'); t.innerHTML = "<b>ТАБЛИЦА ЛИДЕРОВ:</b><br>";
+                const t = document.getElementById('topList'); t.innerHTML = "<b>ТОП ЛИДЕРОВ (КЛИКИ):</b><br>";
                 let a = []; s.forEach(u => a.push({n:u.key, s:u.val().score}));
-                a.sort((x,y)=>y.s-x.s).forEach((u,i) => t.innerHTML += `<div onclick="showP('${u.n}')" style="cursor:pointer">${i+1}. ${u.n} — ${u.s} [${getRank(u.s)}]</div>`);
+                a.sort((x,y)=>y.s-x.s).forEach((u,i) => t.innerHTML += `<div onclick="showP('${u.n}')" style="cursor:pointer">${i+1}. ${u.n} — <b style="color:#fff">${u.s}</b> кликов</div>`);
             });
         }
 
-        // МУЛЬТИПЛЕЕР
-        window.startMM = async (type) => {
-            gType = type;
-            document.getElementById('lobby').classList.add('hidden');
-            document.getElementById('game-area').classList.remove('hidden');
-            const qRef = ref(db, 'queue_'+type);
-            const snap = await get(qRef);
-            if(snap.exists() && snap.val() !== user.name) {
-                const id = 'g_'+Date.now();
-                await set(ref(db, 'games/'+id), { p1: snap.val(), p2: user.name, type, turn: 'p1', board: type==='ttt' ? Array(9).fill("") : "rnbqkbnrpppppppp................................PPPPPPPPRNBQKBNR" });
-                await remove(qRef); join(id, 'p2');
-            } else {
-                set(qRef, user.name);
-                onValue(ref(db, 'games'), (s) => { s.forEach(g => { if(g.val().p1 === user.name) join(g.key, 'p1'); }); });
-            }
-        };
-
-        window.stopMM = () => { remove(ref(db, 'queue_'+gType)); location.reload(); };
-
-        function join(id, role) {
-            currentGid = id; myRole = role;
-            onValue(ref(db, 'games/'+id), (s) => {
-                const d = s.val(); if(!d) return;
-                draw(d);
-                document.getElementById('g-info').innerText = d.turn === (role==='p1'?'p1':'p2') ? "ТВОЙ ХОД!" : "ЖДИ...";
-            });
-        }
-
-        function draw(d) {
-            const cont = document.getElementById('board-container'); cont.innerHTML = "";
-            const board = document.createElement('div');
-            board.className = d.type==='ttt'?'ttt-grid':'chess-board';
-            const bArr = typeof d.board === 'string' ? d.board.split('') : d.board;
-            bArr.forEach((v, i) => {
-                const c = document.createElement('div'); c.className = 'cell';
-                c.innerText = d.type==='chess' ? ({"r":"♜","p":"♟","R":"♖","P":"♙"}[v]||v.replace('.','')) : v;
-                c.onclick = () => move(i, d);
-                board.appendChild(c);
-            });
-            cont.appendChild(board);
-        }
-
-        async function move(i, d) {
-            if(d.turn !== (myRole==='p1'?'p1':'p2')) return;
-            let nb = typeof d.board === 'string' ? d.board.split('') : [...d.board];
-            if(d.type==='ttt') { if(nb[i]!=='')return; nb[i]=myRole==='p1'?'X':'O'; }
-            update(ref(db, 'games/'+currentGid), {board: typeof d.board === 'string'?nb.join(''):nb, turn: d.turn==='p1'?'p2':'p1'});
-        }
-
-        login();
+        window.openMenu = () => document.getElementById('sMenu').style.display = 'block';
+        window.closeModal = (id) => document.getElementById(id).style.display = 'none';
         window.logout = () => { localStorage.clear(); location.reload(); };
+        window.changeTheme = (v) => { document.body.className = 'theme-'+v; document.getElementById('matrixCanvas').classList.toggle('hidden', v!=='hacker'); document.getElementById('snowCanvas').classList.toggle('hidden', v!=='snow'); };
+
+        init();
+        window.onclick = (e) => { if(!e.target.closest('.msg')) document.getElementById('reactPicker').style.display = 'none'; };
     </script>
 
     <script>
-        function changeTheme(v) { document.body.className = 'theme-'+v; document.getElementById('matrixCanvas').classList.toggle('hidden', v!=='hacker'); document.getElementById('snowCanvas').classList.toggle('hidden', v!=='snow'); }
-        // Эффекты
         const mC = document.getElementById('matrixCanvas'), mX = mC.getContext('2d');
         mC.width = window.innerWidth; mC.height = window.innerHeight;
         const drops = Array(Math.floor(mC.width/16)).fill(1);
-        setInterval(() => {
-            mX.fillStyle = 'rgba(0,0,0,0.05)'; mX.fillRect(0,0,mC.width,mC.height);
-            mX.fillStyle = '#0F0'; mX.font = '16px monospace';
+        setInterval(() => { mX.fillStyle = 'rgba(0,0,0,0.05)'; mX.fillRect(0,0,mC.width,mC.height); mX.fillStyle = '#0F0'; mX.font = '16px monospace';
             drops.forEach((y, i) => { mX.fillText(Math.random()>0.5?'0':'1', i*16, y*16); if(y*16>mC.height && Math.random()>0.975) drops[i]=0; drops[i]++; });
         }, 33);
-        window.onclick = () => { document.getElementById('reactMenu').style.display = 'none'; };
     </script>
 </body>
 </html>
+
+
 
 
 
