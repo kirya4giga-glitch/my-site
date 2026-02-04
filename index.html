@@ -14,5 +14,25 @@
     <br><br>
     <a href="#" class="button" onclick="alert('скинуть будущему программисту на чай:+79216274225 сбербанк')">Нажми сюда)</a>
 </body>
+<hr>
+<div style="margin-top: 20px;">
+    <h3>Мини-игра: Накликай себе опыт!</h3>
+    <p>Счет: <span id="score">0</span></p>
+    <button onclick="addScore()" style="padding: 15px 30px; font-size: 20px; background: lime; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">КЛИК!</button>
+</div>
 
+<script>
+    // Это и есть JavaScript — логика игры
+    let count = 0;
+    function addScore() {
+        count = count + 1; // Увеличиваем счет на 1
+        document.getElementById('score').innerText = count; // Обновляем цифру на экране
+        
+        // Маленький прикол:
+        if(count === 10) {
+            alert("Ого, уже 10 кликов! Ты задрот!");
+        }
+    }
+</script>
 </html>
+
