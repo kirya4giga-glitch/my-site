@@ -1,192 +1,155 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kiru OS v23 - Apple Aesthetic</title>
+    <title>Kiru Ultimate v24</title>
     <style>
         :root { 
-            --bg: #000; 
-            --main: #007AFF; /* Apple Blue */
-            --glass: rgba(255, 255, 255, 0.1); 
-            --txt: #ffffff; 
+            --bg: #000; --main: #007AFF; --glass: rgba(255, 255, 255, 0.1); --txt: #fff; 
             --grad: linear-gradient(135deg, #007AFF, #00C7FF);
         }
-        
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background: radial-gradient(circle at top right, #1a1a1a, #000);
-            color: var(--txt); 
-            margin: 0; 
-            padding: 20px;
-            transition: all 0.5s ease;
-            overflow-x: hidden;
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+            background: #000; color: var(--txt); margin: 0; padding: 15px; 
+            transition: 0.3s; overflow-x: hidden;
         }
-
-        /* Эстетичные карточки в стиле Apple */
         .game-box { 
-            background: var(--glass); 
-            backdrop-filter: blur(15px); 
-            -webkit-backdrop-filter: blur(15px);
-            padding: 20px; 
-            border-radius: 25px; 
-            margin: 0 auto 20px auto; 
-            width: 95%; 
-            max-width: 450px; 
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            animation: fadeIn 0.8s ease-out;
+            background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: 20px; border-radius: 28px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
         }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Плавные кнопки */
         .button-tea { 
-            padding: 12px 20px; 
-            background: var(--grad); 
-            color: white; 
-            border: none; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            font-weight: 600; 
-            margin: 5px; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
+            padding: 12px 18px; background: var(--grad); color: #fff; border: none; 
+            border-radius: 14px; cursor: pointer; font-weight: 600; margin: 5px; 
+            transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .button-tea:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0, 122, 255, 0.5); }
-        .button-tea:active { transform: scale(0.95); }
-
-        /* Чат */
-        #cList { 
-            height: 300px; 
-            overflow-y: auto; 
-            background: rgba(0,0,0,0.2); 
-            border-radius: 18px; 
-            padding: 15px; 
-            margin-bottom: 15px; 
-            text-align: left; 
-            border: 1px solid rgba(255,255,255,0.05);
-            scroll-behavior: smooth;
-        }
-        .msg { 
-            background: rgba(255,255,255,0.08); 
-            padding: 12px; 
-            border-radius: 15px; 
-            margin-bottom: 10px; 
-            position: relative; 
-            transition: 0.3s;
-        }
-        .msg:hover { background: rgba(255,255,255,0.12); }
-
-        /* Окна (Modals) */
-        .modal { 
-            display: none; 
-            position: fixed; 
-            top: 50%; left: 50%; 
-            transform: translate(-50%, -50%); 
-            background: rgba(30, 30, 30, 0.9); 
-            backdrop-filter: blur(30px);
-            border: 1px solid rgba(255,255,255,0.2); 
-            padding: 30px; 
-            border-radius: 30px; 
-            z-index: 2000; 
-            width: 85%; 
-            max-width: 350px; 
-            box-shadow: 0 0 100px rgba(0,0,0,0.8);
-            animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes popUp { from { transform: translate(-50%, -40%) scale(0.8); opacity: 0; } to { transform: translate(-50%, -50%) scale(1); opacity: 1; } }
-
-        /* Специфические стили */
-        .prefix { font-size: 10px; padding: 3px 6px; border-radius: 6px; background: white; color: black; margin-right: 6px; }
-        .msg-time { opacity: 0.4; font-size: 10px; float: right; margin-top: 10px; }
-        #matrixCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.3; }
+        .button-tea:active { transform: scale(0.92); }
         
-        /* Игры */
-        .chess-board, .ttt-grid { display: grid; margin: 15px auto; border-radius: 12px; overflow: hidden; border: 2px solid var(--main); }
-        .chess-board { grid-template-columns: repeat(8, 1fr); width: 300px; height: 300px; }
-        .ttt-grid { grid-template-columns: repeat(3, 1fr); width: 240px; height: 240px; }
-        .cell { display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 24px; transition: 0.2s; }
-        .cell-w { background: #fff; color: #000; } .cell-b { background: #333; color: #fff; }
+        #cList { height: 300px; overflow-y: auto; border-radius: 20px; padding: 10px; text-align: left; background: rgba(0,0,0,0.3); }
+        .msg { background: rgba(255,255,255,0.07); padding: 12px; border-radius: 16px; margin-bottom: 8px; position: relative; }
+        .del-msg { color: #ff3b30; cursor: pointer; float: right; font-weight: bold; margin-left: 10px; }
+        
+        .modal { 
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            background: rgba(25, 25, 25, 0.95); backdrop-filter: blur(40px);
+            padding: 30px; border-radius: 35px; z-index: 3000; width: 85%; max-width: 380px;
+            border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 0 80px rgba(0,0,0,0.9);
+        }
+        
+        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .shop-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        
+        .chess-board, .ttt-grid { display: grid; margin: 15px auto; border-radius: 15px; overflow: hidden; border: 3px solid var(--main); }
+        .chess-board { grid-template-columns: repeat(8, 1fr); width: 280px; height: 280px; }
+        .ttt-grid { grid-template-columns: repeat(3, 1fr); width: 210px; height: 210px; }
+        .cell { display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; }
+        .cell-w { background: #fff; color: #000; } .cell-b { background: #2c2c2e; color: #fff; }
+        
+        .prefix { font-size: 10px; padding: 2px 6px; border-radius: 5px; background: #fff; color: #000; font-weight: bold; margin-right: 5px; }
+        .react-bar { margin-top: 8px; display: flex; gap: 5px; }
+        .react-item { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 10px; font-size: 12px; }
+        
+        #reactPicker { display: none; position: fixed; background: rgba(40,40,40,0.95); backdrop-filter: blur(10px); padding: 10px; border-radius: 50px; z-index: 4000; border: 1px solid var(--main); }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
-    <canvas id="matrixCanvas"></canvas>
 
-    <div style="position:fixed; top:20px; right:20px; z-index:1001; display:flex; gap:12px;">
+    <div style="position:fixed; top:20px; right:20px; z-index:1001; display:flex; gap:10px;">
         <button class="button-tea" onclick="openMod('shopWin')">🛒 Shop</button>
         <button class="button-tea" onclick="openMod('sMenu')">⚙️</button>
     </div>
 
-    <h1 id="h-title" style="font-weight: 800; letter-spacing: -1px;">Kiru OS v23</h1>
-    <h3 onclick="eggClick()" style="cursor:pointer">Баланс: <span id="userBalance" style="color:var(--main)">0</span> 💰</h3>
+    <h1 id="h-title" style="font-weight:800; letter-spacing:-1px;">Kiru OS v24</h1>
+    <h3 onclick="eggClick()" style="cursor:pointer">Balance: <span id="userBalance" style="color:var(--main)">0</span> 💰</h3>
 
-    <div id="musyaEaster" class="modal">
-        <h2 style="color: #FF2D55;">🐾 Секретная Муся!</h2>
-        <img id="musyaImg" src="https://i.postimg.cc/mD3mB8Qf/image.jpg" style="width:100%; border-radius:20px; margin:10px 0;">
-        <p>Ты нашел легенду!</p>
-        <button class="button-tea" onclick="closeMod('musyaEaster')">Закрыть</button>
+    <div id="shopWin" class="modal">
+        <h3>🛒 Apple Market</h3>
+        <div class="shop-grid">
+            <div class="shop-card">
+                <span>🤖 Autoclicker</span><br>
+                <small>+1/sec</small><br>
+                <button class="button-tea" onclick="buy('auto', 5000, 1)">5000</button>
+            </div>
+            <div class="shop-card">
+                <span>⚡ Multi-Click</span><br>
+                <small>+2 per click</small><br>
+                <button class="button-tea" onclick="buy('multi', 2000, 2)">2000</button>
+            </div>
+            <div class="shop-card">
+                <span>🛡️ Anti-Mute</span><br>
+                <button class="button-tea" onclick="buy('item', 1500, 'shield')">1500</button>
+            </div>
+            <div class="shop-card">
+                <span>💎 [VIP] Tag</span><br>
+                <button class="button-tea" onclick="buy('prefix', 500, 'VIP')">500</button>
+            </div>
+        </div>
+        <button class="button-tea" onclick="closeMod('shopWin')" style="width:100%; margin-top:15px;">Close</button>
     </div>
 
     <div id="thanksWin" class="modal">
         <h3>🌟 Wall of Fame</h3>
-        <ul style="text-align:left; line-height:2.2; font-weight: 500;">
-            <li>1. Вадеку</li>
-            <li>2. Мусе ❤️</li>
-            <li>3. Саше</li>
-            <li>4. Андрею 😎</li>
-            <li>5. Тепе</li>
-            <li>6. gemini</li>
-            <li>7. Анастасие Землеройке</li>
-        </ul>
-        <button class="button-tea" onclick="closeMod('thanksWin')">Закрыть</button>
+        <ol id="thanksList" style="text-align:left; line-height:2;">
+            <li>Вадеку</li>
+            <li>Мусе ❤️</li>
+            <li>Саше</li>
+            <li>Андрею 😎</li>
+            <li>Тепе</li>
+            <li>gemini</li>
+            <li>Анастасие Землеройке</li>
+        </ol>
+        <button class="button-tea" onclick="closeMod('thanksWin')">Close</button>
     </div>
 
     <div id="sMenu" class="modal">
-        <h3>⚙️ Настройки</h3>
-        Тема: <select onchange="changeTheme(this.value)"><option value="hacker">iOS Dark</option><option value="tg">Telegram</option><option value="snow">Snowy</option></select><br><br>
-        Язык: <select onchange="changeLang(this.value)"><option value="ru">RU</option><option value="en">EN</option></select>
+        <h3 id="h-set">Settings</h3>
+        Language: <select id="langSelect" onchange="changeLang(this.value)">
+            <option value="ru">Русский</option>
+            <option value="en">English</option>
+            <option value="ua">Українська</option>
+        </select><br><br>
+        Theme: <select onchange="document.body.className=this.value">
+            <option value="">Dark Mode</option>
+            <option value="light">Light Mode</option>
+        </select>
         <hr style="opacity:0.1">
-        <button class="button-tea" onclick="openMod('thanksWin')">🌟 Благодарности</button><br>
-        <button class="button-tea" onclick="logout()">Выход</button>
+        <button class="button-tea" onclick="openMod('thanksWin')">🌟 Credits</button>
+        <button class="button-tea" onclick="logout()" style="background:#ff3b30">Exit</button>
         <button class="button-tea" onclick="closeMod('sMenu')">X</button>
-    </div>
-
-    <div id="shopWin" class="modal">
-        <h3>🛒 Apple Market</h3>
-        <div class="shop-item"><span>[VIP]</span><button class="button-tea" onclick="buy('prefix', 100, 'VIP')">100</button></div>
-        <div class="shop-item"><span>🛡️ Shield</span><button class="button-tea" onclick="buy('item', 1000, 'shield')">1000</button></div>
-        <button class="button-tea" onclick="closeMod('shopWin')">X</button>
     </div>
 
     <div id="pCard" class="modal">
         <h2 id="pc-name">User</h2>
-        <div id="pc-stats" style="text-align:left; font-size: 15px;"></div>
+        <div id="pc-stats" style="text-align:left; line-height:1.8"></div>
         <hr style="opacity:0.1">
-        <button class="button-tea" onclick="sendMoneyPrompt()">💸 Перевести</button>
+        <button class="button-tea" onclick="sendMoneyPrompt()">💸 Transfer</button>
+        <button class="button-tea" onclick="adminMute()" style="background:orange">🤐 Mute (Adm)</button>
+        <button class="button-tea" onclick="adminDeleteUser()" style="background:red">🗑️ Delete (Adm)</button>
         <button class="button-tea" onclick="closeMod('pCard')">X</button>
     </div>
 
     <div class="game-box">
         <h3 id="h-chat">iChat</h3>
         <div id="cList"></div>
-        <div style="display:flex; gap:10px">
-            <input type="text" id="mInp" placeholder="Сообщение..." style="flex:1; background:rgba(255,255,255,0.1); border:none; color:white; padding:15px; border-radius:15px; outline:none;">
+        <div style="display:flex; gap:8px">
+            <input type="text" id="mInp" placeholder="..." style="flex:1; background:rgba(255,255,255,0.1); border:none; color:#fff; padding:14px; border-radius:14px; outline:none;">
             <button class="button-tea" onclick="sendMsg()">></button>
         </div>
     </div>
 
     <div class="game-box">
-        <h3 id="h-click">Mining Farm</h3>
-        <div id="score" style="font-size:60px; font-weight:800; margin:10px 0;">0</div>
-        <button class="button-tea" onclick="doClick()" style="width:80%; padding:20px; font-size:22px; border-radius:20px;">КЛИК!</button>
-        <div id="topList" style="text-align:left; margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:15px;"></div>
+        <h3 id="h-click">Mining</h3>
+        <div id="score" style="font-size:55px; font-weight:800;">0</div>
+        <button class="button-tea" onclick="doClick()" style="width:100%; padding:18px; font-size:20px; border-radius:18px">TAP TAP TAP</button>
+        <div id="topList" style="text-align:left; margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;"></div>
     </div>
 
     <div class="game-box">
-        <h3 id="h-games">Game Center</h3>
-        <div id="active-list" style="font-size:12px; color:var(--main); margin-bottom:10px;"></div>
+        <h3 id="h-games">Casino Games</h3>
+        <div id="active-games" style="font-size:11px; color:var(--main); margin-bottom:10px;"></div>
         <div id="lobby">
             <button class="button-tea" onclick="startMM('ttt')">Tic-Tac-Toe</button>
             <button class="button-tea" onclick="startMM('chess')">Chess</button>
@@ -194,12 +157,18 @@
         <div id="game-area" class="hidden">
             <div id="g-info"></div>
             <div id="board-container"></div>
-            <button class="button-tea" onclick="stopMM()">Quit</button>
+            <button class="button-tea" onclick="stopMM()" style="background:#ff3b30">Surrender</button>
         </div>
     </div>
 
+    <div id="musyaEaster" class="modal">
+        <h2 style="color:pink">🐾 СЕКРЕТНАЯ МУСЯ</h2>
+        <img src="https://i.postimg.cc/mD3mB8Qf/image.jpg" style="width:100%; border-radius:20px;">
+        <button class="button-tea" onclick="closeMod('musyaEaster')">Meow!</button>
+    </div>
+
     <div id="reactPicker">
-        <span onclick="applyR('🔥')">🔥</span><span onclick="applyR('❤️')">❤️</span><span onclick="applyR('👍')">👍</span>
+        <span onclick="applyR('🔥')">🔥</span><span onclick="applyR('❤️')">❤️</span><span onclick="applyR('😂')">😂</span><span onclick="applyR('💀')">💀</span>
     </div>
 
     <script type="module">
@@ -209,26 +178,34 @@
         const conf = { apiKey: "AIzaSyChSk0gETRBQ391e4BjPqFsKc_dzjBmT58", databaseURL: "https://my-chat-52203-default-rtdb.firebaseio.com", projectId: "my-chat-52203" };
         const db = getDatabase(initializeApp(conf));
 
-        let user = JSON.parse(localStorage.getItem('user_v23'));
-        let selId = null, gid = null, myRole = '', eggCounter = 0;
+        let user = JSON.parse(localStorage.getItem('user_v24'));
+        let selId = null, gid = null, myRole = '', eggCounter = 0, viewUser = null;
+
+        const langDict = {
+            ru: {chat:"Чат", click:"Майнинг", games:"Игры", set:"Настройки", balance:"Баланс"},
+            en: {chat:"iChat", click:"Mining", games:"Games", set:"Settings", balance:"Balance"},
+            ua: {chat:"Чат", click:"Майнінг", games:"Ігри", set:"Налаштування", balance:"Баланс"}
+        };
+
+        window.changeLang = (l) => {
+            const d = langDict[l];
+            document.getElementById('h-chat').innerText = d.chat;
+            document.getElementById('h-click').innerText = d.click;
+            document.getElementById('h-games').innerText = d.games;
+            document.getElementById('h-set').innerText = d.set;
+        };
 
         async function init() {
             if(!user) {
-                let n = prompt("Name:"); if(!n) return;
+                let n = prompt("Login:"); if(!n) return;
                 let p = prompt("Pass:");
                 const s = await get(ref(db, 'users/'+n));
                 if(s.exists()){ if(s.val().password !== p) return location.reload(); user = {name: n, ...s.val()}; }
-                else { user = {name: n, password: p, score: 0, w_ttt:0, w_chess:0}; await set(ref(db, 'users/'+n), user); }
-                localStorage.setItem('user_v23', JSON.stringify(user));
+                else { user = {name: n, password: p, score: 0, w_ttt:0, w_chess:0, autoclicker: 0, mult: 1}; await set(ref(db, 'users/'+n), user); }
+                localStorage.setItem('user_v24', JSON.stringify(user));
             }
-            syncUser(); loadChat(); loadTop(); loadActive();
+            syncUser(); loadChat(); loadTop(); loadActive(); startAutoClickerLoop();
         }
-
-        window.eggClick = () => {
-            eggCounter++;
-            if(eggCounter === 5) { openMod('musyaEaster'); eggCounter = 0; }
-            setTimeout(() => { eggCounter = 0; }, 2000);
-        };
 
         function syncUser() {
             onValue(ref(db, 'users/'+user.name), (s) => {
@@ -236,49 +213,90 @@
                 user = {name: user.name, ...d};
                 document.getElementById('userBalance').innerText = d.score || 0;
                 document.getElementById('score').innerText = d.score || 0;
-                localStorage.setItem('user_v23', JSON.stringify(user));
+                localStorage.setItem('user_v24', JSON.stringify(user));
             });
         }
 
-        window.doClick = () => update(ref(db, 'users/'+user.name), {score: (user.score || 0) + 1});
+        function startAutoClickerLoop() {
+            setInterval(() => {
+                if(user.autoclicker > 0) {
+                    update(ref(db, 'users/'+user.name), { score: (user.score || 0) + user.autoclicker });
+                }
+            }, 1000);
+        }
 
-        // Чат и реакции (без изменений логики)
+        window.doClick = () => update(ref(db, 'users/'+user.name), {score: (user.score || 0) + (user.mult || 1)});
+
+        window.buy = async (type, price, val) => {
+            if(user.score < price) return alert("No money!");
+            let up = { score: user.score - price };
+            if(type === 'auto') up.autoclicker = (user.autoclicker || 0) + val;
+            if(type === 'multi') up.mult = (user.mult || 1) + val;
+            if(type === 'prefix') up.prefix = val;
+            if(type === 'item') up.shield = (user.shield || 0) + 1;
+            await update(ref(db, 'users/'+user.name), up);
+            alert("Success!");
+        };
+
+        window.sendMsg = async () => {
+            const i = document.getElementById('mInp'); if(!i.value) return;
+            const s = await get(ref(db, 'users/'+user.name));
+            if(s.val().muteUntil > Date.now()) return alert("Muted!");
+            push(ref(db, 'msgs'), { n: user.name, t: i.value, time: serverTimestamp(), pref: s.val().prefix||'', col: s.val().color||'' });
+            i.value="";
+        };
+
         function loadChat() {
             onValue(ref(db, 'msgs'), (s) => {
                 const l = document.getElementById('cList'); l.innerHTML = "";
                 s.forEach(d => {
                     const m = d.val();
-                    const ts = m.time ? new Date(m.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : "";
-                    let rb = '<div class="react-bar">';
-                    if(m.r) Object.entries(m.r).forEach(([emoji, voters]) => { rb += `<span class="react-item">${emoji} ${Object.keys(voters).length}</span>`; });
-                    rb += '</div>';
                     const div = document.createElement('div'); div.className = 'msg';
-                    div.innerHTML = `<b onclick="event.stopPropagation(); showP('${m.n}')">${m.n}</b>: ${m.t}${rb}<span class="msg-time">${ts}</span>`;
-                    div.onclick = (e) => { selId = d.key; const p = document.getElementById('reactPicker'); p.style.display='flex'; p.style.top=(e.clientY-40)+'px'; p.style.left=e.clientX+'px'; };
+                    div.innerHTML = `<span class="del-msg" onclick="event.stopPropagation(); adminDelMsg('${d.key}')">×</span>
+                        ${m.pref ? `<span class="prefix">${m.pref}</span>`:''}<b onclick="event.stopPropagation(); showP('${m.n}')">${m.n}</b>: ${m.t}`;
+                    div.onclick = (e) => { selId = d.key; const p = document.getElementById('reactPicker'); p.style.display='block'; p.style.top=(e.clientY-40)+'px'; p.style.left=e.clientX+'px'; };
                     l.appendChild(div);
                 });
                 l.scrollTop = l.scrollHeight;
             });
         }
 
-        // ТАБЛИЦА (Исправлено)
+        window.applyR = (e) => {
+            set(ref(db, `msgs/${selId}/r/${e}/${user.name}`), true);
+            document.getElementById('reactPicker').style.display = 'none';
+        };
+
         window.loadTop = () => {
             onValue(ref(db, 'users'), (s) => {
-                const t = document.getElementById('topList'); t.innerHTML = "<b>Top Leaders</b><br>";
-                let a = [];
-                s.forEach(u => { 
-                    let d = u.val();
-                    a.push({ n: u.key, s: d.score || 0 });
-                });
-                a.sort((x,y) => y.s - x.s).slice(0, 8).forEach((u, i) => {
-                    t.innerHTML += `<div style="padding:5px 0; border-bottom:1px solid rgba(255,255,255,0.05)">${i+1}. ${u.n} — ${u.s} 💰</div>`;
+                const t = document.getElementById('topList'); t.innerHTML = "";
+                let a = []; s.forEach(u => a.push({n:u.key, s:u.val().score||0}));
+                a.sort((x,y)=>y.s-x.s).slice(0,10).forEach((u,i) => {
+                    t.innerHTML += `<div style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05)">
+                        ${i+1}. <span onclick="showP('${u.n}')" style="cursor:pointer">${u.n}</span> — ${u.s} 💰
+                    </div>`;
                 });
             });
-        }
+        };
 
-        // Игры и всё остальное (код сохранен полностью из v22)
+        window.showP = async (n) => {
+            viewUser = n; const s = await get(ref(db, 'users/'+n)); const d = s.val();
+            document.getElementById('pc-name').innerText = n;
+            document.getElementById('pc-stats').innerHTML = `💰 Balance: ${d.score}<br>🤖 Auto: ${d.autoclicker||0}<br>⚔️ Wins: ${d.w_ttt||0}/${d.w_chess||0}<br>🛡️ Shields: ${d.shield||0}`;
+            openMod('pCard');
+        };
+
+        // ADMIN FUNCTIONS
+        window.adminDelMsg = (id) => { if(prompt("AdmPass:")==="8070") remove(ref(db, 'msgs/'+id)); };
+        window.adminMute = async () => { 
+            if(prompt("AdmPass:")!=="8070") return;
+            const s = await get(ref(db, 'users/'+viewUser));
+            if(s.val().shield > 0) { update(ref(db, 'users/'+viewUser), {shield: s.val().shield-1}); alert("Shield broken!"); return; }
+            update(ref(db, 'users/'+viewUser), {muteUntil: Date.now() + 600000}); alert("Muted 10m");
+        };
+        window.adminDeleteUser = () => { if(prompt("AdmPass:")==="8070") remove(ref(db, 'users/'+viewUser)); };
+
+        // GAMES ENGINE
         window.startMM = async (type) => {
-            document.getElementById('lobby').classList.add('hidden'); document.getElementById('game-area').classList.remove('hidden');
             const qRef = ref(db, 'queue_'+type); const snap = await get(qRef);
             if(snap.exists() && snap.val() !== user.name) {
                 gid = 'g_'+Date.now();
@@ -288,18 +306,17 @@
         };
 
         function join(id, role) {
-            gid = id; myRole = role;
-            document.getElementById('lobby').classList.add('hidden'); document.getElementById('game-area').classList.remove('hidden');
+            gid = id; myRole = role; document.getElementById('lobby').classList.add('hidden'); document.getElementById('game-area').classList.remove('hidden');
             onValue(ref(db, 'games/'+id), (s) => {
-                const d = s.val(); if(!d) return; draw(d);
-                document.getElementById('g-info').innerText = d.turn===(role==='p1'?'p1':'p2') ? "YOUR TURN" : "WAIT...";
+                const d = s.val(); if(!d) return location.reload(); draw(d);
+                document.getElementById('g-info').innerText = d.turn === (role==='p1'?'p1':'p2') ? "YOUR MOVE" : "WAIT...";
             });
         }
 
         function draw(d) {
             const cont = document.getElementById('board-container'); cont.innerHTML = "";
             const board = document.createElement('div'); board.className = d.type==='ttt'?'ttt-grid':'chess-board';
-            const bArr = typeof d.board === 'string' ? d.board.split('') : d.board;
+            const bArr = Array.isArray(d.board) ? d.board : d.board.split('');
             bArr.forEach((v, i) => {
                 const c = document.createElement('div'); c.className = 'cell ' + (d.type==='chess' ? ((Math.floor(i/8)+i%8)%2 ? 'cell-b' : 'cell-w') : 'cell-b');
                 c.innerText = d.type==='chess' ? ({"r":"♜","n":"♞","b":"♝","q":"♛","k":"♚","p":"♟","R":"♖","N":"♘","B":"♗","Q":"♕","K":"♔","P":"♙"}[v]||"") : v;
@@ -310,24 +327,27 @@
 
         async function move(i, d) {
             if(d.turn !== (myRole==='p1'?'p1':'p2')) return;
-            let nb = typeof d.board === 'string' ? d.board.split('') : [...d.board];
+            let nb = Array.isArray(d.board) ? [...d.board] : d.board.split('');
             if(d.type === 'ttt') { if(nb[i] !== '') return; nb[i] = myRole === 'p1' ? 'X' : 'O'; }
             else { 
                 let sel = localStorage.getItem('cs'); 
                 if(!sel) { if(nb[i] !== '.') localStorage.setItem('cs', i); return; }
                 nb[i] = nb[sel]; nb[sel] = '.'; localStorage.removeItem('cs');
             }
-            update(ref(db, 'games/'+gid), {board: typeof d.board === 'string' ? nb.join('') : nb, turn: d.turn === 'p1' ? 'p2' : 'p1'});
+            update(ref(db, 'games/'+gid), {board: Array.isArray(d.board) ? nb : nb.join(''), turn: d.turn === 'p1' ? 'p2' : 'p1'});
         }
 
+        window.eggClick = () => { eggCounter++; if(eggCounter===5) { openMod('musyaEaster'); eggCounter=0; } setTimeout(()=>eggCounter=0, 2000); };
         window.openMod = (id) => document.getElementById(id).style.display = 'block';
         window.closeMod = (id) => document.getElementById(id).style.display = 'none';
         window.logout = () => { localStorage.clear(); location.reload(); };
 
         init();
+        window.onclick = (e) => { if(!e.target.closest('.msg')) document.getElementById('reactPicker').style.display='none'; };
     </script>
 </body>
 </html>
+
 
 
 
