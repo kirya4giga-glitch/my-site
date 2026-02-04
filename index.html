@@ -32,9 +32,19 @@
             border-radius: 10px;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.1s;
+            display: block;
+            margin: 10px auto;
         }
-        .click-btn:active { transform: scale(0.95); }
+        .reset-btn {
+            padding: 5px 15px;
+            font-size: 14px;
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -50,6 +60,8 @@
         <h3>моя первая мини игра!</h3>
         <p>Счет: <span id="score">0</span></p>
         <button class="click-btn" onclick="addScore()">КЛИК!</button>
+        
+        <button class="reset-btn" onclick="resetScore()">Обнулить счет</button>
     </div>
 
     <script>
@@ -65,13 +77,19 @@
         function addScore() {
             count = count + 1;
             document.getElementById('score').innerText = count;
-            
-            // Сохраняем в память браузера
             localStorage.setItem('myScore', count);
 
-            // Маленький прикол на 100 кликов
             if (count === 100) {
                 alert("иди потрогай траву! задрот");
+            }
+        }
+
+        // 4. ФУНКЦИЯ ОБНУЛЕНИЯ
+        function resetScore() {
+            if (confirm("Точно хочешь всё удалить?")) {
+                count = 0;
+                document.getElementById('score').innerText = count;
+                localStorage.removeItem('myScore'); // Удаляем данные из памяти
             }
         }
     </script>
