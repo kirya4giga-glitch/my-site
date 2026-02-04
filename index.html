@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Мой супер сайт</title>
+    <title>Мой первый сайт</title>
     <style>
         body { font-family: -apple-system, sans-serif; text-align: center; padding: 20px; background-color: #f0f0f0; margin: 0; }
         .game-box {
@@ -48,10 +48,11 @@
 <body>
 
     <h1>Мой сайт</h1>
-    <div class="button-tea" onclick="alert('скинуть на чай: +79216274225')">На чай ☕</div>
+    <h2>Делал сам честно!</h2>
+    <div class="button-tea" onclick="alert('скинуть на чай: +79216274225 сбербанк')">Нажми! </div>
 
     <div class="game-box">
-        <h3>чат (прототип номер 1)</h3>
+        <h3>чат (прототип номер 3)</h3>
         <div id="cList"></div>
         <div class="chat-input-area">
             <input type="text" id="nInp" placeholder="Имя" style="width: 70px;">
@@ -63,7 +64,7 @@
     <div class="game-box">
         <h3>Кликер</h3>
         <div id="score">0</div>
-        <button class="click-btn" onclick="addScore()">КЛИК!</button>
+        <button class="click-btn" onclick="addScore()">КЛИКНИ!</button>
         <span class="reset-link" onclick="resetScore()">обнулить счет</span>
     </div>
 
@@ -107,7 +108,7 @@
 
         window.deleteMsg = function(id) {
             const password = prompt("Пароль админа:");
-            if (password === "1234") { // <--- ЗАМЕНИ 1234 НА СВОЙ ПАРОЛЬ
+            if (password === "8070") { // <--- ЗАМЕНИ 1234 НА СВОЙ ПАРОЛЬ
                 remove(ref(db, 'chat_messages/' + id));
             } else {
                 alert("Неверно!");
@@ -141,7 +142,7 @@
             if(count === 100) alert("100 кликов! Иди потрогай траву)");
         }
         function resetScore() {
-            if(confirm("Обнулить?")) { count=0; document.getElementById('score').innerText=0; localStorage.removeItem('myScore'); }
+            if(confirm("точно обнулить?")) { count=0; document.getElementById('score').innerText=0; localStorage.removeItem('myScore'); }
         }
 
         const canvas = document.getElementById("snakeGame");
@@ -172,3 +173,4 @@
     </script>
 </body>
 </html>
+
