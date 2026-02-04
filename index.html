@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kiru OS v30.1 - JUBILEE FIX</title>
+    <title>Kiru OS v30.3 - THE FINAL JUBILEE</title>
     <style>
         :root { 
             --bg: #000; --main: #0A84FF; --txt: #fff; 
@@ -62,7 +62,6 @@
             width: 88%; max-width: 380px; z-index: 9999; padding: 25px; border: 1px solid rgba(255,255,255,0.15);
         }
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9998; }
-
         .prefix { font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 6px; margin-right: 6px; text-transform: uppercase; background: #fff; color: #000; }
         input { background: rgba(255,255,255,0.08); border: none; padding: 14px; border-radius: 14px; color: #fff; font-size: 16px; outline: none; }
         .hidden { display: none; }
@@ -74,7 +73,7 @@
 
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding: 0 5px;">
         <div>
-            <h1 style="margin:0; font-size: 24px; font-weight: 800;">Kiru OS <span style="color:var(--main)">v30.1</span></h1>
+            <h1 style="margin:0; font-size: 24px; font-weight: 800;">Kiru OS <span style="color:var(--main)">v30.3</span></h1>
             <div style="font-size: 10px; opacity: 0.5;">● Система активна</div>
         </div>
         <div style="display:flex; gap:8px;">
@@ -136,8 +135,14 @@
 
     <div id="thanksWin" class="modal">
         <h3>Wall of Fame</h3>
-        <ul style="text-align:left; font-size:15px; line-height:1.8;">
-            <li>Вадек</li><li>Муся ❤️</li><li>Анастасия Землеройка</li><li>Саша</li><li>Андрей😎</li><li>Тепе</li><li>Gemini</li>
+        <ul style="text-align:left; font-size:15px; line-height:1.8; list-style:none; padding:0;">
+            <li>Вадек</li>
+            <li id="musyaEaster" style="cursor:pointer; font-weight:bold;">Муся ❤️</li>
+            <li>Анастасия Землеройка</li>
+            <li>Саша</li>
+            <li>Андрей😎</li>
+            <li>Тепе</li>
+            <li>Gemini</li>
         </ul>
         <button class="btn" onclick="closeMod('thanksWin')" style="width:100%;">Назад</button>
     </div>
@@ -162,6 +167,7 @@
 
         let user = JSON.parse(localStorage.getItem('k_user_v30'));
         let gid, myRole, viewUser;
+        let mClicks = 0;
 
         const langData = {
             ru: {bal:"Баланс", chat:"Чат", games:"Игры", tap:"ТАП ТАП ТАП", set:"Настройки", sh:"Магазин", send:"Перевести", del:"Удалить", cancel:"Отмена"},
@@ -188,10 +194,24 @@
             }
             onValue(ref(db, 'users/'+user.name), s => { if(s.exists()){ user = {name:user.name, ...s.val()}; document.getElementById('score').innerText = user.score; }});
             loadChat(); loadTop();
-            setInterval(() => { if(user.autoclicker > 0) update(ref(db, 'users/'+user.name), {score: (user.score || 0) + user.autoclicker}); }, 1000);
+            setInterval(() => { if(user.autoclicker > 0) update(ref(db, 'users/'+user.name), {score: (Number(user.score) || 0) + user.autoclicker}); }, 1000);
         }
 
-        window.doClick = () => update(ref(db, 'users/'+user.name), {score: (user.score || 0) + (user.mult || 1)});
+        window.doClick = () => update(ref(db, 'users/'+user.name), {score: (Number(user.score) || 0) + (user.mult || 1)});
+
+        // EASTER EGG SYSTEM
+        document.getElementById('musyaEaster').onclick = () => {
+            mClicks++;
+            if(mClicks === 5) {
+                const bonus = 10000;
+                update(ref(db, 'users/'+user.name), {score: Number(user.score) + bonus});
+                const oldBg = document.body.style.background;
+                document.body.style.background = '#ff69b4';
+                alert("💖 Муся дарит тебе 10,000 коинов!");
+                setTimeout(() => { document.body.style.background = oldBg; }, 1000);
+                mClicks = 0;
+            }
+        };
 
         window.sendMsg = async () => {
             const i = document.getElementById('mInp'); if(!i.value.trim()) return;
@@ -225,8 +245,9 @@
         function loadTop() {
             onValue(ref(db, 'users'), s => {
                 const c = document.getElementById('topContent'); c.innerHTML = "";
-                let a = []; s.forEach(u => a.push({n: u.key, s: u.val().score||0}));
-                a.sort((x,y)=>y.s-x.s).slice(0,5).forEach((u,i) => {
+                let a = []; 
+                s.forEach(u => { a.push({n: u.key, s: Number(u.val().score) || 0}); });
+                a.sort((x,y) => y.s - x.s).slice(0,5).forEach((u,i) => {
                     c.innerHTML += `<div class="top-item ${u.n===user.name?'my-rank':''}"><span>#${i+1} ${u.n}</span><b>${u.s} 💰</b></div>`;
                 });
             });
@@ -235,16 +256,16 @@
         window.showP = async n => {
             viewUser = n; const s = await get(ref(db, 'users/'+n)); const d = s.val();
             document.getElementById('pc-name').innerText = n;
-            document.getElementById('pc-stats').innerHTML = `Баллы: ${d.score} | Авто: ${d.autoclicker}`;
+            document.getElementById('pc-stats').innerHTML = `💰: ${d.score} | 🤖: ${d.autoclicker}`;
             openMod('pCard');
         };
 
         window.sendMoney = async () => {
-            let amt = parseInt(prompt("Сумма перевода:"));
+            let amt = parseInt(prompt("Сумма:"));
             if(amt > 0 && user.score >= amt) {
                 const t = await get(ref(db, 'users/'+viewUser));
-                await update(ref(db, 'users/'+user.name), {score: user.score - amt});
-                await update(ref(db, 'users/'+viewUser), {score: (t.val().score||0) + amt});
+                await update(ref(db, 'users/'+user.name), {score: Number(user.score) - amt});
+                await update(ref(db, 'users/'+viewUser), {score: (Number(t.val().score)||0) + amt});
                 alert("Успешно!"); closeMod('pCard');
             }
         };
@@ -258,7 +279,7 @@
                 gid = 'g_'+Date.now();
                 await set(ref(db, 'games/'+gid), {p1: s.val(), p2: user.name, type, turn: 'p1', board: Array(9).fill("")});
                 await remove(q); join(gid, 'p2');
-            } else { set(q, user.name); document.getElementById('g-info').innerText = "Поиск оппонента..."; document.getElementById('lobby').classList.add('hidden'); document.getElementById('game-area').classList.remove('hidden'); onValue(ref(db, 'games'), sn => { sn.forEach(g => { if(g.val().p1===user.name) join(g.key, 'p1'); })}); }
+            } else { set(q, user.name); document.getElementById('g-info').innerText = "Поиск..."; document.getElementById('lobby').classList.add('hidden'); document.getElementById('game-area').classList.remove('hidden'); onValue(ref(db, 'games'), sn => { sn.forEach(g => { if(g.val().p1===user.name) join(g.key, 'p1'); })}); }
         };
 
         window.stopMM = async () => { await remove(ref(db, 'queue_ttt')); await remove(ref(db, 'queue_chess')); if(gid) await remove(ref(db, 'games/'+gid)); location.reload(); };
@@ -286,7 +307,7 @@
 
         window.buy = async (t, p, v) => {
             if(user.score < p) return alert("Недостаточно 💰");
-            let up = {score: user.score - p};
+            let up = {score: Number(user.score) - p};
             if(t==='auto') up.autoclicker = (user.autoclicker||0)+v;
             if(t==='multi') up.mult = (user.mult||1)+v;
             if(t==='prefix') { up.prefix = v; up.color = v==='VIP'?'#FFD700':'#FF2D55'; }
@@ -302,6 +323,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
