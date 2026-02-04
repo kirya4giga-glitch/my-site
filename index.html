@@ -1,38 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Моя первая страница</title>
+    <meta charset="UTF-8">
+    <title>Мой сайт</title>
     <style>
-        body { background: #1a1a1a; color: lime; font-family: sans-serif; text-align: center; padding-top: 50px; }
-        h1 { font-size: 50px; }
-        .button { background: lime; color: black; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; }
+        .button { 
+            display: inline-block; 
+            padding: 10px 20px; 
+            background: #eee; 
+            text-decoration: none; 
+            color: black; 
+            border-radius: 5px; 
+        }
     </style>
 </head>
 <body>
-    <h1>мой первый сайт)))</h1>
+
+    <h1>Мой первый сайт!</h1>
     <p>делал сам честно!</p>
-    <br><br>
-    <a href="#" class="button" onclick="alert('скинуть будущему программисту на чай:+79216274225 сбербанк')">Нажми сюда)</a>
-</body>
-<hr>
-<div style="margin-top: 20px;">
-    <h3>Мини-игра: Накликай себе опыт!</h3>
-    <p>Счет: <span id="score">0</span></p>
-    <button onclick="addScore()" style="padding: 15px 30px; font-size: 20px; background: lime; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">КЛИК!</button>
-</div>
+    <br>
+    
+    <a href="#" class="button" onclick="alert('скинуть будущему программисту на чай: +79216274225 сбербанк')">Нажми сюда</a>
 
-<script>
-    // Это и есть JavaScript — логика игры
-    let count = 0;
-    function addScore() {
-        count = count + 1; // Увеличиваем счет на 1
-        document.getElementById('score').innerText = count; // Обновляем цифру на экране
-        
-        // Маленький прикол:
-        if(count === 10) {
-            alert("Ого, уже 10 кликов! Ты задрот!");
+    <hr>
+
+    <div style="margin-top: 20px;">
+        <h3>моя первая мини игра!</h3>
+        <p>Счет: <span id="score">0</span></p>
+        <button onclick="addScore()" style="padding: 15px 30px; font-size: 20px; background: lime; border: none; border-radius: 10px; cursor: pointer;">КЛИКНИ!</button>
+    </div>
+
+    <script>
+        // 1. Загружаем данные из памяти
+        let count = localStorage.getItem('myScore') ? parseInt(localStorage.getItem('myScore')) : 0;
+
+        // 2. Показываем счет сразу после загрузки страницы
+        window.onload = function() {
+            document.getElementById('score').innerText = count;
+        };
+
+        // 3. Функция клика
+        function addScore() {
+            count = count + 1; 
+            document.getElementById('score').innerText = count;
+            
+            // Сохраняем в память браузера
+            localStorage.setItem('myScore', count);
         }
-    }
-</script>
-</html>
+    </script>
 
+</body>
+</html>
