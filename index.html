@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+         <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -41,9 +41,11 @@
         .settings-menu {
             display: none; position: fixed; top: 60px; right: 15px; z-index: 101;
             background: var(--box-bg); padding: 15px; border-radius: 10px; border: 1px solid var(--main-color);
-            text-align: left; box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            text-align: left; box-shadow: 0 0 15px rgba(0,0,0,0.5); width: 200px;
         }
-        .settings-menu select { background: #000; color: #0F0; border: 1px solid #0F0; margin-bottom: 10px; width: 100%; }
+        .settings-menu select, .settings-menu button { 
+            background: #000; color: #0F0; border: 1px solid #0F0; margin-bottom: 10px; width: 100%; cursor: pointer;
+        }
 
         h1, h2 { color: var(--main-color); text-shadow: 0 0 5px var(--main-color); }
         .game-box {
@@ -65,12 +67,12 @@
         }
         .message {
             max-width: 85%; margin-bottom: 8px; padding: 8px 12px; border-radius: 12px; font-size: 14px;
-            background: rgba(0, 255, 0, 0.1); border: 1px solid rgba(0,255,0,0.2); align-self: flex-start;
+            background: rgba(0, 255, 0, 0.1); border: 1px solid rgba(0,255,0,0.2); align-self: flex-start; text-align: left;
         }
         .del-btn { color: #ff4d4d; cursor: pointer; margin-left: 10px; }
         .chat-input-area { display: flex; gap: 5px; margin-top: 15px; }
-        .chat-input-area input { flex: 1; padding: 10px; border: 1px solid var(--main-color); border-radius: 20px; background: #000; color: #0F0; }
-        .send-btn { background: var(--main-color); color: #000; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
+        .chat-input-area input { flex: 1; padding: 10px; border: 1px solid var(--main-color); border-radius: 20px; background: #000; color: #0F0; outline: none; }
+        .send-btn { background: var(--main-color); color: #000; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold; }
 
         /* Игры */
         canvas#snakeGame { background: #000; display: block; margin: 10px auto; width: 280px; height: 280px; border: 1px solid var(--main-color); }
@@ -96,6 +98,8 @@
             <option value="en">English</option>
             <option value="ua">Українська</option>
         </select>
+        <hr style="border: 0.5px solid var(--main-color)">
+        <button onclick="showThanks()" id="btn-thanks">Особая благодарность</button>
     </div>
     
     <h1 id="h-title">Мой первый сайт</h1>
@@ -106,7 +110,7 @@
         <h3 id="h-chat">чат (прототип номер 3)</h3>
         <div id="cList"></div>
         <div class="chat-input-area">
-            <input type="text" id="nInp" placeholder="Имя">
+            <input type="text" id="nInp" placeholder="Имя" style="width: 80px;">
             <input type="text" id="mInp" placeholder="Сообщение...">
             <button class="send-btn" onclick="addC()">></button>
         </div>
@@ -114,22 +118,23 @@
 
     <div class="game-box">
         <h3 id="h-click">Кликер</h3>
-        <div id="score" style="font-size: 30px;">0</div>
+        <div id="score" style="font-size: 35px; font-weight: bold;">0</div>
         <button class="button-tea" onclick="addScore()" id="btn-click">КЛИКНИ!</button>
     </div>
 
     <div class="game-box">
         <h3 id="h-snake">Змейка</h3>
         <canvas id="snakeGame" width="400" height="400"></canvas>
-        <button class="button-tea" onclick="setD('up')">▲</button><br>
-        <button class="button-tea" onclick="setD('left')">◀</button>
-        <button class="button-tea" onclick="setD('down')">▼</button>
-        <button class="button-tea" onclick="setD('right')">▶</button>
+        <button class="button-tea" style="padding: 10px 20px;" onclick="setD('up')">▲</button><br>
+        <button class="button-tea" style="padding: 10px 20px;" onclick="setD('left')">◀</button>
+        <button class="button-tea" style="padding: 10px 20px;" onclick="setD('down')">▼</button>
+        <button class="button-tea" style="padding: 10px 20px;" onclick="setD('right')">▶</button>
     </div>
 
     <div class="game-box">
-        <h3>DOOM</h3>
+        <h3>DOOM (1993)</h3>
         <div id="doom-container"></div>
+        <p style="font-size: 10px; color: var(--main-color);">Управление: стрелки, Ctrl, Alt, Пробел. Только ПК!</p>
     </div>
 
     <script type="module">
@@ -147,30 +152,38 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Регистрация и отправка
+        let currentSessionPass = ""; 
+
         window.addC = async function() {
             const n = document.getElementById('nInp').value.trim();
             const m = document.getElementById('mInp').value.trim();
             if(!n || !m) return;
 
             const uRef = ref(db, 'users/' + n);
-            const snap = await get(uRef);
 
-            if(snap.exists()){
-                const p = prompt("Введите пароль для этого ника:");
-                if(p !== snap.val().password) return alert("Неверно!");
-            } else {
-                const np = prompt("Придумайте пароль для защиты ника:");
-                if(!np) return;
-                await set(uRef, {password: np});
+            if (!currentSessionPass) {
+                const snap = await get(uRef);
+                if(snap.exists()){
+                    const p = prompt("Этот ник занят. Введи пароль:");
+                    if(p !== snap.val().password) return alert("Неверный пароль!");
+                    currentSessionPass = p;
+                } else {
+                    const np = prompt("Ник свободен! Создай пароль для защиты:");
+                    if(!np) return;
+                    await set(uRef, {password: np});
+                    currentSessionPass = np;
+                }
             }
 
             const now = new Date();
-            push(ref(db, 'chat_messages'), { name: n, text: m, time: now.getHours() + ":" + (now.getMinutes()<10?'0':'') + now.getMinutes() });
+            push(ref(db, 'chat_messages'), { 
+                name: n, 
+                text: m, 
+                time: now.getHours() + ":" + (now.getMinutes()<10?'0':'') + now.getMinutes() 
+            });
             document.getElementById('mInp').value = "";
         };
 
-        // Удаление (Пароль 8070)
         window.deleteMsg = (id) => {
             if(prompt("Пароль админа:") === "8070") remove(ref(db, 'chat_messages/' + id));
         };
@@ -187,10 +200,14 @@
     </script>
 
     <script>
-        // Настройки
+        // Настройки и Благодарность
         function toggleSettings() { 
             const m = document.getElementById('sMenu');
             m.style.display = m.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function showThanks() {
+            alert("ОСОБАЯ БЛАГОДАРНОСТЬ:\n\n1. Анастасие землеройке\n2. Вадеку\n3. Андрюхе 😎\n4. Саше");
         }
 
         function changeTheme(v) {
@@ -199,9 +216,9 @@
         }
 
         const langs = {
-            ru: { title: "Мой первый сайт", subtitle: "Делал сам честно!", chat: "Чат", click: "Кликер", snake: "Змейка", settings: "Настройки" },
-            en: { title: "My First Site", subtitle: "Made it myself!", chat: "Chat", click: "Clicker", snake: "Snake", settings: "Settings" },
-            ua: { title: "Мій перший сайт", subtitle: "Робив сам чесно!", chat: "Чат", click: "Клікер", snake: "Змійка", settings: "Налаштування" }
+            ru: { title: "Мой первый сайт", subtitle: "Делал сам честно!", chat: "Чат", click: "Кликер", snake: "Змейка", settings: "Настройки", thanks: "Особая благодарность" },
+            en: { title: "My First Site", subtitle: "Made it myself!", chat: "Chat", click: "Clicker", snake: "Snake", settings: "Settings", thanks: "Special Thanks" },
+            ua: { title: "Мій перший сайт", subtitle: "Робив сам чесно!", chat: "Чат", click: "Клікер", snake: "Змійка", settings: "Налаштування", thanks: "Особлива подяка" }
         };
 
         function changeLang(l) {
@@ -211,11 +228,16 @@
             document.getElementById('h-click').innerText = langs[l].click;
             document.getElementById('h-snake').innerText = langs[l].snake;
             document.getElementById('set-txt').innerText = langs[l].settings;
+            document.getElementById('btn-thanks').innerText = langs[l].thanks;
         }
 
-        // Кликер
+        // Кликер с пасхалкой
         let count = 0;
-        function addScore() { count++; document.getElementById('score').innerText = count; }
+        function addScore() { 
+            count++; 
+            document.getElementById('score').innerText = count; 
+            if(count === 100) alert("100 кликов! Иди потрогай траву, задрот! 😂");
+        }
 
         // Змейка
         const sCanvas = document.getElementById("snakeGame");
@@ -245,15 +267,16 @@
             mCtx.fillStyle = 'rgba(0, 0, 0, 0.05)'; mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
             mCtx.fillStyle = '#0F0'; mCtx.font = '16px monospace';
             drops.forEach((y, i) => {
-                mCtx.fillText('01', i * 16, y * 16);
+                mCtx.fillText(Math.random() > 0.5 ? '0' : '1', i * 16, y * 16);
                 if (y * 16 > mCanvas.height && Math.random() > 0.975) drops[i] = 0;
                 drops[i]++;
             });
         }
         setInterval(drawM, 33);
 
-        // DOOM
+        // Запуск DOOM
         Dos(document.getElementById("doom-container"), { style: "none" }).run("https://js-dos.com/v7/build/archive/doom.zip");
     </script>
 </body>
 </html>
+               
