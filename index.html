@@ -6,14 +6,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Мой сайт</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f0f0f0; color: black; margin: 0; }
-        .button-tea { display: inline-block; padding: 10px 20px; background: #eee; text-decoration: none; color: black; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 20px; cursor: pointer; }
-        #score { font-size: 40px; font-weight: bold; color: #2ecc71; margin: 10px 0; }
-        .click-btn { padding: 20px 50px; font-size: 22px; background: lime; border: 2px solid #333; border-radius: 15px; cursor: pointer; font-weight: bold; touch-action: manipulation; width: 80%; max-width: 300px; }
-        canvas { background: #000; border: 4px solid #333; display: block; margin: 20px auto; width: 280px; height: 280px; touch-action: none; }
-        .controls { display: grid; grid-template-columns: repeat(3, 75px); gap: 10px; justify-content: center; margin-top: 10px; }
-        .btn-dir { width: 75px; height: 75px; background: #fff; border: 2px solid #ccc; border-radius: 15px; font-size: 28px; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
-        .reset-link { color: red; text-decoration: underline; cursor: pointer; font-size: 14px; display: block; margin-top: 20px; }
+        /* --- ТВОЙ ФИРМЕННЫЙ СТИЛЬ --- */
+        body { 
+            font-family: sans-serif; 
+            text-align: center; 
+            padding: 20px; 
+            background-color: #f0f0f0; 
+            color: black; 
+            margin: 0;
+        }
+
+        /* Кнопка "На чай" */
+        .button-tea { 
+            display: inline-block; 
+            padding: 10px 20px; 
+            background: #eee; 
+            text-decoration: none; 
+            color: black; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+            margin-bottom: 20px; 
+            cursor: pointer; 
+        }
+
+        /* Белые блоки для игр и комментов */
+        .game-box {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: inline-block;
+            margin-bottom: 30px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        /* Кнопки и текст счета */
+        #score { font-size: 40px; font-weight: bold; color: limegreen; margin: 10px 0; }
+        .click-btn { 
+            padding: 15px 40px; 
+            font-size: 20px; 
+            background: lime; 
+            border: none; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            width: 80%;
+            transition: 0.1s;
+            touch-action: manipulation;
+        }
+        .click-btn:active { transform: scale(0.95); }
+        .reset-link { color: red; text-decoration: underline; cursor: pointer; font-size: 14px; margin-top: 15px; display: block; }
+
+        /* --- СТИЛИ МАГИЧЕСКОГО ШАРА --- */
+        .magic-ball {
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle at 30% 30%, #444, #000);
+            border-radius: 50%;
+            margin: 10px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            text-align: center;
+            padding: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            cursor: pointer;
+            user-select: none;
+            transition: 0.2s;
+        }
+        .magic-ball:active { transform: scale(0.9) rotate(10deg); }
+
+        /* --- СТИЛИ КОММЕНТАРИЕВ --- */
+        input {
+            width: 85%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .comment-item {
+            background: #f9f9f9;
+            border-left: 4px solid lime;
+            padding: 10px;
+            margin-top: 10px;
+            text-align: left;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -21,25 +103,33 @@
     <h1>Мой первый сайт!</h1>
     <p>делал сам честно!</p>
     
-    <div class="button-tea" id="teaBtn">Нажми сюда</div>
+    <div class="button-tea" onclick="alert('скинуть будущему программисту на чай: +79216274225 сбербанк')">
+        Нажми сюда
+    </div>
 
     <hr>
 
-    <h3>моя первая мини игра!</h3>
-    <div id="score">0</div>
-    <button class="click-btn" id="clickBtn">КЛИК!</button>
-    <div class="reset-link" id="resetBtn">обнулить счет</div>
+    <div class="game-box">
+        <h3>Игра №1: Кликер</h3>
+        <div id="score">0</div>
+        <button class="click-btn" id="clickBtn">КЛИК!</button>
+        <div class="reset-link" id="resetBtn">обнулить счет</div>
+    </div>
 
-    <hr>
+    <div class="game-box">
+        <h3>Игра №2: Магический Шар 🎱</h3>
+        <p style="font-size: 13px; color: #666;">Загадай вопрос и нажми на шар</p>
+        <div class="magic-ball" id="magicBall">Нажми на меня</div>
+    </div>
 
-    <h3>Змейка для телефона</h3>
-    <canvas id="snakeGame" width="400" height="400"></canvas>
-    
-    <div class="controls">
-        <div></div><button class="btn-dir" id="up">▲</button><div></div>
-        <button class="btn-dir" id="left">◀</button>
-        <button class="btn-dir" id="down">▼</button>
-        <button class="btn-dir" id="right">▶</button>
+    <div class="game-box">
+        <h3>Твои заметки</h3>
+        <input type="text" id="nameInput" placeholder="Твое имя">
+
+<input type="text" id="msgInput" placeholder="Что думаешь?">
+        <button class="click-btn" onclick="addComment()" style="font-size: 16px; padding: 10px;">Оставить запись</button>
+        <div id="commentsList" style="margin-top: 20px;"></div>
+        <div class="reset-link" onclick="clearComments()" style="color: #999;">Очистить все</div>
     </div>
 
     <script>
@@ -48,82 +138,60 @@
         const scoreDisplay = document.getElementById('score');
         scoreDisplay.innerText = count;
 
-        document.getElementById('clickBtn').addEventListener('click', function() {
+        document.getElementById('clickBtn').addEventListener('click', () => {
             count++;
             scoreDisplay.innerText = count;
             localStorage.setItem('myScore', count);
-            if (count === 100) alert("иди потрогай траву! задрот");
+            if (count === 100) alert("Ого, 100 кликов! Ты задрот!");
         });
 
-        document.getElementById('resetBtn').addEventListener('click', function() {
-            if(confirm("Точно обнулить?")) {
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            if(confirm("Обнуляем?")) {
                 count = 0;
                 scoreDisplay.innerText = count;
                 localStorage.removeItem('myScore');
             }
         });
 
-        document.getElementById('teaBtn').addEventListener('click', function() {
-            alert('скинуть будущему программисту на чай: +79216274225 сбербанк');
-        });
+        // --- ЛОГИКА МАГИЧЕСКОГО ШАРА ---
+        const ball = document.getElementById('magicBall');
+        const answers = ["Да", "Нет", "Возможно", "Спроси завтра", "100%", "Вряд ли", "Даже не думай", "Звезды говорят Да"];
+        
+        ball.onclick = function() {
+            ball.innerText = "..."; // Эффект раздумья
+            setTimeout(() => {
+                const randomAnswer = answers[Math.floor(Math.random() * answers.length)];
+                ball.innerText = randomAnswer;
+            }, 400);
+        };
 
-        // --- ЛОГИКА ЗМЕЙКИ ---
-        const canvas = document.getElementById("snakeGame");
-        const ctx = canvas.getContext("2d");
-        const box = 20;
-        let snake = [{x: 10 * box, y: 10 * box}];
-        let food = { x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box };
-        let d = "";
-
-        document.getElementById('up').onclick = () => { if(d != "down") d = "up"; };
-        document.getElementById('down').onclick = () => { if(d != "up") d = "down"; };
-        document.getElementById('left').onclick = () => { if(d != "right") d = "left"; };
-        document.getElementById('right').onclick = () => { if(d != "left") d = "right"; };
-
-        function draw() {
-            ctx.fillStyle = "black";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "red";
-            ctx.fillRect(food.x, food.y, box, box);
-
-for(let i=0; i<snake.length; i++) {
-                ctx.fillStyle = (i==0) ? "#00FF00" : "#008000";
-                ctx.fillRect(snake[i].x, snake[i].y, box, box);
-            }
-
-            let sX = snake[0].x;
-            let sY = snake[0].y;
-
-            if(d == "left") sX -= box;
-            if(d == "up") sY -= box;
-            if(d == "right") sX += box;
-            if(d == "down") sY += box;
-
-            if(sX == food.x && sY == food.y) {
-                food = { x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box };
-            } else if(d != "") {
-                snake.pop();
-            }
-
-            if(d != "") {
-                let head = {x: sX, y: sY};
-                if(sX < 0  sX >= canvas.width  sY < 0  sY >= canvas.height  collision(head, snake)) {
-                    alert("Игра окончена!");
-                    location.reload();
-                }
-                snake.unshift(head);
+        // --- ЛОГИКА ЗАМЕТОК ---
+        let comments = JSON.parse(localStorage.getItem('myComments')) || [];
+        function renderComments() {
+            let list = document.getElementById('commentsList');
+            list.innerHTML = "";
+            comments.slice().reverse().forEach(c => {
+                list.innerHTML += <div class="comment-item"><b>${c.name}:</b><br>${c.text}</div>;
+            });
+        }
+        function addComment() {
+            let n = document.getElementById('nameInput');
+            let m = document.getElementById('msgInput');
+            if(n.value && m.value) {
+                comments.push({name: n.value, text: m.value});
+                localStorage.setItem('myComments', JSON.stringify(comments));
+                n.value = ""; m.value = "";
+                renderComments();
             }
         }
-
-        function collision(head, array) {
-            for(let i=0; i<array.length; i++) {
-                if(head.x == array[i].x && head.y == array[i].y) return true;
+        function clearComments() {
+            if(confirm("Удалить заметки?")) {
+                comments = [];
+                localStorage.removeItem('myComments');
+                renderComments();
             }
-            return false;
         }
-
-        setInterval(draw, 150);
+        renderComments(); // Загружаем комменты при открытии
     </script>
 </body>
 </html>
-
