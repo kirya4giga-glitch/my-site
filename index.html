@@ -3,27 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super App v16 - God Mode</title>
+    <title>Super App v17 - Top Fixed</title>
     <style>
         :root { --bg: #0a0a0a; --main: #0F0; --box: rgba(15, 30, 15, 0.9); --txt: #0F0; }
         body.theme-tg { --bg: #17212b; --main: #5288c1; --box: #242f3d; --txt: #fff; }
         body.theme-snow { --bg: #001c3d; --main: #ffffff; --box: rgba(255,255,255,0.1); --txt: #fff; }
         body.theme-cyber { --bg: #0d0015; --main: #ff00ff; --box: #1a0029; --txt: #00ffff; }
         
-        body { font-family: 'Consolas', monospace; text-align: center; padding: 20px; background: var(--bg); color: var(--txt); margin: 0; transition: 0.3s; }
-        .game-box { background: var(--box); padding: 15px; border-radius: 15px; display: inline-block; margin-bottom: 20px; width: 95%; max-width: 450px; border: 1px solid var(--main); position: relative; z-index: 5; }
+        body { font-family: 'Consolas', monospace; text-align: center; padding: 20px; background: var(--bg); color: var(--txt); margin: 0; transition: 0.3s; overflow-x: hidden; }
+        .game-box { background: var(--box); padding: 15px; border-radius: 15px; display: inline-block; margin-bottom: 20px; width: 95%; max-width: 450px; border: 1px solid var(--main); position: relative; z-index: 5; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .button-tea { padding: 8px 15px; background: transparent; color: var(--main); border: 1px solid var(--main); border-radius: 8px; cursor: pointer; font-weight: bold; margin: 5px; }
         
         #cList { height: 250px; overflow-y: auto; background: rgba(0,0,0,0.4); border-radius: 10px; padding: 10px; margin-bottom: 10px; text-align: left; border: 1px solid var(--main); }
         .msg { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-bottom: 8px; position: relative; border-left: 3px solid var(--main); cursor: pointer; }
-        .del-btn { position: absolute; top: 5px; right: 5px; color: #ff4d4d; cursor: pointer; border: 1px solid #ff4d4d; border-radius: 3px; padding: 0 4px; font-size: 10px; }
+        .del-btn { position: absolute; top: 5px; right: 5px; color: #ff4d4d; cursor: pointer; font-size: 10px; border: 1px solid #ff4d4d; border-radius: 3px; padding: 0 3px; }
         
-        .react-bar { margin-top: 5px; font-size: 12px; display: flex; gap: 5px; }
+        .react-bar { margin-top: 5px; font-size: 12px; display: flex; gap: 5px; flex-wrap: wrap; }
         .react-item { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 10px; border: 1px solid var(--main); }
 
         .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--box); border: 2px solid var(--main); padding: 25px; border-radius: 15px; z-index: 2000; width: 300px; box-shadow: 0 0 50px #000; }
-        
-        #reactPicker { display: none; position: fixed; background: #111; border: 1px solid var(--main); padding: 10px; border-radius: 50px; z-index: 3000; gap: 10px; font-size: 24px; box-shadow: 0 0 20px var(--main); }
         
         .chess-board, .ttt-grid { display: grid; margin: 10px auto; border: 1px solid var(--main); background: #000; }
         .chess-board { grid-template-columns: repeat(8, 1fr); width: 280px; height: 280px; }
@@ -32,6 +30,7 @@
         .cell-w { background: #eee; color: #111; } .cell-b { background: #444; color: #fff; }
 
         #matrixCanvas, #snowCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        #reactPicker { display: none; position: fixed; background: #111; border: 1px solid var(--main); padding: 10px; border-radius: 50px; z-index: 3000; gap: 10px; font-size: 24px; }
         .hidden { display: none; }
     </style>
 </head>
@@ -49,8 +48,8 @@
     <div id="pCard" class="modal">
         <h2 id="pc-name">Игрок</h2>
         <p id="pc-rank" style="font-weight:bold; color:var(--main)"></p>
-        <div id="pc-stats" style="text-align:left; line-height:1.6"></div>
-        <button class="button-tea" onclick="resetClicks()" style="color:red; border-color:red">Сбросить клики</button>
+        <div id="pc-stats" style="text-align:left; line-height:1.6; margin-bottom:15px"></div>
+        <button class="button-tea" onclick="resetScore()" style="color:red; border-color:red">Сбросить клики</button>
         <button class="button-tea" onclick="closeMod('pCard')">Закрыть</button>
     </div>
 
@@ -60,7 +59,7 @@
         Язык: <select onchange="changeLang(this.value)"><option value="ru">RU</option><option value="en">EN</option><option value="ua">UA</option></select>
         <hr>
         <button class="button-tea" onclick="alert('скинуть будущему программисту на чай: +79216274225 сбербанк')" id="b-tea">Поддержи меня</button>
-        <button class="button-tea" onclick="logout()">Exit</button>
+        <button class="button-tea" onclick="logout()">Выход</button>
         <button class="button-tea" onclick="closeMod('sMenu')">X</button>
     </div>
 
@@ -75,14 +74,14 @@
 
     <div class="game-box">
         <h3 id="h-click">Кликер</h3>
-        <div id="score" style="font-size:50px">0</div>
-        <button class="button-tea" onclick="doClick()" id="b-click" style="padding:15px 35px">КЛИКНИ!</button>
-        <div id="topList" style="text-align:left; font-size:12px; margin-top:10px; border-top:1px solid var(--main); padding-top:10px"></div>
+        <div id="score" style="font-size:55px; font-weight:bold">0</div>
+        <button class="button-tea" onclick="doClick()" id="b-click" style="padding:15px 35px; font-size:20px">КЛИКНИ!</button>
+        <div id="topList" style="text-align:left; font-size:13px; margin-top:10px; border-top:1px solid var(--main); padding-top:10px"></div>
     </div>
 
     <div class="game-box">
-        <h3 id="h-games">Игровой Центр</h3>
-        <div id="active-list" style="font-size:10px; color:yellow; margin-bottom:10px"></div>
+        <h3 id="h-games">Игры</h3>
+        <div id="active-list" style="font-size:11px; color:yellow; margin-bottom:10px"></div>
         <div id="lobby">
             <button class="button-tea" onclick="startMM('ttt')">Крестики-Нолики</button>
             <button class="button-tea" onclick="startMM('chess')">Шахматы</button>
@@ -106,13 +105,13 @@
         const conf = { apiKey: "AIzaSyChSk0gETRBQ391e4BjPqFsKc_dzjBmT58", databaseURL: "https://my-chat-52203-default-rtdb.firebaseio.com", projectId: "my-chat-52203" };
         const db = getDatabase(initializeApp(conf));
 
-        let user = JSON.parse(localStorage.getItem('user_v16'));
-        let selId = null, gid = null, myRole = '', gType = '', mmSub = null;
+        let user = JSON.parse(localStorage.getItem('user_v17'));
+        let selId = null, gid = null, myRole = '', mmSub = null;
 
         const dict = {
-            ru: {title:"Мой первый сайт", sub:"сделал сам честно!", chat:"Чат", click:"Кликер", games:"Игры", tea:"Поддержи меня", cancel:"Отмена", bclick:"КЛИКНИ!"},
-            en: {title:"My First Web", sub:"honest work!", chat:"Chat", click:"Clicker", games:"Games", tea:"Support Me", cancel:"Cancel", bclick:"CLICK!"},
-            ua: {title:"Мій перший сайт", sub:"робив сам чесно!", chat:"Чат", click:"Клікер", games:"Ігри", tea:"Підтримай мене", cancel:"Відміна", bclick:"КЛІКНИ!"}
+            ru: {title:"Мой первый сайт", sub:"сделал сам честно!", chat:"Чат", click:"Кликер", games:"Игры", tea:"Поддержи меня", bclick:"КЛИКНИ!"},
+            en: {title:"My First Website", sub:"honest work!", chat:"Chat", click:"Clicker", games:"Games", tea:"Support Me", bclick:"CLICK!"},
+            ua: {title:"Мій перший сайт", sub:"робив сам чесно!", chat:"Чат", click:"Клікер", games:"Ігри", tea:"Підтримай мене", bclick:"КЛІКНИ!"}
         };
 
         window.changeLang = (l) => {
@@ -120,7 +119,7 @@
             document.getElementById('h-title').innerText = t.title; document.getElementById('h-sub').innerText = t.sub;
             document.getElementById('h-chat').innerText = t.chat; document.getElementById('h-click').innerText = t.click;
             document.getElementById('h-games').innerText = t.games; document.getElementById('b-tea').innerText = t.tea;
-            document.getElementById('b-cancel').innerText = t.cancel; document.getElementById('b-click').innerText = t.bclick;
+            document.getElementById('b-click').innerText = t.bclick;
         };
 
         async function init() {
@@ -130,7 +129,7 @@
                 const s = await get(ref(db, 'users/'+n));
                 if(s.exists()){ if(s.val().password !== p) return location.reload(); user = {name: n, ...s.val()}; }
                 else { user = {name: n, password: p, score: 0, wins_ttt: 0, wins_chess: 0}; await set(ref(db, 'users/'+n), user); }
-                localStorage.setItem('user_v16', JSON.stringify(user));
+                localStorage.setItem('user_v17', JSON.stringify(user));
             }
             document.getElementById('score').innerText = user.score;
             loadTop(); loadChat(); loadActive();
@@ -138,9 +137,8 @@
 
         window.doClick = () => {
             user.score++; document.getElementById('score').innerText = user.score;
-            if(user.score === 100) alert("Иди траву потрогай задрот 😂");
             update(ref(db, 'users/'+user.name), {score: user.score});
-            localStorage.setItem('user_v16', JSON.stringify(user));
+            localStorage.setItem('user_v17', JSON.stringify(user));
         };
 
         function loadChat() {
@@ -175,24 +173,25 @@
         window.showP = async (n) => {
             const s = await get(ref(db, 'users/'+n)); const d = s.val();
             document.getElementById('pc-name').innerText = n;
-            document.getElementById('pc-rank').innerText = d.score > 500 ? "БОГ КОДА" : "НОВИЧОК";
-            document.getElementById('pc-stats').innerHTML = `Кликов: <b>${d.score}</b><br>Побед X/O: <b>${d.wins_ttt||0}</b><br>Побед Шахматы: <b>${d.wins_chess||0}</b>`;
+            document.getElementById('pc-rank').innerText = d.score > 1000 ? "БОГ КОДА" : "МАСТЕР";
+            document.getElementById('pc-stats').innerHTML = `🔘 Кликов: <b>${d.score}</b><br>❌ Побед X/O: <b>${d.wins_ttt||0}</b><br>♟ Побед Chess: <b>${d.wins_chess||0}</b>`;
             openMod('pCard');
         };
 
-        window.resetClicks = () => { if(prompt("Pass:") === "8070") { update(ref(db, 'users/'+user.name), {score: 0}); user.score=0; localStorage.setItem('user_v16', JSON.stringify(user)); location.reload(); }};
+        window.resetScore = () => { if(prompt("Pass:") === "8070") { update(ref(db, 'users/'+user.name), {score: 0}); user.score=0; localStorage.setItem('user_v17', JSON.stringify(user)); location.reload(); }};
 
         function loadTop() {
-            onValue(query(ref(db, 'users'), orderByChild('score'), limitToLast(10)), (s) => {
+            onValue(ref(db, 'users'), (s) => {
                 const t = document.getElementById('topList'); t.innerHTML = "<b>ТОП ЛИДЕРОВ:</b><br>";
-                let a = []; s.forEach(u => a.push({n:u.key, s:u.val().score}));
-                a.sort((x,y)=>y.s-x.s).forEach((u,i) => t.innerHTML += `<div onclick="showP('${u.n}')" style="cursor:pointer">${i+1}. ${u.n} — <b>${u.s}</b></div>`);
+                let a = []; s.forEach(u => { if(u.val().score !== undefined) a.push({n:u.key, s:u.val().score}); });
+                a.sort((x,y) => y.s - x.s).slice(0, 10).forEach((u,i) => {
+                    t.innerHTML += `<div onclick="showP('${u.n}')" style="cursor:pointer; color:${u.n===user.name?'#fff':'inherit'}">${i+1}. ${u.n} — <b>${u.s}</b></div>`;
+                });
             });
         }
 
-        // ИГРЫ
         window.startMM = async (type) => {
-            gType = type; document.getElementById('lobby').classList.add('hidden'); document.getElementById('game-area').classList.remove('hidden');
+            document.getElementById('lobby').classList.add('hidden'); document.getElementById('game-area').classList.remove('hidden');
             const qRef = ref(db, 'queue_'+type); const snap = await get(qRef);
             if(snap.exists() && snap.val() !== user.name) {
                 gid = 'g_'+Date.now();
@@ -204,7 +203,7 @@
             }
         };
 
-        window.stopMM = () => { if(mmSub) off(ref(db, 'games')); remove(ref(db, 'queue_'+gType)); location.reload(); };
+        window.stopMM = () => location.reload();
         window.watch = (id) => join(id, 'spectator');
 
         function join(id, role) {
@@ -212,7 +211,7 @@
             document.getElementById('lobby').classList.add('hidden'); document.getElementById('game-area').classList.remove('hidden');
             onValue(ref(db, 'games/'+id), (s) => {
                 const d = s.val(); if(!d) return location.reload();
-                draw(d); document.getElementById('g-info').innerText = role==='spectator' ? `👀 Наблюдение: ${d.p1} vs ${d.p2}` : (d.turn === (role==='p1'?'p1':'p2') ? "ТВОЙ ХОД!" : "ОЖИДАНИЕ...");
+                draw(d); document.getElementById('g-info').innerText = role==='spectator' ? `👀 ${d.p1} vs ${d.p2}` : (d.turn === (role==='p1'?'p1':'p2') ? "ТВОЙ ХОД!" : "ЖДИ...");
             });
         }
 
@@ -270,6 +269,9 @@
     </script>
 </body>
 </html>
+
+
+
 
 
 
