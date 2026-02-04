@@ -1,11 +1,14 @@
+Манул, [04.02.2026 12:08]
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Мой сайт</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f0f0f0; }
+        /* Возвращаем твой старый стиль */
+        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f0f0f0; color: black; }
+        
         .button { 
             display: inline-block; 
             padding: 10px 20px; 
@@ -16,14 +19,18 @@
             border-radius: 5px; 
             margin-bottom: 20px;
         }
+
         .game-box {
             background: white;
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             display: inline-block;
+            margin-top: 20px;
         }
+
         #score { font-size: 30px; font-weight: bold; color: limegreen; }
+
         .click-btn {
             padding: 15px 40px;
             font-size: 20px;
@@ -32,18 +39,44 @@
             border-radius: 10px;
             cursor: pointer;
             font-weight: bold;
-            display: block;
-            margin: 10px auto;
         }
+
+        /* Стили для змейки */
+        canvas { 
+            background: #000; 
+            border: 2px solid #333; 
+            display: block; 
+            margin: 10px auto; 
+            width: 280px; 
+            height: 280px; 
+            touch-action: none; 
+        }
+
+        .controls { 
+            display: grid; 
+            grid-template-columns: repeat(3, 60px); 
+            gap: 10px; 
+            justify-content: center; 
+            margin-top: 10px; 
+        }
+
+        .btn-dir { 
+            width: 60px; 
+            height: 60px; 
+            background: #eee; 
+            border: 1px solid #ccc; 
+            border-radius: 10px; 
+            font-size: 20px; 
+        }
+
         .reset-btn {
-            padding: 5px 15px;
-            font-size: 14px;
-            background: #ff4d4d;
-            color: white;
+            background: none;
             border: none;
-            border-radius: 5px;
+            color: red;
+            text-decoration: underline;
             cursor: pointer;
-            margin-top: 15px;
+            font-size: 12px;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -60,20 +93,29 @@
         <h3>моя первая мини игра!</h3>
         <p>Счет: <span id="score">0</span></p>
         <button class="click-btn" onclick="addScore()">КЛИК!</button>
-        
-        <button class="reset-btn" onclick="resetScore()">Обнулить счет</button>
+        <br>
+        <button class="reset-btn" onclick="resetScore()">обнулить счет</button>
+    </div>
+
+    <div class="game-box">
+        <h3>Змейка для телефона</h3>
+        <canvas id="snakeGame" width="400" height="400"></canvas>
+        <div class="controls">
+            <div></div><button class="btn-dir" onclick="changeDir('up')">▲</button><div></div>
+            <button class="btn-dir" onclick="changeDir('left')">◀</button>
+            <button class="btn-dir" onclick="changeDir('down')">▼</button>
+            <button class="btn-dir" onclick="changeDir('right')">▶</button>
+        </div>
     </div>
 
     <script>
-        // 1. Загружаем сохраненный счет
+        // --- ЛОГИКА КЛИКЕРА ---
         let count = localStorage.getItem('myScore') ? parseInt(localStorage.getItem('myScore')) : 0;
 
-        // 2. Отображаем его сразу при загрузке
         window.onload = function() {
             document.getElementById('score').innerText = count;
         };
 
-        // 3. Функция клика
         function addScore() {
             count = count + 1;
             document.getElementById('score').innerText = count;
@@ -84,14 +126,71 @@
             }
         }
 
-        // 4. ФУНКЦИЯ ОБНУЛЕНИЯ
         function resetScore() {
-            if (confirm("Точно хочешь всё удалить?")) {
+            if (confirm("Точно обнулить?")) {
                 count = 0;
                 document.getElementById('score').innerText = count;
-                localStorage.removeItem('myScore'); // Удаляем данные из памяти
+                localStorage.removeItem('myScore');
             }
         }
+
+Манул, [04.02.2026 12:08]
+// --- ЛОГИКА ЗМЕЙКИ ---
+        const canvas = document.getElementById("snakeGame");
+        const ctx = canvas.getContext("2d");
+        const box = 20;
+        let snake = [{x: 10 * box, y: 10 * box}];
+        let food = { x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box };
+        let dir;
+
+        function changeDir(newDir) {
+            if(newDir == "left" && dir != "right") dir = "left";
+            else if(newDir == "up" && dir != "down") dir = "up";
+            else if(newDir == "right" && dir != "left") dir = "right";
+            else if(newDir == "down" && dir != "up") dir = "down";
+        }
+
+        function draw() {
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "red";
+            ctx.fillRect(food.x, food.y, box, box);
+
+            for(let i=0; i<snake.length; i++) {
+                ctx.fillStyle = (i==0) ? "lime" : "green";
+                ctx.fillRect(snake[i].x, snake[i].y, box, box);
+            }
+
+            let sX = snake[0].x;
+            let sY = snake[0].y;
+
+            if(dir=="left") sX-=box;
+            if(dir=="right") sX+=box;
+            if(dir=="up") sY-=box;
+            if(dir=="down") sY+=box;
+
+            if(sX==food.x && sY==food.y) {
+                food = { x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box };
+            } else { snake.pop(); }
+
+            let head = {x:sX, y:sY};
+
+            if(sX<0  sX>=canvas.width  sY<0  sY>=canvas.height  collision(head, snake)) {
+                clearInterval(game);
+                alert("Game Over!");
+                location.reload();
+            }
+            snake.unshift(head);
+        }
+
+        function collision(head, array) {
+            for(let i=0; i<array.length; i++) {
+                if(head.x == array[i].x && head.y == array[i].y) return true;
+            }
+            return false;
+        }
+
+        let game = setInterval(draw, 150);
     </script>
 
 </body>
