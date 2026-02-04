@@ -1,177 +1,135 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kiru OS v25 - Ultimate Mega Update</title>
+    <title>Kiru OS v26 - Full Edition</title>
     <style>
-        :root { 
-            --bg: #000; --main: #007AFF; --glass: rgba(255, 255, 255, 0.1); 
-            --txt: #fff; --card: rgba(30,30,30,0.8); 
-        }
+        :root { --bg: #000; --main: #0A84FF; --glass: rgba(255,255,255,0.1); --txt: #fff; }
+        body.theme-hacker { --bg: #050505; --main: #32D74B; --txt: #32D74B; --glass: rgba(0,255,0,0.05); }
+        body.theme-ios-light { --bg: #F2F2F7; --main: #007AFF; --txt: #000; --glass: rgba(255,255,255,0.7); }
+        body.theme-cyber { --bg: #0d0015; --main: #BF5AF2; --txt: #64D2FF; --glass: rgba(191,90,242,0.1); }
+
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 15px; transition: 0.3s; }
+        .game-box { background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 20px; border-radius: 25px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        .button-tea { padding: 12px 16px; background: var(--main); color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; margin: 5px; transition: 0.2s; }
+        .button-tea:active { transform: scale(0.95); }
+
+        #cList { height: 280px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 15px; padding: 10px; margin-bottom: 10px; }
+        .msg { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; margin-bottom: 8px; position: relative; border-left: 3px solid var(--main); }
+        .msg-time { font-size: 9px; opacity: 0.5; float: right; }
+
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(28,28,30,0.95); backdrop-filter: blur(30px); padding: 25px; border-radius: 30px; z-index: 3000; width: 85%; max-width: 360px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px #000; }
         
-        /* ТЕМЫ */
-        body.theme-hacker { --bg: #0a0a0a; --main: #0f0; --txt: #0f0; --glass: rgba(0,255,0,0.05); }
-        body.theme-light { --bg: #f2f2f7; --main: #007aff; --txt: #000; --glass: rgba(255,255,255,0.8); --card: #fff; }
-        body.theme-tg { --bg: #17212b; --main: #5288c1; --txt: #fff; --glass: rgba(36,47,61,0.9); }
-        body.theme-cyber { --bg: #0d0015; --main: #ff00ff; --txt: #00ffff; --glass: rgba(26,0,41,0.9); }
-
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background: var(--bg); color: var(--txt); margin: 0; padding: 15px; 
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); min-height: 100vh;
-        }
-
-        .game-box { 
-            background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            padding: 20px; border-radius: 28px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: slideUp 0.5s ease;
-        }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .button-tea { 
-            padding: 12px 18px; background: var(--main); color: #fff; border: none; 
-            border-radius: 14px; cursor: pointer; font-weight: 600; margin: 5px; transition: 0.2s;
-        }
-        .button-tea:active { transform: scale(0.9); }
-
-        /* Чат */
-        #cList { height: 320px; overflow-y: auto; border-radius: 20px; padding: 10px; background: rgba(0,0,0,0.2); }
-        .msg { background: rgba(255,255,255,0.08); padding: 12px; border-radius: 18px; margin-bottom: 10px; position: relative; border-left: 4px solid var(--main); }
-        .msg-time { font-size: 10px; opacity: 0.5; position: absolute; bottom: 5px; right: 12px; }
-        .del-msg { color: #ff3b30; cursor: pointer; float: right; font-weight: bold; margin-left: 8px; }
-
-        /* Модалки */
-        .modal { 
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            background: var(--card); backdrop-filter: blur(50px);
-            padding: 30px; border-radius: 35px; z-index: 3000; width: 85%; max-width: 380px;
-            border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 0 100px rgba(0,0,0,0.5);
-        }
-
-        /* Игры */
-        .chess-board, .ttt-grid { display: grid; margin: 15px auto; border-radius: 15px; overflow: hidden; border: 3px solid var(--main); background: #000; }
+        .chess-board, .ttt-grid { display: grid; margin: 10px auto; border-radius: 10px; overflow: hidden; border: 2px solid var(--main); }
         .chess-board { grid-template-columns: repeat(8, 1fr); width: 280px; height: 280px; }
         .ttt-grid { grid-template-columns: repeat(3, 1fr); width: 210px; height: 210px; }
-        .cell { display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; min-height: 35px; }
-        .cell-w { background: #fff; color: #000; } .cell-b { background: #333; color: #fff; }
-
-        .rank-badge { font-size: 10px; padding: 2px 6px; border-radius: 6px; background: gold; color: #000; font-weight: bold; margin-right: 5px; }
-        #reactPicker { display: none; position: fixed; background: #222; padding: 10px; border-radius: 30px; z-index: 4000; border: 1px solid var(--main); }
+        .cell { display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; min-height: 35px; }
+        .cell-w { background: #fff; color: #000; } .cell-b { background: #3a3a3c; color: #fff; }
+        
+        .prefix { font-size: 9px; padding: 2px 5px; border-radius: 4px; background: #fff; color: #000; font-weight: bold; margin-right: 5px; }
+        #reactPicker { display: none; position: fixed; background: #1c1c1e; padding: 8px; border-radius: 20px; z-index: 4000; border: 1px solid var(--main); }
         .hidden { display: none; }
     </style>
 </head>
-<body class="theme-hacker">
+<body class="theme-ios-dark">
 
-    <div style="position:fixed; top:20px; right:20px; z-index:1001; display:flex; gap:10px;">
+    <div style="position:fixed; top:15px; right:15px; z-index:1001; display:flex; gap:8px;">
         <button class="button-tea" onclick="openMod('shopWin')">🛒 Shop</button>
         <button class="button-tea" onclick="openMod('sMenu')">⚙️</button>
     </div>
 
-    <h1 id="h-title" style="font-weight:900;">Kiru OS v25</h1>
-    <h3 onclick="eggClick()" style="cursor:pointer">Balance: <span id="userBalance" style="color:var(--main)">0</span> 💰</h3>
+    <h1 id="h-title">Kiru OS v26</h1>
+    <h3 onclick="eggClick()" style="cursor:pointer"><span id="l-bal">Баланс</span>: <span id="userBalance" style="color:var(--main)">0</span> 💰</h3>
 
     <div id="shopWin" class="modal">
-        <h3>🛒 Market</h3>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:15px;">
-                <span>🤖 AutoClick</span><br>
-                <button class="button-tea" onclick="buy('auto', 5000, 1)">5000</button>
-            </div>
-            <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:15px;">
-                <span>⚡ MultiClick</span><br>
-                <button class="button-tea" onclick="buy('multi', 2000, 2)">2000</button>
-            </div>
-            <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:15px;">
-                <span>🛡️ Shield</span><br>
-                <button class="button-tea" onclick="buy('item', 1000, 'shield')">1000</button>
-            </div>
+        <h3 id="l-sh-title">Магазин</h3>
+        <div style="max-height: 60vh; overflow-y: auto;">
+            <div class="shop-item">🤖 Auto (+1) <button class="button-tea" onclick="buy('auto', 5000, 1)">5000</button></div>
+            <div class="shop-item">⚡ Multi (+2) <button class="button-tea" onclick="buy('multi', 2000, 2)">2000</button></div>
+            <div class="shop-item">💎 [VIP] <button class="button-tea" onclick="buy('prefix', 500, 'VIP')">500</button></div>
+            <div class="shop-item">👑 [ELITE] <button class="button-tea" onclick="buy('prefix', 2000, 'ELITE')">2000</button></div>
+            <div class="shop-item">🎨 Blue Name <button class="button-tea" onclick="buy('color', 1000, '#0A84FF')">1000</button></div>
+            <div class="shop-item">🛡️ Shield <button class="button-tea" onclick="buy('item', 1500, 'shield')">1500</button></div>
         </div>
-        <button class="button-tea" onclick="closeMod('shopWin')" style="width:100%; margin-top:15px;">Close</button>
+        <button class="button-tea" onclick="closeMod('shopWin')" style="width:100%">X</button>
     </div>
 
     <div id="sMenu" class="modal">
-        <h3>⚙️ Settings</h3>
-        Theme: <select onchange="changeTheme(this.value)">
-            <option value="hacker">Hacker (Green)</option>
-            <option value="light">iOS Light</option>
-            <option value="tg">Telegram</option>
-            <option value="cyber">Cyberpunk</option>
+        <h3 id="l-set-title">Настройки</h3>
+        <label id="l-theme">Тема</label>: <select onchange="changeTheme(this.value)">
+            <option value="ios-dark">iOS Dark</option>
+            <option value="hacker">Hacker</option>
+            <option value="ios-light">iOS Light</option>
+            <option value="cyber">Cyber</option>
         </select><br><br>
-        Language: <select onchange="changeLang(this.value)">
+        <label id="l-lang">Язык</label>: <select id="langSel" onchange="changeLang(this.value)">
             <option value="ru">Русский</option>
             <option value="en">English</option>
             <option value="ua">Українська</option>
         </select>
         <hr style="opacity:0.1">
         <button class="button-tea" onclick="openMod('thanksWin')">🌟 Credits</button>
-        <button class="button-tea" onclick="logout()" style="background:#ff3b30">Logout</button>
+        <button class="button-tea" onclick="logout()" id="l-out">Выход</button>
         <button class="button-tea" onclick="closeMod('sMenu')">X</button>
     </div>
 
     <div id="thanksWin" class="modal">
-        <h3>🌟 Wall of Fame</h3>
-        <ul style="text-align:left; line-height:1.8;">
-            <li>1. Вадеку</li>
-            <li>2. Мусе ❤️</li>
-            <li>3. Саше</li>
-            <li>4. Андрею 😎</li>
-            <li>5. Тепе</li>
-            <li>6. gemini</li>
-            <li>7. Анастасие Землеройке</li>
-        </ul>
-        <button class="button-tea" onclick="closeMod('thanksWin')">Close</button>
+        <h3>Wall of Fame</h3>
+        <ol id="thanksList" style="text-align:left; line-height:1.6; font-size:14px;">
+            <li>Вадеку</li><li>Мусе ❤️</li><li>Саше</li><li>Андрею 😎</li><li>Тепе</li><li>gemini</li><li>Анастасие Землеройке</li>
+        </ol>
+        <button class="button-tea" onclick="closeMod('thanksWin')">X</button>
+    </div>
+
+    <div id="pCard" class="modal">
+        <h2 id="pc-name">User</h2>
+        <div id="pc-stats" style="text-align:left; font-size:14px;"></div>
+        <hr style="opacity:0.1">
+        <button class="button-tea" onclick="sendMoneyPrompt()" id="l-send">💸 Перевести</button>
+        <button class="button-tea" onclick="adminMute()" style="background:orange">Mute</button>
+        <button class="button-tea" onclick="adminDelUser()" style="background:#ff453a">Delete</button>
+        <button class="button-tea" onclick="closeMod('pCard')">X</button>
     </div>
 
     <div class="game-box">
-        <h3 id="h-chat">iMessage</h3>
+        <h3 id="l-chat">Чат</h3>
         <div id="cList"></div>
-        <div style="display:flex; gap:10px">
-            <input type="text" id="mInp" placeholder="Текст..." style="flex:1; background:rgba(255,255,255,0.1); border:none; color:inherit; padding:15px; border-radius:15px; outline:none;">
+        <div style="display:flex; gap:8px">
+            <input type="text" id="mInp" style="flex:1; background:rgba(255,255,255,0.1); border:none; color:inherit; padding:12px; border-radius:12px; outline:none;">
             <button class="button-tea" onclick="sendMsg()">></button>
         </div>
     </div>
 
     <div class="game-box">
-        <h3 id="h-click">Mining</h3>
-        <div id="score" style="font-size:50px; font-weight:900;">0</div>
-        <button class="button-tea" onclick="doClick()" style="width:100%; padding:20px; font-size:20px; border-radius:20px;">КЛИК!</button>
-        <div id="topList" style="text-align:left; margin-top:15px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;"></div>
+        <h3 id="l-mine">Майнинг</h3>
+        <div id="score" style="font-size:45px; font-weight:900;">0</div>
+        <button class="button-tea" id="l-tap" onclick="doClick()" style="width:100%; padding:15px; font-size:18px;">ТАП!</button>
+        <div id="topList" style="text-align:left; margin-top:15px; font-size:13px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;"></div>
     </div>
 
     <div class="game-box">
-        <h3 id="h-games">Casino</h3>
-        <div id="active-list" style="font-size:11px; color:var(--main); margin-bottom:5px;"></div>
+        <h3 id="l-games">Игры</h3>
+        <div id="active-list" style="font-size:10px; color:var(--main); margin-bottom:5px;"></div>
         <div id="lobby">
             <button class="button-tea" onclick="startMM('ttt')">Tic-Tac-Toe</button>
             <button class="button-tea" onclick="startMM('chess')">Chess</button>
         </div>
         <div id="game-area" class="hidden">
-            <div id="g-info" style="font-weight:bold; margin-bottom:5px;"></div>
+            <div id="g-info" style="font-weight:bold;"></div>
             <div id="board-container"></div>
-            <button class="button-tea" onclick="stopMM()" style="background:#ff3b30">Exit</button>
+            <button class="button-tea" onclick="stopMM()" id="l-cancel" style="background:#ff453a">Отмена</button>
         </div>
-    </div>
-
-    <div id="pCard" class="modal">
-        <h2 id="pc-name">User</h2>
-        <div id="pc-stats" style="text-align:left; line-height:1.8"></div>
-        <hr style="opacity:0.1">
-        <button class="button-tea" onclick="sendMoneyPrompt()">💸 Transfer</button>
-        <button class="button-tea" onclick="adminMute()" style="background:orange">Mute</button>
-        <button class="button-tea" onclick="adminDelUser()" style="background:red">Delete</button>
-        <button class="button-tea" onclick="closeMod('pCard')">X</button>
     </div>
 
     <div id="musyaEaster" class="modal">
         <h2>🐾 Муся</h2>
         <img src="https://i.postimg.cc/mD3mB8Qf/image.jpg" style="width:100%; border-radius:20px;">
-        <button class="button-tea" onclick="closeMod('musyaEaster')">Закрыть</button>
+        <button class="button-tea" onclick="closeMod('musyaEaster')">Meow!</button>
     </div>
 
-    <div id="reactPicker">
-        <span onclick="applyR('🔥')">🔥</span><span onclick="applyR('❤️')">❤️</span><span onclick="applyR('😂')">😂</span>
-    </div>
+    <div id="reactPicker"><span onclick="applyR('🔥')">🔥</span><span onclick="applyR('❤️')">❤️</span><span onclick="applyR('😂')">😂</span></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -180,15 +138,23 @@
         const conf = { apiKey: "AIzaSyChSk0gETRBQ391e4BjPqFsKc_dzjBmT58", databaseURL: "https://my-chat-52203-default-rtdb.firebaseio.com", projectId: "my-chat-52203" };
         const db = getDatabase(initializeApp(conf));
 
-        let user = JSON.parse(localStorage.getItem('user_v25'));
-        let selId = null, gid = null, myRole = '', eggCounter = 0, viewUser = null;
+        let user = JSON.parse(localStorage.getItem('user_v26'));
+        let selId, gid, myRole, eggCounter = 0, viewUser;
 
-        const getRank = (s) => {
-            if(s > 100000) return "Бог Экономики";
-            if(s > 50000) return "Рокфеллер";
-            if(s > 10000) return "Барон";
-            if(s > 1000) return "Майнер";
-            return "Новичок";
+        const langData = {
+            ru: {bal:"Баланс", mine:"Майнинг", games:"Игры", chat:"Чат", tap:"ТАП!", set:"Настройки", send:"Перевести", out:"Выход", cancel:"Отмена", theme:"Тема", lang:"Язык", sh:"Магазин"},
+            en: {bal:"Balance", mine:"Mining", games:"Games", chat:"iChat", tap:"TAP!", set:"Settings", send:"Transfer", out:"Logout", cancel:"Cancel", theme:"Theme", lang:"Language", sh:"Market"},
+            ua: {bal:"Баланс", mine:"Майнінг", games:"Ігри", chat:"Чат", tap:"ТАП!", set:"Налаштування", send:"Переказати", out:"Вихід", cancel:"Скасувати", theme:"Тема", lang:"Мова", sh:"Магазин"}
+        };
+
+        window.changeLang = (l) => {
+            const d = langData[l];
+            document.getElementById('l-bal').innerText = d.bal; document.getElementById('l-mine').innerText = d.mine;
+            document.getElementById('l-games').innerText = d.games; document.getElementById('l-chat').innerText = d.chat;
+            document.getElementById('l-tap').innerText = d.tap; document.getElementById('l-set-title').innerText = d.set;
+            document.getElementById('l-send').innerText = d.send; document.getElementById('l-out').innerText = d.out;
+            document.getElementById('l-cancel').innerText = d.cancel; document.getElementById('l-theme').innerText = d.theme;
+            document.getElementById('l-lang').innerText = d.lang; document.getElementById('l-sh-title').innerText = d.sh;
         };
 
         async function init() {
@@ -196,9 +162,9 @@
                 let n = prompt("Login:"); if(!n) return;
                 let p = prompt("Pass:");
                 const s = await get(ref(db, 'users/'+n));
-                if(s.exists()){ if(s.val().password !== p) return location.reload(); user = {name: n, ...s.val()}; }
-                else { user = {name: n, password: p, score: 0, autoclicker: 0, mult: 1}; await set(ref(db, 'users/'+n), user); }
-                localStorage.setItem('user_v25', JSON.stringify(user));
+                if(s.exists()){ if(s.val().password !== p) return location.reload(); user={name:n, ...s.val()}; }
+                else { user={name:n, password:p, score:0, autoclicker:0, mult:1, prefix:'', color:''}; await set(ref(db, 'users/'+n), user); }
+                localStorage.setItem('user_v26', JSON.stringify(user));
             }
             syncUser(); loadChat(); loadTop(); loadActive(); 
             setInterval(() => { if(user.autoclicker > 0) update(ref(db, 'users/'+user.name), {score: (user.score || 0) + user.autoclicker}); }, 1000);
@@ -206,8 +172,7 @@
 
         function syncUser() {
             onValue(ref(db, 'users/'+user.name), (s) => {
-                const d = s.val(); if(!d) return;
-                user = {name: user.name, ...d};
+                const d = s.val(); if(!d) return; user = {name:user.name, ...d};
                 document.getElementById('userBalance').innerText = d.score || 0;
                 document.getElementById('score').innerText = d.score || 0;
             });
@@ -217,9 +182,9 @@
 
         window.sendMsg = async () => {
             const i = document.getElementById('mInp'); if(!i.value) return;
-            const snap = await get(ref(db, 'users/'+user.name));
-            if(snap.val().muteUntil > Date.now()) return alert("Muted!");
-            push(ref(db, 'msgs'), { n: user.name, t: i.value, time: serverTimestamp(), rank: getRank(user.score) });
+            const s = await get(ref(db, 'users/'+user.name));
+            if(s.val().muteUntil > Date.now()) return alert("Muted!");
+            push(ref(db, 'msgs'), { n: user.name, t: i.value, time: serverTimestamp(), pref: s.val().prefix, col: s.val().color });
             i.value="";
         };
 
@@ -227,11 +192,10 @@
             onValue(ref(db, 'msgs'), (s) => {
                 const l = document.getElementById('cList'); l.innerHTML = "";
                 s.forEach(d => {
-                    const m = d.val();
-                    const date = m.time ? new Date(m.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : "";
+                    const m = d.val(); const date = m.time ? new Date(m.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : "";
                     const div = document.createElement('div'); div.className = 'msg';
-                    div.innerHTML = `<span class="del-msg" onclick="event.stopPropagation(); adminDelMsg('${d.key}')">×</span>
-                        <span class="rank-badge">${m.rank || 'Новичок'}</span><b onclick="event.stopPropagation(); showP('${m.n}')">${m.n}</b>: ${m.t}
+                    div.innerHTML = `<span onclick="adminDelMsg('${d.key}')" style="float:right; color:red; cursor:pointer">×</span>
+                        ${m.pref ? `<span class="prefix">${m.pref}</span>`:''}<b style="color:${m.col||'inherit'}" onclick="showP('${m.n}')">${m.n}</b>: ${m.t}
                         <span class="msg-time">${date}</span>`;
                     div.onclick = (e) => { selId = d.key; const p = document.getElementById('reactPicker'); p.style.display='block'; p.style.top=(e.clientY-40)+'px'; p.style.left=e.clientX+'px'; };
                     l.appendChild(div);
@@ -242,19 +206,33 @@
 
         window.loadTop = () => {
             onValue(ref(db, 'users'), (s) => {
-                const t = document.getElementById('topList'); t.innerHTML = "<b>Leaders:</b><br>";
+                const t = document.getElementById('topList'); t.innerHTML = "<b>Top:</b><br>";
                 let a = []; s.forEach(u => a.push({n:u.key, s:u.val().score||0}));
                 a.sort((x,y)=>y.s-x.s).slice(0,10).forEach((u,i) => {
-                    t.innerHTML += `<div style="padding:5px 0; border-bottom:1px solid rgba(255,255,255,0.05)">${i+1}. ${u.n} — ${u.s} 💰</div>`;
+                    t.innerHTML += `<div>${i+1}. ${u.n} — ${u.s} 💰 <span onclick="adminDelUser('${u.n}')" style="color:red; cursor:pointer">[X]</span></div>`;
                 });
             });
         };
 
-        window.showP = async (n) => {
-            viewUser = n; const s = await get(ref(db, 'users/'+n)); const d = s.val();
-            document.getElementById('pc-name').innerText = n;
-            document.getElementById('pc-stats').innerHTML = `🏆 Rank: ${getRank(d.score)}<br>💰 Balance: ${d.score}<br>🤖 Auto: ${d.autoclicker||0}<br>🛡️ Shield: ${d.shield||0}`;
-            openMod('pCard');
+        window.buy = async (type, price, val) => {
+            if(user.score < price) return alert("Low 💰");
+            let up = { score: user.score - price };
+            if(type==='auto') up.autoclicker = (user.autoclicker||0)+val;
+            if(type==='multi') up.mult = (user.mult||1)+val;
+            if(type==='prefix') up.prefix = val;
+            if(type==='color') up.color = val;
+            if(type==='item') up.shield = (user.shield||0)+1;
+            await update(ref(db, 'users/'+user.name), up);
+            alert("OK!");
+        };
+
+        window.sendMoneyPrompt = async () => {
+            let amount = parseInt(prompt("Amount:"));
+            if(isNaN(amount) || amount > user.score) return;
+            const tSnap = await get(ref(db, 'users/'+viewUser));
+            await update(ref(db, 'users/'+user.name), {score: user.score - amount});
+            await update(ref(db, 'users/'+viewUser), {score: (tSnap.val().score||0) + amount});
+            alert("Done!"); closeMod('pCard');
         };
 
         window.startMM = async (type) => {
@@ -266,11 +244,12 @@
             } else { set(qRef, user.name); onValue(ref(db, 'games'), (s) => { s.forEach(g => { if(g.val().p1 === user.name) join(g.key, 'p1'); }); }); }
         };
 
+        window.stopMM = async () => { await remove(ref(db, 'queue_ttt')); await remove(ref(db, 'queue_chess')); location.reload(); };
+
         function join(id, role) {
             gid = id; myRole = role; document.getElementById('lobby').classList.add('hidden'); document.getElementById('game-area').classList.remove('hidden');
             onValue(ref(db, 'games/'+id), (s) => {
-                const d = s.val(); if(!d) return location.reload();
-                const cont = document.getElementById('board-container'); cont.innerHTML = "";
+                const d = s.val(); if(!d) return; const cont = document.getElementById('board-container'); cont.innerHTML = "";
                 const board = document.createElement('div'); board.className = d.type==='ttt'?'ttt-grid':'chess-board';
                 const bArr = Array.isArray(d.board) ? d.board : d.board.split('');
                 bArr.forEach((v, i) => {
@@ -286,22 +265,32 @@
                     board.appendChild(c);
                 });
                 cont.appendChild(board);
-                document.getElementById('g-info').innerText = d.turn === (role==='p1'?'p1':'p2') ? "ТВОЙ ХОД" : "ЖДИ...";
+                document.getElementById('g-info').innerText = d.turn === (role==='p1'?'p1':'p2') ? "YOUR TURN" : "WAIT...";
             });
         }
 
-        window.adminDelMsg = (id) => { if(prompt("Pass:")==="8070") remove(ref(db, 'msgs/'+id)); };
-        window.changeTheme = (v) => { document.body.className = 'theme-'+v; };
+        window.showP = async (n) => {
+            viewUser = n; const s = await get(ref(db, 'users/'+n)); const d = s.val();
+            document.getElementById('pc-name').innerText = n;
+            document.getElementById('pc-stats').innerHTML = `💰 Score: ${d.score}<br>🤖 Auto: ${d.autoclicker||0}<br>🛡️ Shields: ${d.shield||0}`;
+            openMod('pCard');
+        };
+
+        window.adminDelMsg = (id) => { if(prompt("Adm:")==="8070") remove(ref(db, 'msgs/'+id)); };
+        window.adminMute = async () => { if(prompt("Adm:")==="8070") update(ref(db, 'users/'+viewUser), {muteUntil: Date.now()+600000}); };
+        window.adminDelUser = (n) => { if(prompt("Adm:")==="8070") remove(ref(db, 'users/'+(n||viewUser))); };
+        window.applyR = (e) => { set(ref(db, `msgs/${selId}/r/${e}/${user.name}`), true); document.getElementById('reactPicker').style.display='none'; };
         window.eggClick = () => { eggCounter++; if(eggCounter===5){ openMod('musyaEaster'); eggCounter=0;} setTimeout(()=>eggCounter=0, 2000); };
         window.openMod = (id) => document.getElementById(id).style.display = 'block';
         window.closeMod = (id) => document.getElementById(id).style.display = 'none';
+        window.changeTheme = (v) => document.body.className = 'theme-'+v;
         window.logout = () => { localStorage.clear(); location.reload(); };
 
         init();
-        window.onclick = (e) => { if(!e.target.closest('.msg')) document.getElementById('reactPicker').style.display='none'; };
     </script>
 </body>
 </html>
+
 
 
 
