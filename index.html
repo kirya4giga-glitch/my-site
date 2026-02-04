@@ -1,4 +1,4 @@
-         <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -13,19 +13,8 @@
             --text-color: #0F0;
         }
 
-        /* Темы */
-        body.theme-tg {
-            --bg-color: #17212b;
-            --main-color: #5288c1;
-            --box-bg: #242f3d;
-            --text-color: #fff;
-        }
-        body.theme-light {
-            --bg-color: #f0f2f5;
-            --main-color: #0088cc;
-            --box-bg: #ffffff;
-            --text-color: #000;
-        }
+        body.theme-tg { --bg-color: #17212b; --main-color: #5288c1; --box-bg: #242f3d; --text-color: #fff; }
+        body.theme-light { --bg-color: #f0f2f5; --main-color: #0088cc; --box-bg: #ffffff; --text-color: #000; }
 
         body { 
             font-family: 'Consolas', monospace; text-align: center; padding: 20px; 
@@ -33,7 +22,6 @@
             transition: 0.3s;
         }
 
-        /* Настройки */
         .settings-btn {
             position: fixed; top: 15px; right: 15px; z-index: 100;
             cursor: pointer; background: var(--box-bg); padding: 8px; border-radius: 10px; border: 1px solid var(--main-color);
@@ -78,6 +66,10 @@
         canvas#snakeGame { background: #000; display: block; margin: 10px auto; width: 280px; height: 280px; border: 1px solid var(--main-color); }
         #doom-container { width: 100%; height: 300px; background: #000; border: 2px solid var(--main-color); margin-top: 10px; }
         #matrixCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-color: #000; }
+        
+        /* Таблица рекордов */
+        #leaderboard { margin-top: 15px; font-size: 14px; text-align: left; border-top: 1px solid var(--main-color); padding-top: 10px; }
+        .leader-item { display: flex; justify-content: space-between; padding: 2px 0; }
     </style>
 </head>
 <body>
@@ -107,7 +99,7 @@
     <div class="button-tea" id="btn-tea" onclick="alert('скинуть на чай будущему программисту:\n+79216274225 Сбербанк')">Нажми!</div>
 
     <div class="game-box">
-        <h3 id="h-chat">чат (прототип номер 4)</h3>
+        <h3 id="h-chat">чат (v3)</h3>
         <div id="cList"></div>
         <div class="chat-input-area">
             <input type="text" id="nInp" placeholder="Имя" style="width: 80px;">
@@ -120,6 +112,12 @@
         <h3 id="h-click">Кликер</h3>
         <div id="score" style="font-size: 35px; font-weight: bold;">0</div>
         <button class="button-tea" onclick="addScore()" id="btn-click">КЛИКНИ!</button>
+        <div style="color: #ff4d4d; text-decoration: underline; cursor: pointer; font-size: 12px; margin-top: 5px;" onclick="resetScore()">обнулить мой счет</div>
+        
+        <div id="leaderboard">
+            <b id="h-top">ТОП ИГРОКОВ:</b>
+            <div id="leaders-list">Загрузка...</div>
+        </div>
     </div>
 
     <div class="game-box">
@@ -132,14 +130,13 @@
     </div>
 
     <div class="game-box">
-        <h3>DOOM (1993)</h3>
+        <h3>DOOM</h3>
         <div id="doom-container"></div>
-        <p style="font-size: 10px; color: var(--main-color);">Управление: стрелки, Ctrl, Alt, Пробел. Только ПК!</p>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push, onValue, remove, get, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, push, onValue, remove, get, set, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyChSk0gETRBQ391e4BjPqFsKc_dzjBmT58",
@@ -151,41 +148,30 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-
         let currentSessionPass = ""; 
 
+        // --- ЛОГИКА ЧАТА ---
         window.addC = async function() {
             const n = document.getElementById('nInp').value.trim();
             const m = document.getElementById('mInp').value.trim();
             if(!n || !m) return;
-
             const uRef = ref(db, 'users/' + n);
-
             if (!currentSessionPass) {
                 const snap = await get(uRef);
                 if(snap.exists()){
-                    const p = prompt("Этот ник занят. Введи пароль:");
-                    if(p !== snap.val().password) return alert("Неверный пароль!");
+                    const p = prompt("Введи пароль:");
+                    if(p !== snap.val().password) return alert("Неверно!");
                     currentSessionPass = p;
                 } else {
-                    const np = prompt("Ник свободен! Создай пароль для защиты:");
+                    const np = prompt("Создай пароль:");
                     if(!np) return;
-                    await set(uRef, {password: np});
+                    await set(uRef, {password: np, score: 0});
                     currentSessionPass = np;
                 }
             }
-
             const now = new Date();
-            push(ref(db, 'chat_messages'), { 
-                name: n, 
-                text: m, 
-                time: now.getHours() + ":" + (now.getMinutes()<10?'0':'') + now.getMinutes() 
-            });
+            push(ref(db, 'chat_messages'), { name: n, text: m, time: now.getHours() + ":" + (now.getMinutes()<10?'0':'') + now.getMinutes() });
             document.getElementById('mInp').value = "";
-        };
-
-        window.deleteMsg = (id) => {
-            if(prompt("Пароль админа:") === "8070") remove(ref(db, 'chat_messages/' + id));
         };
 
         onValue(ref(db, 'chat_messages'), (s) => {
@@ -197,28 +183,62 @@
             }
             list.scrollTop = list.scrollHeight;
         });
+
+        // --- ЛОГИКА РЕКОРДОВ ---
+        window.addScore = async function() {
+            let count = parseInt(document.getElementById('score').innerText) + 1;
+            document.getElementById('score').innerText = count;
+            if(count === 100) alert("100 кликов! Иди потрогай траву, задрот! 😂");
+
+            const n = document.getElementById('nInp').value.trim();
+            if(n && currentSessionPass) {
+                const uRef = ref(db, 'users/' + n + '/score');
+                const snap = await get(uRef);
+                if(!snap.exists() || count > snap.val()) {
+                    await set(uRef, count);
+                }
+            }
+        };
+
+        window.resetScore = async function() {
+            const n = document.getElementById('nInp').value.trim();
+            if(!n || !currentSessionPass) return alert("Сначала войди в чат!");
+            if(confirm("Обнулить твой рекорд в таблице?")) {
+                document.getElementById('score').innerText = 0;
+                await set(ref(db, 'users/' + n + '/score'), 0);
+            }
+        };
+
+        // Подгрузка ТОП-5
+        const topQuery = query(ref(db, 'users'), orderByChild('score'), limitToLast(5));
+        onValue(topQuery, (s) => {
+            const list = document.getElementById('leaders-list');
+            list.innerHTML = "";
+            let arr = [];
+            s.forEach(child => { arr.push({name: child.key, score: child.val().score || 0}); });
+            arr.reverse().forEach((u, i) => {
+                list.innerHTML += `<div class="leader-item"><span>${i+1}. ${u.name}</span> <b>${u.score}</b></div>`;
+            });
+        });
+
+        window.deleteMsg = (id) => { if(prompt("Пароль админа:") === "8070") remove(ref(db, 'chat_messages/' + id)); };
     </script>
 
     <script>
-        // Настройки и Благодарность
         function toggleSettings() { 
             const m = document.getElementById('sMenu');
             m.style.display = m.style.display === 'block' ? 'none' : 'block';
         }
-
-        function showThanks() {
-            alert("ОСОБАЯ БЛАГОДАРНОСТЬ:\n\n1. Анастасие землеройке\n2. Вадеку\n3. Андрюхе 😎\n4. Саше");
-        }
-
+        function showThanks() { alert("ОСОБАЯ БЛАГОДАРНОСТЬ:\n\n1. Анастасие землеройке\n2. Вадеку\n3. Андрюхе 😎\n4. Саше"); }
         function changeTheme(v) {
             document.body.className = v === 'hacker' ? '' : 'theme-' + v;
             document.getElementById('matrixCanvas').style.display = (v === 'hacker') ? 'block' : 'none';
         }
 
         const langs = {
-            ru: { title: "Мой первый сайт", subtitle: "Делал сам честно!", chat: "Чат", click: "Кликер", snake: "Змейка", settings: "Настройки", thanks: "Особая благодарность" },
-            en: { title: "My First Site", subtitle: "Made it myself!", chat: "Chat", click: "Clicker", snake: "Snake", settings: "Settings", thanks: "Special Thanks" },
-            ua: { title: "Мій перший сайт", subtitle: "Робив сам чесно!", chat: "Чат", click: "Клікер", snake: "Змійка", settings: "Налаштування", thanks: "Особлива подяка" }
+            ru: { title: "Мой первый сайт", subtitle: "Делал сам честно!", chat: "Чат", click: "Кликер", snake: "Змейка", settings: "Настройки", top: "ТОП ИГРОКОВ:" },
+            en: { title: "My First Site", subtitle: "Made it myself!", chat: "Chat", click: "Clicker", snake: "Snake", settings: "Settings", top: "TOP PLAYERS:" },
+            ua: { title: "Мій перший сайт", subtitle: "Робив сам чесно!", chat: "Чат", click: "Клікер", snake: "Змійка", settings: "Налаштування", top: "ТОП ГРАВЦІВ:" }
         };
 
         function changeLang(l) {
@@ -228,18 +248,10 @@
             document.getElementById('h-click').innerText = langs[l].click;
             document.getElementById('h-snake').innerText = langs[l].snake;
             document.getElementById('set-txt').innerText = langs[l].settings;
-            document.getElementById('btn-thanks').innerText = langs[l].thanks;
+            document.getElementById('h-top').innerText = langs[l].top;
         }
 
-        // Кликер с пасхалкой
-        let count = 0;
-        function addScore() { 
-            count++; 
-            document.getElementById('score').innerText = count; 
-            if(count === 100) alert("100 кликов! Иди потрогай траву, задрот! ");
-        }
-
-        // Змейка
+        // --- ЗМЕЙКА С НОВОЙ ГОЛОВОЙ ---
         const sCanvas = document.getElementById("snakeGame");
         const sCtx = sCanvas.getContext("2d");
         let snake = [{x: 200, y: 200}], food = {x: 100, y: 100}, d = "";
@@ -247,13 +259,20 @@
         function drawS() {
             sCtx.fillStyle = "#000"; sCtx.fillRect(0,0,400,400);
             sCtx.fillStyle = "red"; sCtx.fillRect(food.x, food.y, 20, 20);
-            sCtx.fillStyle = "lime"; snake.forEach(s => sCtx.fillRect(s.x, s.y, 20, 20));
+            
+            snake.forEach((s, index) => {
+                sCtx.fillStyle = (index === 0) ? "#ADFF2F" : "#008000"; // Голова ярче
+                sCtx.fillRect(s.x, s.y, 20, 20);
+                sCtx.strokeStyle = "#000"; sCtx.strokeRect(s.x, s.y, 20, 20); // Обводка
+            });
+
             let hX = snake[0].x, hY = snake[0].y;
             if(d=="up") hY-=20; if(d=="down") hY+=20; if(d=="left") hX-=20; if(d=="right") hX+=20;
             if(hX==food.x && hY==food.y) food = {x: Math.floor(Math.random()*19)*20, y: Math.floor(Math.random()*19)*20}; else if(d) snake.pop();
             if(d) {
-                if(hX<0 || hX>=400 || hY<0 || hY>=400) { d=""; snake=[{x:200,y:200}]; }
-                else snake.unshift({x:hX, y:hY});
+                if(hX<0 || hX>=400 || hY<0 || hY>=400 || snake.some(s => s.x==hX && s.y==hY)) { 
+                    d=""; snake=[{x:200,y:200}]; alert("Конец игры!");
+                } else snake.unshift({x:hX, y:hY});
             }
         }
         setInterval(drawS, 150);
@@ -273,11 +292,7 @@
             });
         }
         setInterval(drawM, 33);
-
-        // Запуск DOOM
         Dos(document.getElementById("doom-container"), { style: "none" }).run("https://js-dos.com/v7/build/archive/doom.zip");
     </script>
 </body>
 </html>
-               
-
