@@ -1,129 +1,155 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kiru OS v29 - Giga Edition</title>
+    <title>Kiru OS v30 - JUBILEE ULTIMATE</title>
     <style>
-        /* ПЕРЕМЕННЫЕ И ТЕМЫ */
-        :root { --bg: #000; --main: #0A84FF; --glass: rgba(255,255,255,0.1); --txt: #fff; --card: #1c1c1e; }
-        body.theme-hacker { --bg: #050505; --main: #32D74B; --txt: #32D74B; --glass: rgba(0,255,0,0.05); }
-        body.theme-ios-light { --bg: #F2F2F7; --main: #007AFF; --txt: #000; --glass: rgba(255,255,255,0.8); --card: #fff; }
-        body.theme-cyber { --bg: #0d0015; --main: #BF5AF2; --txt: #64D2FF; --glass: rgba(191,90,242,0.1); }
+        :root { 
+            --bg: #000; --main: #0A84FF; --txt: #fff; 
+            --glass: rgba(255, 255, 255, 0.08); 
+            --card: rgba(28, 28, 30, 0.8);
+            --red: #FF453A; --green: #32D74B; --orange: #FF9F0A;
+        }
+        body.theme-hacker { --bg: #000; --main: #32D74B; --txt: #32D74B; --glass: rgba(0,255,0,0.05); }
+        body.theme-ios-light { --bg: #F2F2F7; --main: #007AFF; --txt: #000; --glass: rgba(255, 255, 255, 0.7); --card: rgba(255,255,255,0.9); }
 
-        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--txt); margin: 0; padding: 15px; transition: 0.3s; }
-        
-        /* ГЛАВНЫЕ КОНТЕЙНЕРЫ */
-        .game-box { background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); padding: 20px; border-radius: 25px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1); }
-        
-        .button-tea { padding: 12px 18px; background: var(--main); color: #fff; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; margin: 5px; transition: 0.2s; }
-        .button-tea:active { transform: scale(0.95); }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: var(--bg); color: var(--txt); margin: 0; padding: 15px; 
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); -webkit-font-smoothing: antialiased;
+        }
 
-        /* ЧАТ */
-        #cList { height: 300px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 15px; padding: 12px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
-        .msg { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 14px; position: relative; border-left: 3px solid var(--main); animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .msg-time { font-size: 10px; opacity: 0.4; float: right; margin-top: 4px; }
-        .del-btn { color: #ff453a; cursor: pointer; float: right; font-weight: bold; margin-left: 10px; }
+        .ios-card { 
+            background: var(--glass); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            padding: 20px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
 
-        /* ТОП ИГРОКОВ (ВЕРТИКАЛЬНЫЙ) */
-        #topContent { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
-        .top-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
-        .my-score { border: 1px solid var(--main); background: rgba(10, 132, 255, 0.1); }
+        .btn { 
+            padding: 12px 16px; background: var(--main); color: #fff; border: none; 
+            border-radius: 14px; cursor: pointer; font-weight: 600; font-size: 15px;
+            transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center;
+        }
+        .btn:active { transform: scale(0.92); opacity: 0.8; }
+        .btn-red { background: var(--red); }
+        .btn-orange { background: var(--orange); }
 
-        /* МАГАЗИН И МОДАЛКИ */
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card); padding: 25px; border-radius: 30px; z-index: 3000; width: 85%; max-width: 380px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
-        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-height: 50vh; overflow-y: auto; padding: 5px; }
-        .shop-card { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 15px; text-align: center; }
+        #cList { height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+        .msg { 
+            background: rgba(255,255,255,0.06); padding: 12px; border-radius: 18px; 
+            font-size: 14px; border-left: 4px solid var(--main); animation: pop 0.3s ease-out;
+        }
+        @keyframes pop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        /* ТОП ИГРОКОВ - КРАСИВЫЙ СПИСОК */
+        .top-list { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
+        .top-item { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 12px 16px; background: rgba(255,255,255,0.04); border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .my-rank { border: 1.5px solid var(--main); background: rgba(10,132,255,0.15); }
 
         /* ИГРЫ */
-        .ttt-grid { display: grid; grid-template-columns: repeat(3, 1fr); width: 210px; height: 210px; margin: 10px auto; gap: 5px; }
-        .cell { background: #2c2c2e; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 240px; margin: 15px auto; }
+        .cell { background: rgba(255,255,255,0.1); border-radius: 12px; height: 75px; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; cursor: pointer; }
+
+        .modal { 
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: var(--card); backdrop-filter: blur(50px); border-radius: 32px;
+            width: 88%; max-width: 380px; z-index: 9999; padding: 25px; border: 1px solid rgba(255,255,255,0.15);
+        }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9998; }
+
+        .prefix { font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 6px; margin-right: 6px; text-transform: uppercase; background: #fff; color: #000; }
+        input { background: rgba(255,255,255,0.08); border: none; padding: 14px; border-radius: 14px; color: #fff; font-size: 16px; outline: none; }
         .hidden { display: none; }
-        .prefix { font-size: 10px; padding: 2px 5px; border-radius: 4px; background: #fff; color: #000; font-weight: bold; margin-right: 5px; }
     </style>
 </head>
 <body class="theme-ios-dark">
 
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h2 id="h-title" style="margin:0;">Kiru OS v29</h2>
-        <div style="display:flex; gap:5px;">
-            <button class="button-tea" onclick="openMod('shopWin')">🛒 <span id="l-sh-btn">Shop</span></button>
-            <button class="button-tea" onclick="openMod('sMenu')">⚙️</button>
+    <div class="overlay" id="overlay"></div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding: 0 5px;">
+        <div>
+            <h1 style="margin:0; font-size: 24px; font-weight: 800;">Kiru OS <span style="color:var(--main)">v30</span></h1>
+            <div id="status" style="font-size: 10px; opacity: 0.5;">● Система активна</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <button class="btn" onclick="openMod('shopWin')">🛒</button>
+            <button class="btn" onclick="openMod('sMenu')">⚙️</button>
         </div>
     </div>
 
-    <div class="game-box" style="text-align:center;">
-        <h3 id="l-bal-txt">Баланс</h3>
-        <div id="score" style="font-size:60px; font-weight:900; margin:10px 0; color:var(--main);">0</div>
-        <button class="button-tea" id="l-tap" onclick="doClick()" style="width:100%; padding:20px; font-size:22px; border-radius:18px;">ТАП!</button>
+    <div class="ios-card" style="text-align:center;">
+        <div style="opacity: 0.6; font-size: 14px; font-weight: 600;" id="l-bal">Баланс</div>
+        <div id="score" style="font-size: 56px; font-weight: 900; letter-spacing: -2px; margin: 5px 0;">0</div>
+        <button class="btn" id="l-tap" onclick="doClick()" style="width:100%; padding:20px; font-size:18px; border-radius:20px; box-shadow: 0 10px 20px rgba(10,132,255,0.3);">ТАП ТАП ТАП</button>
         
-        <div style="text-align:left; margin-top:25px;">
-            <b id="l-top-h">🏆 Топ лидеров:</b>
-            <div id="topContent">Загрузка...</div>
-        </div>
+        <div class="top-list" id="topContent"></div>
     </div>
 
-    <div class="game-box">
-        <h3 id="l-chat-h">Чат</h3>
+    <div class="ios-card">
+        <h3 style="margin-top:0; font-size: 18px;" id="l-chat">iChat Global</h3>
         <div id="cList"></div>
-        <div style="display:flex; gap:10px">
-            <input type="text" id="mInp" placeholder="..." style="flex:1; background:rgba(255,255,255,0.1); border:none; color:inherit; padding:14px; border-radius:14px; outline:none;">
-            <button class="button-tea" id="sendBtn" style="width:60px; font-weight:bold;">></button>
+        <div style="display:flex; gap:10px;">
+            <input type="text" id="mInp" placeholder="Сообщение..." style="flex:1;">
+            <button class="btn" id="sendBtn" style="width:50px;">→</button>
         </div>
     </div>
 
-    <div class="game-box">
-        <h3 id="l-games-h">Игры</h3>
-        <div id="lobby" style="display:flex; gap:10px; justify-content:center;">
-            <button class="button-tea" onclick="startMM('ttt')">Крестики</button>
-            <button class="button-tea" onclick="startMM('chess')">Шахматы</button>
+    <div class="ios-card">
+        <h3 id="l-games">Аркады</h3>
+        <div id="lobby" style="display:flex; gap:10px;">
+            <button class="btn" onclick="startMM('ttt')" style="flex:1;">Tic-Tac-Toe</button>
+            <button class="btn" onclick="startMM('chess')" style="flex:1;">Chess</button>
         </div>
         <div id="game-area" class="hidden">
-            <div id="g-info" style="text-align:center; margin-bottom:10px; font-weight:bold;"></div>
+            <div id="g-info" style="text-align:center; font-weight: 700; color: var(--main); margin-bottom:10px;"></div>
             <div id="board-container"></div>
-            <button class="button-tea" onclick="stopMM()" id="l-cancel" style="background:#ff453a; width:100%; margin-top:10px;">Отмена</button>
+            <button class="btn btn-red" onclick="stopMM()" id="l-cancel" style="width:100%; margin-top:10px;">Отмена</button>
         </div>
     </div>
 
     <div id="shopWin" class="modal">
-        <h3 id="l-sh-title">Магазин</h3>
-        <div class="shop-grid">
-            <div class="shop-card">🤖 Auto<br><button class="button-tea" onclick="buy('auto', 5000, 1)">5000</button></div>
-            <div class="shop-card">⚡ Multi<br><button class="button-tea" onclick="buy('multi', 2000, 2)">2000</button></div>
-            <div class="shop-card">💎 VIP<br><button class="button-tea" onclick="buy('prefix', 1000, 'VIP')">1000</button></div>
-            <div class="shop-card">👑 ELITE<br><button class="button-tea" onclick="buy('prefix', 5000, 'ELITE')">5000</button></div>
-            <div class="shop-card">🔵 Blue<br><button class="button-tea" onclick="buy('color', 1500, '#0A84FF')">1500</button></div>
-            <div class="shop-card">🛡️ Shield<br><button class="button-tea" onclick="buy('item', 2000, 'shield')">2000</button></div>
+        <h2 id="l-sh-title">Market</h2>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; max-height:40vh; overflow-y:auto;">
+            <div class="top-item" style="flex-direction:column;">🤖 Auto +1<button class="btn" onclick="buy('auto', 5000, 1)">5k</button></div>
+            <div class="top-item" style="flex-direction:column;">⚡ Mult +2<button class="btn" onclick="buy('multi', 2000, 2)">2k</button></div>
+            <div class="top-item" style="flex-direction:column;">💎 [VIP]<button class="btn" onclick="buy('prefix', 1500, 'VIP')">1.5k</button></div>
+            <div class="top-item" style="flex-direction:column;">👑 [OWNER]<button class="btn" onclick="buy('prefix', 10000, 'OWNER')">10k</button></div>
         </div>
-        <button class="button-tea" onclick="closeMod('shopWin')" style="width:100%; margin-top:10px;">Close</button>
+        <button class="btn" onclick="closeMod('shopWin')" style="width:100%; margin-top:15px;">Закрыть</button>
     </div>
 
     <div id="sMenu" class="modal">
-        <h3>Настройки</h3>
-        Тема: <select onchange="changeTheme(this.value)">
-            <option value="ios-dark">iOS Dark</option>
-            <option value="hacker">Hacker</option>
-            <option value="ios-light">iOS Light</option>
-            <option value="cyber">Cyber</option>
-        </select><br><br>
-        Язык: <select onchange="changeLang(this.value)">
-            <option value="ru">Русский</option>
-            <option value="en">English</option>
-            <option value="ua">Українська</option>
-        </select>
-        <hr style="opacity:0.1">
-        <button class="button-tea" onclick="logout()" style="background:#ff453a; width:100%;">Выход</button>
-        <button class="button-tea" onclick="closeMod('sMenu')" style="width:100%; margin-top:10px;">X</button>
+        <h3 id="l-set">Настройки</h3>
+        <label>Тема:</label> <select id="tSel" onchange="changeTheme(this.value)"><option value="ios-dark">Dark</option><option value="ios-light">Light</option><option value="hacker">Hacker</option></select><br><br>
+        <label>Язык:</label> <select id="lSel" onchange="changeLang(this.value)"><option value="ru">Русский</option><option value="en">English</option></select>
+        <hr style="opacity:0.1; margin:15px 0;">
+        <button class="btn btn-orange" onclick="openMod('thanksWin')" style="width:100%;">🌟 Благодарности</button>
+        <button class="btn btn-red" onclick="logout()" style="width:100%; margin-top:8px;">Выход</button>
+        <button class="btn" onclick="closeMod('sMenu')" style="width:100%; margin-top:10px;">X</button>
+    </div>
+
+    <div id="thanksWin" class="modal">
+        <h3>Wall of Fame</h3>
+        <ul style="text-align:left; font-size:14px; opacity:0.8;">
+            <li>Вадек (Главный тестер)</li><li>Муся ❤️ (Талисман)</li><li>Анастасия Землеройка</li><li>Саша, Андрей, Тепа</li><li>Gemini (Engine)</li>
+        </ul>
+        <button class="btn" onclick="closeMod('thanksWin')" style="width:100%;">Назад</button>
     </div>
 
     <div id="pCard" class="modal">
         <h2 id="pc-name">User</h2>
-        <div id="pc-stats" style="text-align:left;"></div>
-        <button class="button-tea" onclick="sendMoneyPrompt()">💸 Перевести</button>
-        <button class="button-tea" onclick="adminMute()" style="background:orange">Mute</button>
-        <button class="button-tea" onclick="closeMod('pCard')">X</button>
+        <div id="pc-stats" style="margin-bottom:15px; font-size:14px; opacity:0.8;"></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <button class="btn" onclick="sendMoney()" id="l-send">💸 Донат</button>
+            <button class="btn btn-orange" onclick="adminMute()">Mute</button>
+            <button class="btn btn-red" onclick="adminDelUser()" id="l-del">Удалить</button>
+            <button class="btn" onclick="closeMod('pCard')">X</button>
+        </div>
     </div>
 
     <script type="module">
@@ -133,154 +159,142 @@
         const conf = { apiKey: "AIzaSyChSk0gETRBQ391e4BjPqFsKc_dzjBmT58", databaseURL: "https://my-chat-52203-default-rtdb.firebaseio.com", projectId: "my-chat-52203" };
         const db = getDatabase(initializeApp(conf));
 
-        let user = JSON.parse(localStorage.getItem('user_v29'));
-        let selId, gid, myRole, viewUser;
+        let user = JSON.parse(localStorage.getItem('k_user_v30'));
+        let gid, myRole, viewUser;
 
         const langData = {
-            ru: {bal:"Баланс", tap:"ТАП!", top:"🏆 Топ лидеров:", chat:"Чат", games:"Игры", shbtn:"Магазин", sh:"Магазин", cancel:"Отмена"},
-            en: {bal:"Balance", tap:"TAP!", top:"🏆 Leaderboard:", chat:"iChat", games:"Games", shbtn:"Shop", sh:"Market", cancel:"Cancel"},
-            ua: {bal:"Баланс", tap:"ТАП!", top:"🏆 Топ лідерів:", chat:"Чат", games:"Ігри", shbtn:"Крамниця", sh:"Крамниця", cancel:"Скасувати"}
+            ru: {bal:"Баланс", chat:"Чат", games:"Игры", tap:"ТАП ТАП ТАП", set:"Настройки", sh:"Магазин", send:"Перевести", del:"Удалить", cancel:"Отмена"},
+            en: {bal:"Balance", chat:"iChat", games:"Arcade", tap:"TAP TAP TAP", set:"Settings", sh:"Market", send:"Transfer", del:"Delete", cancel:"Cancel"}
         };
 
         window.changeLang = (l) => {
             const d = langData[l];
-            document.getElementById('l-bal-txt').innerText = d.bal; document.getElementById('l-tap').innerText = d.tap;
-            document.getElementById('l-top-h').innerText = d.top; document.getElementById('l-chat-h').innerText = d.chat;
-            document.getElementById('l-games-h').innerText = d.games; document.getElementById('l-sh-btn').innerText = d.shbtn;
-            document.getElementById('l-sh-title').innerText = d.sh; document.getElementById('l-cancel').innerText = d.cancel;
+            document.getElementById('l-bal').innerText = d.bal; document.getElementById('l-chat').innerText = d.chat;
+            document.getElementById('l-games').innerText = d.games; document.getElementById('l-tap').innerText = d.tap;
+            document.getElementById('l-set').innerText = d.set; document.getElementById('l-sh-title').innerText = d.sh;
+            document.getElementById('l-send').innerText = d.send; document.getElementById('l-del').innerText = d.del;
+            document.getElementById('l-cancel').innerText = d.cancel;
         };
 
         async function init() {
             if(!user) {
                 let n = prompt("Ник:"); let p = prompt("Пароль:");
-                if(!n) return;
+                if(!n || !p) return;
                 const s = await get(ref(db, 'users/'+n));
                 if(s.exists()){ if(s.val().password !== p) return location.reload(); user={name:n, ...s.val()}; }
-                else { user={name:n, password:p, score:0, mult:1, autoclicker:0}; await set(ref(db, 'users/'+n), user); }
-                localStorage.setItem('user_v29', JSON.stringify(user));
+                else { user={name:n, password:p, score:0, mult:1, autoclicker:0, prefix:''}; await set(ref(db, 'users/'+n), user); }
+                localStorage.setItem('k_user_v30', JSON.stringify(user));
             }
-            
-            onValue(ref(db, 'users/'+user.name), (s) => {
-                if(s.exists()) {
-                    user = {name: user.name, ...s.val()};
-                    document.getElementById('score').innerText = user.score;
-                }
-            });
-
+            onValue(ref(db, 'users/'+user.name), s => { if(s.exists()){ user = {name:user.name, ...s.val()}; document.getElementById('score').innerText = user.score; }});
             loadChat(); loadTop();
             setInterval(() => { if(user.autoclicker > 0) update(ref(db, 'users/'+user.name), {score: (user.score || 0) + user.autoclicker}); }, 1000);
         }
 
         window.doClick = () => update(ref(db, 'users/'+user.name), {score: (user.score || 0) + (user.mult || 1)});
 
-        // ИСПРАВЛЕННЫЙ ЧАТ
-        const sendMsg = async () => {
-            const inp = document.getElementById('mInp');
-            if(!inp.value.trim()) return;
+        window.sendMsg = async () => {
+            const i = document.getElementById('mInp'); if(!i.value.trim()) return;
             const s = await get(ref(db, 'users/'+user.name));
-            if(s.val().muteUntil > Date.now()) return alert("Muted!");
-            
-            await push(ref(db, 'msgs'), {
-                n: user.name, t: inp.value, time: serverTimestamp(),
-                pref: s.val().prefix || '', col: s.val().color || ''
-            });
-            inp.value = "";
+            if(s.val().muteUntil > Date.now()) return alert("Вы замучены!");
+            await push(ref(db, 'msgs'), { n: user.name, t: i.value, time: serverTimestamp(), pref: s.val().prefix, col: s.val().color });
+            i.value = "";
         };
-
         document.getElementById('sendBtn').onclick = sendMsg;
-        document.getElementById('mInp').onkeydown = (e) => { if(e.key === 'Enter') sendMsg(); };
+        document.getElementById('mInp').onkeydown = e => { if(e.key==='Enter') sendMsg(); };
 
         function loadChat() {
-            onValue(ref(db, 'msgs'), (s) => {
+            onValue(ref(db, 'msgs'), s => {
                 const l = document.getElementById('cList'); l.innerHTML = "";
                 s.forEach(d => {
                     const m = d.val();
-                    const date = m.time ? new Date(m.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : "";
-                    l.innerHTML += `<div class="msg">
-                        <span class="del-btn" onclick="adminDelMsg('${d.key}')">×</span>
-                        ${m.pref ? `<span class="prefix">${m.pref}</span>`:''}
-                        <b style="color:${m.col||'inherit'}" onclick="showP('${m.n}')">${m.n}</b>: ${m.t}
-                        <span class="msg-time">${date}</span>
-                    </div>`;
+                    l.innerHTML += `<div class="msg"><span class="prefix" style="background:${m.col||'#fff'}">${m.pref||'USER'}</span><b onclick="showP('${m.n}')">${m.n}</b>: ${m.t}</div>`;
                 });
                 l.scrollTop = l.scrollHeight;
             });
         }
 
         function loadTop() {
-            onValue(ref(db, 'users'), (s) => {
-                const cont = document.getElementById('topContent'); cont.innerHTML = "";
-                let players = [];
-                s.forEach(u => { players.push({n: u.key, s: u.val().score || 0}); });
-                players.sort((a,b) => b.s - a.s).slice(0, 10).forEach((p, i) => {
-                    const isMe = p.n === user.name ? 'my-score' : '';
-                    cont.innerHTML += `<div class="top-row ${isMe}">
-                        <span><b>#${i+1}</b> ${p.n}</span>
-                        <span><b>${p.s}</b> 💰</span>
-                    </div>`;
+            onValue(ref(db, 'users'), s => {
+                const c = document.getElementById('topContent'); c.innerHTML = "";
+                let a = []; s.forEach(u => a.push({n: u.key, s: u.val().score||0}));
+                a.sort((x,y)=>y.s-x.s).slice(0,5).forEach((u,i) => {
+                    c.innerHTML += `<div class="top-item ${u.n===user.name?'my-rank':''}"><span>#${i+1} ${u.n}</span><b>${u.s} 💰</b></div>`;
                 });
             });
         }
 
-        window.buy = async (type, price, val) => {
-            if(user.score < price) return alert("Low 💰");
-            let up = { score: user.score - price };
-            if(type==='auto') up.autoclicker = (user.autoclicker||0)+val;
-            if(type==='multi') up.mult = (user.mult||1)+val;
-            if(type==='prefix') up.prefix = val;
-            if(type==='color') up.color = val;
-            await update(ref(db, 'users/'+user.name), up);
-            alert("Куплено!");
+        window.showP = async n => {
+            viewUser = n; const s = await get(ref(db, 'users/'+n)); const d = s.val();
+            document.getElementById('pc-name').innerText = n;
+            document.getElementById('pc-stats').innerHTML = `Баллы: ${d.score} | Авто: ${d.autoclicker}`;
+            openMod('pCard');
         };
 
-        window.startMM = async (type) => {
-            const qRef = ref(db, 'queue_'+type); const snap = await get(qRef);
-            if(snap.exists() && snap.val() !== user.name) {
-                gid = 'g_'+Date.now();
-                await set(ref(db, 'games/'+gid), { p1: snap.val(), p2: user.name, type, turn: 'p1', board: type==='ttt' ? Array(9).fill("") : "rnbqkbnrpppppppp................................PPPPPPPPRNBQKBNR" });
-                await remove(qRef); join(gid, 'p2');
-            } else { set(qRef, user.name); onValue(ref(db, 'games'), (s) => { s.forEach(g => { if(g.val().p1 === user.name) join(g.key, 'p1'); }); }); }
+        window.sendMoney = async () => {
+            let amt = parseInt(prompt("Сумма перевода:"));
+            if(amt > 0 && user.score >= amt) {
+                const t = await get(ref(db, 'users/'+viewUser));
+                await update(ref(db, 'users/'+user.name), {score: user.score - amt});
+                await update(ref(db, 'users/'+viewUser), {score: (t.val().score||0) + amt});
+                alert("Успешно!"); closeMod('pCard');
+            }
         };
+
+        window.adminMute = () => { if(prompt("Pass:")==="8070") update(ref(db, 'users/'+viewUser), {muteUntil: Date.now()+600000}); };
+        window.adminDelUser = () => { if(prompt("Pass:")==="8070") { remove(ref(db, 'users/'+viewUser)); closeMod('pCard'); }};
+
+        window.startMM = async type => {
+            const q = ref(db, 'queue_'+type); const s = await get(q);
+            if(s.exists() && s.val() !== user.name) {
+                gid = 'g_'+Date.now();
+                await set(ref(db, 'games/'+gid), {p1: s.val(), p2: user.name, type, turn: 'p1', board: Array(9).fill("")});
+                await remove(q); join(gid, 'p2');
+            } else { set(q, user.name); document.getElementById('g-info').innerText = "Поиск оппонента..."; document.getElementById('lobby').classList.add('hidden'); document.getElementById('game-area').classList.remove('hidden'); onValue(ref(db, 'games'), sn => { sn.forEach(g => { if(g.val().p1===user.name) join(g.key, 'p1'); })}); }
+        };
+
+        window.stopMM = async () => { await remove(ref(db, 'queue_ttt')); await remove(ref(db, 'queue_chess')); if(gid) await remove(ref(db, 'games/'+gid)); location.reload(); };
 
         function join(id, role) {
             gid = id; myRole = role; document.getElementById('lobby').classList.add('hidden'); document.getElementById('game-area').classList.remove('hidden');
-            onValue(ref(db, 'games/'+id), (s) => {
-                const d = s.val(); if(!d) return; const cont = document.getElementById('board-container'); cont.innerHTML = "";
-                const board = document.createElement('div'); board.className = d.type==='ttt'?'ttt-grid':'chess-board';
-                const bArr = Array.isArray(d.board) ? d.board : d.board.split('');
-                bArr.forEach((v, i) => {
-                    const c = document.createElement('div'); c.className = 'cell';
-                    c.innerText = v;
+            onValue(ref(db, 'games/'+id), s => {
+                const d = s.val(); if(!d) return;
+                const cont = document.getElementById('board-container'); cont.innerHTML = "";
+                const board = document.createElement('div'); board.className = 'grid';
+                d.board.forEach((v, i) => {
+                    const c = document.createElement('div'); c.className = 'cell'; c.innerText = v;
                     c.onclick = () => {
-                        if(d.turn !== (myRole==='p1'?'p1':'p2')) return;
-                        let nb = [...bArr];
-                        if(d.type==='ttt'){ if(nb[i]!=='')return; nb[i]=myRole==='p1'?'X':'O'; }
-                        update(ref(db, 'games/'+gid), {board: nb, turn: d.turn==='p1'?'p2':'p1'});
+                        if(d.turn===(myRole==='p1'?'p1':'p2') && v==="") {
+                            let nb = [...d.board]; nb[i] = myRole==='p1'?'X':'O';
+                            update(ref(db, 'games/'+gid), {board: nb, turn: d.turn==='p1'?'p2':'p1'});
+                        }
                     };
                     board.appendChild(c);
                 });
                 cont.appendChild(board);
-                document.getElementById('g-info').innerText = d.turn === (role==='p1'?'p1':'p2') ? "ТВОЙ ХОД" : "ЖДИ...";
+                document.getElementById('g-info').innerText = d.turn===(role==='p1'?'p1':'p2')?"ВАШ ХОД":"ОЖИДАНИЕ...";
             });
         }
 
-        window.showP = async (n) => {
-            viewUser = n; const s = await get(ref(db, 'users/'+n)); const d = s.val();
-            document.getElementById('pc-name').innerText = n;
-            document.getElementById('pc-stats').innerHTML = `💰 Score: ${d.score}<br>🤖 Auto: ${d.autoclicker||0}`;
-            openMod('pCard');
+        window.buy = async (t, p, v) => {
+            if(user.score < p) return alert("Недостаточно 💰");
+            let up = {score: user.score - p};
+            if(t==='auto') up.autoclicker = (user.autoclicker||0)+v;
+            if(t==='multi') up.mult = (user.mult||1)+v;
+            if(t==='prefix') { up.prefix = v; up.color = v==='VIP'?'#FFD700':'#FF2D55'; }
+            await update(ref(db, 'users/'+user.name), up); alert("Куплено!");
         };
 
-        window.adminDelMsg = (id) => { if(prompt("Pass:")==="8070") remove(ref(db, 'msgs/'+id)); };
-        window.openMod = (id) => document.getElementById(id).style.display = 'block';
-        window.closeMod = (id) => document.getElementById(id).style.display = 'none';
-        window.changeTheme = (v) => document.body.className = 'theme-'+v;
+        window.openMod = id => { document.getElementById(id).style.display='block'; document.getElementById('overlay').style.display='block'; };
+        window.closeMod = id => { document.getElementById(id).style.display='none'; document.getElementById('overlay').style.display='none'; };
+        window.changeTheme = v => document.body.className = 'theme-'+v;
         window.logout = () => { localStorage.clear(); location.reload(); };
 
         init();
     </script>
 </body>
 </html>
+
+
 
 
 
