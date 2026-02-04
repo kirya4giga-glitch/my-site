@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super App v17 - Top Fixed</title>
+    <title>Super App v19 - Mute System</title>
     <style>
         :root { --bg: #0a0a0a; --main: #0F0; --box: rgba(15, 30, 15, 0.9); --txt: #0F0; }
         body.theme-tg { --bg: #17212b; --main: #5288c1; --box: #242f3d; --txt: #fff; }
@@ -17,6 +17,9 @@
         #cList { height: 250px; overflow-y: auto; background: rgba(0,0,0,0.4); border-radius: 10px; padding: 10px; margin-bottom: 10px; text-align: left; border: 1px solid var(--main); }
         .msg { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-bottom: 8px; position: relative; border-left: 3px solid var(--main); cursor: pointer; }
         .del-btn { position: absolute; top: 5px; right: 5px; color: #ff4d4d; cursor: pointer; font-size: 10px; border: 1px solid #ff4d4d; border-radius: 3px; padding: 0 3px; }
+        
+        .top-del { color: #ff4d4d; font-size: 9px; cursor: pointer; margin-left: 5px; border: 1px solid #ff4d4d; padding: 0 2px; border-radius: 3px; }
+        .top-mute { color: #ffa500; font-size: 9px; cursor: pointer; margin-left: 5px; border: 1px solid #ffa500; padding: 0 2px; border-radius: 3px; }
         
         .react-bar { margin-top: 5px; font-size: 12px; display: flex; gap: 5px; flex-wrap: wrap; }
         .react-item { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 10px; border: 1px solid var(--main); }
@@ -58,7 +61,7 @@
         Тема: <select onchange="changeTheme(this.value)"><option value="hacker">Hacker</option><option value="tg">Telegram</option><option value="snow">Snow</option><option value="cyber">Cyber</option></select><br><br>
         Язык: <select onchange="changeLang(this.value)"><option value="ru">RU</option><option value="en">EN</option><option value="ua">UA</option></select>
         <hr>
-        <button class="button-tea" onclick="alert('скинуть будущему программисту на чай: +79216274225 сбербанк')" id="b-tea">Поддержи меня</button>
+        <button class="button-tea" onclick="alert('скинуть будущему программисту на чай: +79216274225')" id="b-tea">Поддержи меня</button>
         <button class="button-tea" onclick="logout()">Выход</button>
         <button class="button-tea" onclick="closeMod('sMenu')">X</button>
     </div>
@@ -105,12 +108,12 @@
         const conf = { apiKey: "AIzaSyChSk0gETRBQ391e4BjPqFsKc_dzjBmT58", databaseURL: "https://my-chat-52203-default-rtdb.firebaseio.com", projectId: "my-chat-52203" };
         const db = getDatabase(initializeApp(conf));
 
-        let user = JSON.parse(localStorage.getItem('user_v17'));
+        let user = JSON.parse(localStorage.getItem('user_v19'));
         let selId = null, gid = null, myRole = '', mmSub = null;
 
         const dict = {
             ru: {title:"Мой первый сайт", sub:"сделал сам честно!", chat:"Чат", click:"Кликер", games:"Игры", tea:"Поддержи меня", bclick:"КЛИКНИ!"},
-            en: {title:"My First Website", sub:"honest work!", chat:"Chat", click:"Clicker", games:"Games", tea:"Support Me", bclick:"CLICK!"},
+            en: {title:"My First Web", sub:"honest work!", chat:"Chat", click:"Clicker", games:"Games", tea:"Support Me", bclick:"CLICK!"},
             ua: {title:"Мій перший сайт", sub:"робив сам чесно!", chat:"Чат", click:"Клікер", games:"Ігри", tea:"Підтримай мене", bclick:"КЛІКНИ!"}
         };
 
@@ -128,8 +131,8 @@
                 let p = prompt("Пароль:");
                 const s = await get(ref(db, 'users/'+n));
                 if(s.exists()){ if(s.val().password !== p) return location.reload(); user = {name: n, ...s.val()}; }
-                else { user = {name: n, password: p, score: 0, wins_ttt: 0, wins_chess: 0}; await set(ref(db, 'users/'+n), user); }
-                localStorage.setItem('user_v17', JSON.stringify(user));
+                else { user = {name: n, password: p, score: 0, wins_ttt: 0, wins_chess: 0, muteUntil: 0}; await set(ref(db, 'users/'+n), user); }
+                localStorage.setItem('user_v19', JSON.stringify(user));
             }
             document.getElementById('score').innerText = user.score;
             loadTop(); loadChat(); loadActive();
@@ -138,7 +141,7 @@
         window.doClick = () => {
             user.score++; document.getElementById('score').innerText = user.score;
             update(ref(db, 'users/'+user.name), {score: user.score});
-            localStorage.setItem('user_v17', JSON.stringify(user));
+            localStorage.setItem('user_v19', JSON.stringify(user));
         };
 
         function loadChat() {
@@ -161,6 +164,16 @@
             });
         }
 
+        window.sendMsg = async () => {
+            const i = document.getElementById('mInp'); if(!i.value) return;
+            const s = await get(ref(db, 'users/'+user.name));
+            if(s.val().muteUntil && s.val().muteUntil > Date.now()) {
+                alert(`Вы в муте еще ${Math.ceil((s.val().muteUntil - Date.now())/60000)} мин!`);
+                return;
+            }
+            push(ref(db, 'msgs'), {n:user.name, t:i.value}); i.value="";
+        };
+
         window.applyR = (e) => {
             const path = `msgs/${selId}/r/${e}/${user.name}`;
             get(ref(db, path)).then(s => { if(s.exists()) remove(ref(db, path)); else set(ref(db, path), true); });
@@ -168,28 +181,47 @@
         };
 
         window.delM = (id) => { if(prompt("Pass:") === "8070") remove(ref(db, 'msgs/'+id)); };
-        window.sendMsg = () => { const i = document.getElementById('mInp'); if(!i.value) return; push(ref(db, 'msgs'), {n:user.name, t:i.value}); i.value=""; };
+        window.delUser = (name) => { if(prompt(`Удалить ${name}? Pass:`) === "8070") remove(ref(db, 'users/'+name)); };
+
+        // Функция МУТА
+        window.toggleMute = async (name) => {
+            const s = await get(ref(db, 'users/'+name));
+            const isMuted = s.val().muteUntil && s.val().muteUntil > Date.now();
+            if(isMuted) {
+                if(prompt(`Размутить ${name}? Pass:`) === "8070") update(ref(db, 'users/'+name), {muteUntil: 0});
+            } else {
+                let m = prompt(`На сколько минут замутить ${name}?`);
+                if(m && prompt("Admin Pass:") === "8070") {
+                    update(ref(db, 'users/'+name), {muteUntil: Date.now() + (m * 60000)});
+                    alert(`${name} замучен на ${m} мин.`);
+                }
+            }
+        };
 
         window.showP = async (n) => {
-            const s = await get(ref(db, 'users/'+n)); const d = s.val();
+            const s = await get(ref(db, 'users/'+n)); if(!s.exists()) return;
+            const d = s.val();
             document.getElementById('pc-name').innerText = n;
-            document.getElementById('pc-rank').innerText = d.score > 1000 ? "БОГ КОДА" : "МАСТЕР";
             document.getElementById('pc-stats').innerHTML = `🔘 Кликов: <b>${d.score}</b><br>❌ Побед X/O: <b>${d.wins_ttt||0}</b><br>♟ Побед Chess: <b>${d.wins_chess||0}</b>`;
             openMod('pCard');
         };
 
-        window.resetScore = () => { if(prompt("Pass:") === "8070") { update(ref(db, 'users/'+user.name), {score: 0}); user.score=0; localStorage.setItem('user_v17', JSON.stringify(user)); location.reload(); }};
-
         function loadTop() {
             onValue(ref(db, 'users'), (s) => {
                 const t = document.getElementById('topList'); t.innerHTML = "<b>ТОП ЛИДЕРОВ:</b><br>";
-                let a = []; s.forEach(u => { if(u.val().score !== undefined) a.push({n:u.key, s:u.val().score}); });
+                let a = []; s.forEach(u => { if(u.val().score !== undefined) a.push({n:u.key, s:u.val().score, m: u.val().muteUntil}); });
                 a.sort((x,y) => y.s - x.s).slice(0, 10).forEach((u,i) => {
-                    t.innerHTML += `<div onclick="showP('${u.n}')" style="cursor:pointer; color:${u.n===user.name?'#fff':'inherit'}">${i+1}. ${u.n} — <b>${u.s}</b></div>`;
+                    const muteTxt = u.m > Date.now() ? "🤐" : "[MUTE]";
+                    t.innerHTML += `<div style="margin-bottom:3px; color:${u.n===user.name?'#fff':'inherit'}">
+                        <span onclick="showP('${u.n}')" style="cursor:pointer">${i+1}. ${u.n} — <b>${u.s}</b></span>
+                        <span class="top-mute" onclick="toggleMute('${u.n}')">${muteTxt}</span>
+                        <span class="top-del" onclick="delUser('${u.n}')">[DEL]</span>
+                    </div>`;
                 });
             });
         }
 
+        // ИГРЫ
         window.startMM = async (type) => {
             document.getElementById('lobby').classList.add('hidden'); document.getElementById('game-area').classList.remove('hidden');
             const qRef = ref(db, 'queue_'+type); const snap = await get(qRef);
@@ -197,24 +229,18 @@
                 gid = 'g_'+Date.now();
                 await set(ref(db, 'games/'+gid), { p1: snap.val(), p2: user.name, type, turn: 'p1', board: type==='ttt' ? Array(9).fill("") : "rnbqkbnrpppppppp................................PPPPPPPPRNBQKBNR" });
                 await remove(qRef); join(gid, 'p2');
-            } else {
-                set(qRef, user.name);
-                mmSub = onValue(ref(db, 'games'), (s) => { s.forEach(g => { if(g.val().p1 === user.name) join(g.key, 'p1'); }); });
-            }
+            } else { set(qRef, user.name); mmSub = onValue(ref(db, 'games'), (s) => { s.forEach(g => { if(g.val().p1 === user.name) join(g.key, 'p1'); }); }); }
         };
-
         window.stopMM = () => location.reload();
         window.watch = (id) => join(id, 'spectator');
-
         function join(id, role) {
             if(mmSub) off(ref(db, 'games')); gid = id; myRole = role;
             document.getElementById('lobby').classList.add('hidden'); document.getElementById('game-area').classList.remove('hidden');
             onValue(ref(db, 'games/'+id), (s) => {
-                const d = s.val(); if(!d) return location.reload();
-                draw(d); document.getElementById('g-info').innerText = role==='spectator' ? `👀 ${d.p1} vs ${d.p2}` : (d.turn === (role==='p1'?'p1':'p2') ? "ТВОЙ ХОД!" : "ЖДИ...");
+                const d = s.val(); if(!d) return location.reload(); draw(d);
+                document.getElementById('g-info').innerText = role==='spectator' ? `👀 ${d.p1} vs ${d.p2}` : (d.turn===(role==='p1'?'p1':'p2') ? "ТВОЙ ХОД!" : "ЖДИ...");
             });
         }
-
         function draw(d) {
             const cont = document.getElementById('board-container'); cont.innerHTML = "";
             const board = document.createElement('div'); board.className = d.type==='ttt'?'ttt-grid':'chess-board';
@@ -226,49 +252,30 @@
             });
             cont.appendChild(board);
         }
-
         async function move(i, d) {
             if(myRole === 'spectator' || d.turn !== (myRole==='p1'?'p1':'p2')) return;
             let nb = typeof d.board === 'string' ? d.board.split('') : [...d.board];
             if(d.type === 'ttt') { if(nb[i] !== '') return; nb[i] = myRole === 'p1' ? 'X' : 'O'; }
-            else { 
-                let sel = localStorage.getItem('cs'); 
-                if(!sel) { if(nb[i] !== '.') localStorage.setItem('cs', i); return; }
-                nb[i] = nb[sel]; nb[sel] = '.'; localStorage.removeItem('cs');
-            }
+            else { let sel = localStorage.getItem('cs'); if(!sel) { if(nb[i] !== '.') localStorage.setItem('cs', i); return; } nb[i] = nb[sel]; nb[sel] = '.'; localStorage.removeItem('cs'); }
             update(ref(db, 'games/'+gid), {board: typeof d.board === 'string' ? nb.join('') : nb, turn: d.turn === 'p1' ? 'p2' : 'p1'});
         }
-
-        function loadActive() {
-            onValue(ref(db, 'games'), (s) => {
-                const al = document.getElementById('active-list'); al.innerHTML = "";
-                s.forEach(g => { const d = g.val(); al.innerHTML += `🎮 ${d.p1} vs ${d.p2} <button class="button-tea" style="padding:2px; font-size:9px" onclick="watch('${g.key}')">Смотреть</button><br>`; });
-            });
-        }
+        function loadActive() { onValue(ref(db, 'games'), (s) => {
+            const al = document.getElementById('active-list'); al.innerHTML = "";
+            s.forEach(g => { const d = g.val(); al.innerHTML += `🎮 ${d.p1} vs ${d.p2} <button class="button-tea" style="padding:2px; font-size:9px" onclick="watch('${g.key}')">Смотреть</button><br>`; });
+        }); }
 
         window.openMod = (id) => document.getElementById(id).style.display = 'block';
         window.closeMod = (id) => document.getElementById(id).style.display = 'none';
         window.logout = () => { localStorage.clear(); location.reload(); };
-        window.changeTheme = (v) => { 
-            document.body.className = 'theme-'+v; 
-            document.getElementById('matrixCanvas').classList.toggle('hidden', v !== 'hacker');
-            document.getElementById('snowCanvas').classList.toggle('hidden', v !== 'snow');
-        };
-
+        window.changeTheme = (v) => { document.body.className = 'theme-'+v; document.getElementById('matrixCanvas').classList.toggle('hidden', v !== 'hacker'); document.getElementById('snowCanvas').classList.toggle('hidden', v !== 'snow'); };
         init();
         window.onclick = (e) => { if(!e.target.closest('.msg')) document.getElementById('reactPicker').style.display='none'; };
     </script>
-
-    <script>
-        const mC = document.getElementById('matrixCanvas'), mX = mC.getContext('2d');
-        mC.width = window.innerWidth; mC.height = window.innerHeight;
-        const drops = Array(Math.floor(mC.width/16)).fill(1);
-        setInterval(() => { mX.fillStyle = 'rgba(0,0,0,0.05)'; mX.fillRect(0,0,mC.width,mC.height); mX.fillStyle = '#0F0'; mX.font = '16px monospace';
-            drops.forEach((y, i) => { mX.fillText(Math.random()>0.5?'0':'1', i*16, y*16); if(y*16>mC.height && Math.random()>0.975) drops[i]=0; drops[i]++; });
-        }, 33);
-    </script>
 </body>
 </html>
+
+
+
 
 
 
