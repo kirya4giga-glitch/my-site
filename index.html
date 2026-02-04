@@ -1,4 +1,4 @@
-Манул, [04.02.2026 12:28]
+Манул, [04.02.2026 12:32]
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -6,71 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Мой сайт</title>
     <style>
-        /* ТВОЙ СТАРЫЙ СТИЛЬ */
-        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f0f0f0; color: black; }
-        
-        .button { 
-            display: inline-block; 
-            padding: 10px 20px; 
-            background: #eee; 
-            text-decoration: none; 
-            color: black; 
-            border: 1px solid #ccc;
-            border-radius: 5px; 
-            margin-bottom: 20px;
-            cursor: pointer;
-        }
-
-        #score { font-size: 35px; font-weight: bold; color: limegreen; margin: 10px 0; }
-
-        .click-btn {
-            padding: 15px 40px;
-            font-size: 20px;
-            background: lime;
-            border: 1px solid #333;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            touch-action: manipulation; /* Чтобы на телефоне сразу нажималось */
-        }
-
-        /* ЗМЕЙКА */
-        canvas { 
-            background: #000; 
-            border: 3px solid #333; 
-            display: block; 
-            margin: 20px auto; 
-            width: 280px; 
-            height: 280px; 
-            touch-action: none; 
-        }
-
-        .controls { 
-            display: grid; 
-            grid-template-columns: repeat(3, 70px); 
-            gap: 10px; 
-            justify-content: center; 
-            margin-top: 10px; 
-        }
-
-        .btn-dir { 
-            width: 70px; 
-            height: 70px; 
-            background: #eee; 
-            border: 1px solid #ccc; 
-            border-radius: 10px; 
-            font-size: 24px;
-            touch-action: manipulation;
-        }
-
-        .reset-link {
-            color: red;
-            text-decoration: underline;
-            cursor: pointer;
-            font-size: 13px;
-            display: block;
-            margin-top: 15px;
-        }
+        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f0f0f0; color: black; margin: 0; }
+        .button-tea { display: inline-block; padding: 10px 20px; background: #eee; text-decoration: none; color: black; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 20px; cursor: pointer; }
+        #score { font-size: 40px; font-weight: bold; color: #2ecc71; margin: 10px 0; }
+        .click-btn { padding: 20px 50px; font-size: 22px; background: lime; border: 2px solid #333; border-radius: 15px; cursor: pointer; font-weight: bold; touch-action: manipulation; width: 80%; max-width: 300px; }
+        canvas { background: #000; border: 4px solid #333; display: block; margin: 20px auto; width: 280px; height: 280px; touch-action: none; }
+        .controls { display: grid; grid-template-columns: repeat(3, 75px); gap: 10px; justify-content: center; margin-top: 10px; }
+        .btn-dir { width: 75px; height: 75px; background: #fff; border: 2px solid #ccc; border-radius: 15px; font-size: 28px; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        .reset-link { color: red; text-decoration: underline; cursor: pointer; font-size: 14px; display: block; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -78,14 +21,14 @@
     <h1>Мой первый сайт!</h1>
     <p>делал сам честно!</p>
     
-    <div class="button" id="teaBtn">Нажми сюда</div>
+    <div class="button-tea" id="teaBtn">Нажми сюда</div>
 
     <hr>
 
     <h3>моя первая мини игра!</h3>
     <div id="score">0</div>
     <button class="click-btn" id="clickBtn">КЛИК!</button>
-    <span class="reset-link" id="resetBtn">обнулить счет</span>
+    <div class="reset-link" id="resetBtn">обнулить счет</div>
 
     <hr>
 
@@ -100,34 +43,31 @@
     </div>
 
     <script>
-        // Использование ID напрямую для надежности
+        // --- ЛОГИКА КЛИКЕРА ---
         let count = parseInt(localStorage.getItem('myScore')) || 0;
         const scoreDisplay = document.getElementById('score');
         scoreDisplay.innerText = count;
 
-        // КЛИКЕР
-        document.getElementById('clickBtn').onclick = function() {
+        document.getElementById('clickBtn').addEventListener('click', function() {
             count++;
             scoreDisplay.innerText = count;
             localStorage.setItem('myScore', count);
             if (count === 100) alert("иди потрогай траву! задрот");
-        };
+        });
 
-        // СБРОС
-        document.getElementById('resetBtn').onclick = function() {
-            if(confirm("Обнулить?")) {
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            if(confirm("Точно обнулить?")) {
                 count = 0;
                 scoreDisplay.innerText = count;
                 localStorage.removeItem('myScore');
             }
-        };
+        });
 
-        // ЧАЙ
-        document.getElementById('teaBtn').onclick = function() {
+        document.getElementById('teaBtn').addEventListener('click', function() {
             alert('скинуть будущему программисту на чай: +79216274225 сбербанк');
-        };
+        });
 
-        // ЗМЕЙКА
+        // --- ЛОГИКА ЗМЕЙКИ ---
         const canvas = document.getElementById("snakeGame");
         const ctx = canvas.getContext("2d");
         const box = 20;
@@ -135,8 +75,6 @@
         let food = { x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box };
         let d = "";
 
-Манул, [04.02.2026 12:28]
-// Управление змейкой
         document.getElementById('up').onclick = () => { if(d != "down") d = "up"; };
         document.getElementById('down').onclick = () => { if(d != "up") d = "down"; };
         document.getElementById('left').onclick = () => { if(d != "right") d = "left"; };
@@ -145,12 +83,12 @@
         function draw() {
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
             ctx.fillStyle = "red";
             ctx.fillRect(food.x, food.y, box, box);
 
-            for(let i=0; i<snake.length; i++) {
-                ctx.fillStyle = (i==0) ? "lime" : "green";
+Манул, [04.02.2026 12:32]
+for(let i=0; i<snake.length; i++) {
+                ctx.fillStyle = (i==0) ? "#00FF00" : "#008000";
                 ctx.fillRect(snake[i].x, snake[i].y, box, box);
             }
 
@@ -187,6 +125,6 @@
 
         setInterval(draw, 150);
     </script>
-
 </body>
 </html>
+
