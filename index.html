@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Мой Первый Сайт</title>
+    <title>Super App v8 - Profiles & Ranks</title>
     <script src="https://js-dos.com/v7/build/releases/latest/js-dos.js"></script>
     <style>
         :root { --bg: #0a0a0a; --main: #0F0; --box: rgba(10, 25, 10, 0.7); --txt: #0F0; }
@@ -14,82 +14,77 @@
         body.theme-snow { --bg: #001529; --main: #ffffff; --box: rgba(255,255,255,0.1); --txt: #ffffff; }
         body { font-family: 'Consolas', monospace; text-align: center; padding: 20px; background-color: var(--bg); color: var(--txt); margin: 0; transition: 0.3s; overflow-x: hidden; }
         .settings-btn { position: fixed; top: 15px; right: 15px; z-index: 100; cursor: pointer; background: var(--box); padding: 8px; border-radius: 10px; border: 1px solid var(--main); }
-        .settings-menu { display: none; position: fixed; top: 60px; right: 15px; z-index: 101; background: var(--box); padding: 15px; border-radius: 10px; border: 1px solid var(--main); text-align: left; width: 240px; box-shadow: 0 0 20px rgba(0,0,0,0.8); }
-        .settings-menu select, .settings-menu button { background: #000; color: var(--main); border: 1px solid var(--main); margin-bottom: 10px; width: 100%; cursor: pointer; padding: 5px; }
+        .settings-menu, .profile-card { display: none; position: fixed; top: 60px; right: 15px; z-index: 101; background: var(--box); padding: 15px; border-radius: 10px; border: 1px solid var(--main); text-align: left; width: 240px; box-shadow: 0 0 20px #000; }
+        .profile-card { top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
         .game-box { background: var(--box); padding: 20px; border-radius: 15px; display: inline-block; margin-bottom: 30px; width: 95%; max-width: 450px; border: 1px solid var(--main); position: relative; z-index: 5; }
-        .button-tea { display: inline-block; padding: 12px 25px; background: rgba(0,0,0,0.3); color: var(--main); border: 1px solid var(--main); border-radius: 8px; margin: 10px 0; cursor: pointer; font-weight: bold; }
-        #cList { height: 280px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; display: flex; flex-direction: column; border: 1px solid var(--main); margin-bottom: 10px; }
-        .msg { margin-bottom: 10px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.05); align-self: flex-start; text-align: left; width: 92%; }
-        .react-btn { background: none; border: 1px solid var(--main); color: var(--main); font-size: 11px; border-radius: 5px; cursor: pointer; margin-top: 5px; }
-        .chat-area { display: flex; gap: 5px; }
-        .chat-area input { flex: 1; padding: 10px; border: 1px solid var(--main); border-radius: 20px; background: #000; color: var(--main); outline: none; }
-        canvas#snakeGame { background: #000; display: block; margin: 10px auto; width: 280px; height: 280px; border: 1px solid var(--main); }
-        #doom-container { width: 100%; height: 300px; background: #000; border: 1px solid var(--main); }
-        .mini-top { font-size: 12px; text-align: left; border-top: 1px solid var(--main); margin-top: 10px; padding-top: 5px; }
+        .button-tea { display: inline-block; padding: 10px 20px; background: rgba(0,0,0,0.3); color: var(--main); border: 1px solid var(--main); border-radius: 8px; margin: 5px 0; cursor: pointer; font-weight: bold; }
+        #cList { height: 250px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; border: 1px solid var(--main); margin-bottom: 10px; }
+        .msg { margin-bottom: 8px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.05); text-align: left; }
+        .ttt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; width: 210px; margin: 15px auto; }
+        .ttt-cell { width: 65px; height: 65px; border: 1px solid var(--main); background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; }
         #matrixCanvas, #snowCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        .rank { font-size: 10px; padding: 2px 5px; border-radius: 4px; background: var(--main); color: #000; margin-left: 5px; vertical-align: middle; }
     </style>
 </head>
 <body class="theme-hacker">
     <canvas id="matrixCanvas"></canvas>
     <canvas id="snowCanvas" style="display:none"></canvas>
-    <div class="settings-btn" onclick="toggleSettings()">⚙️ <span id="set-txt">Настройки</span></div>
+
+    <div class="settings-btn" onclick="toggleSettings()">⚙️ Настройки</div>
+    
     <div class="settings-menu" id="sMenu">
-        <label id="l-theme">Тема:</label>
-        <select onchange="changeTheme(this.value)">
-            <option value="hacker">Hacker</option>
-            <option value="tg">Telegram</option>
-            <option value="light">Light</option>
-            <option value="retro">Retro</option>
-            <option value="cyber">Cyberpunk</option>
-            <option value="snow">Новый Год ❄️</option>
-        </select>
-        <label id="l-lang">Язык:</label>
-        <select onchange="changeLang(this.value)">
-            <option value="ru">Русский</option>
-            <option value="en">English</option>
-            <option value="ua">Українська</option>
-        </select>
+        <label>Тема:</label>
+        <select onchange="changeTheme(this.value)"><option value="hacker">Hacker</option><option value="tg">Telegram</option><option value="light">Light</option><option value="retro">Retro</option><option value="cyber">Cyberpunk</option><option value="snow">Новый Год ❄️</option></select>
         <hr>
-        <button onclick="alert('Кинуть на чай будущему программисту:\n+79216274225 Сбербанк')" id="btn-support">Поддержать</button>
+        <div id="my-profile-info" style="font-size:12px"></div>
+        <input type="text" id="statusInp" placeholder="Твой статус..." style="width:90%; background:#000; color:#0F0; border:1px solid #0F0; margin-top:5px">
+        <button class="button-tea" onclick="updateStatus()" style="width:100%">Сохранить статус</button>
+    </div>
+
+    <div class="profile-card" id="pCard">
+        <h2 id="pc-name">Имя</h2>
+        <div id="pc-rank" class="rank">Ранг</div>
+        <p id="pc-status">"Статус"</p>
+        <div style="text-align:left; font-size:14px">
+            Кликнул раз: <span id="pc-clicks">0</span><br>
+            Побед в X/O: <span id="pc-wins">0</span>
+        </div>
+        <button class="button-tea" onclick="document.getElementById('pCard').style.display='none'">Закрыть</button>
     </div>
 
     <h1 id="h-title">Мой первый сайт</h1>
-    <h2 id="h-subtitle" style="font-size:16px; opacity:0.8">Делал сам честно!</h2>
+    <h2 style="font-size:14px; opacity:0.7">Делал сам честно!</h2>
 
     <div class="game-box">
-        <h3 id="h-chat">Чат</h3>
+        <h3>Чат</h3>
         <div id="cList"></div>
-        <div class="chat-area">
-            <input type="text" id="nInp" placeholder="Имя" style="width:70px">
-            <input type="text" id="mInp" placeholder="Текст...">
-            <button class="button-tea" style="margin:0; border-radius:50%" onclick="addC()">></button>
+        <div style="display:flex; gap:5px">
+            <input type="text" id="nInp" placeholder="Имя" style="width:70px; background:#000; color:#0F0; border:1px solid #0F0; padding:5px">
+            <input type="text" id="mInp" placeholder="Текст..." style="flex:1; background:#000; color:#0F0; border:1px solid #0F0; padding:5px">
+            <button class="button-tea" style="margin:0" onclick="addC()">></button>
         </div>
     </div>
 
     <div class="game-box">
-        <h3 id="h-click">Кликер</h3>
-        <div id="score" style="font-size:35px">0</div>
-        <button class="button-tea" id="btn-main-click" onclick="addScore()">КЛИКНИ!</button><br>
-        <small id="h-reset" style="cursor:pointer; text-decoration:underline" onclick="resetMyScore()">обнулить счет</small>
-        <div class="mini-top" id="click-top"><b>TOP КЛИКЕРОВ:</b><br><div id="leader-list">Загрузка...</div></div>
+        <h3>Кликер</h3>
+        <div id="score" style="font-size:40px">0</div>
+        <button class="button-tea" onclick="addScore()" style="padding:20px 40px; font-size:20px">КЛИКНИ!</button>
+        <div id="leader-list" style="font-size:12px; text-align:left; margin-top:10px; border-top:1px solid var(--main)"></div>
     </div>
 
     <div class="game-box">
-        <h3 id="h-snake">Змейка</h3>
-        <div id="s-score">Очки: 0</div>
-        <canvas id="snakeGame" width="400" height="400"></canvas>
-        <button class="button-tea" onclick="setD('up')">▲</button><br>
-        <button class="button-tea" onclick="setD('left')">◀</button>
-        <button class="button-tea" onclick="setD('down')">▼</button>
-        <button class="button-tea" onclick="setD('right')">▶</button>
-        <div class="mini-top" id="snake-top"><b>TOP ЗМЕЙКИ:</b><br><div id="snake-leader-list">Загрузка...</div></div>
+        <h3>Online Дуэли</h3>
+        <div id="active-rooms" style="font-size:12px; margin-bottom:10px"></div>
+        <div id="mp-status">Войдите в чат</div>
+        <button class="button-tea" id="find-btn" onclick="findGame()">ПОИСК ИГРЫ</button>
+        <div id="game-area" style="display:none">
+            <div id="player-role"></div>
+            <div class="ttt-grid" id="ttt-grid"></div>
+            <div id="turn-info"></div>
+        </div>
     </div>
 
-    <div class="game-box">
-        <h3>DOOM (1993)</h3>
-        <div id="doom-container"></div>
-        <div style="font-size:10px; color:red; margin-top:5px" id="h-doom">⚠️ ТОЛЬКО ДЛЯ ПК: Стрелки, Ctrl, Пробел</div>
-    </div>
+    <div class="game-box"><h3>DOOM</h3><div id="doom-container" style="height:200px"></div></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -98,8 +93,26 @@
         const conf = { apiKey: "AIzaSyChSk0gETRBQ391e4BjPqFsKc_dzjBmT58", databaseURL: "https://my-chat-52203-default-rtdb.firebaseio.com", projectId: "my-chat-52203" };
         const app = initializeApp(conf);
         const db = getDatabase(app);
-        let pass = "";
-        let likedMsgs = JSON.parse(localStorage.getItem('likedMsgs') || '[]');
+        let pass = "", myName = "", myRole = "", currentGameId = null;
+
+        const getRank = (s) => {
+            if(s > 1000) return "Программист 💻";
+            if(s > 500) return "Мастер 🏆";
+            if(s > 100) return "Продвинутый ⚡";
+            return "Новичок 🌱";
+        };
+
+        window.showProfile = async (name) => {
+            const s = await get(ref(db, 'users/'+name));
+            if(!s.exists()) return;
+            const d = s.val();
+            document.getElementById('pc-name').innerText = name;
+            document.getElementById('pc-rank').innerText = getRank(d.score || 0);
+            document.getElementById('pc-status').innerText = d.status || "Нет статуса";
+            document.getElementById('pc-clicks').innerText = d.score || 0;
+            document.getElementById('pc-wins').innerText = d.wins || 0;
+            document.getElementById('pCard').style.display = 'block';
+        };
 
         window.addC = async () => {
             const n = document.getElementById('nInp'), m = document.getElementById('mInp');
@@ -107,149 +120,113 @@
             if(!pass) {
                 const s = await get(ref(db, 'users/'+n.value));
                 if(s.exists()){
-                    let p = prompt(curLang=='ru'?"Пароль:":"Password:");
-                    if(p !== s.val().password) return alert("Error!");
-                    pass = p; document.getElementById('score').innerText = s.val().score || 0;
+                    let p = prompt("Пароль:"); if(p !== s.val().password) return alert("Error!"); pass = p;
                 } else {
-                    let p = prompt(curLang=='ru'?"Придумай пароль:":"Create password:");
-                    if(!p) return;
-                    await set(ref(db, 'users/'+n.value), {password: p, score: 0, snakeScore: 0});
-                    pass = p;
+                    let p = prompt("Пароль:"); if(!p) return;
+                    await set(ref(db, 'users/'+n.value), {password: p, score: 0, wins: 0, status: "Всем привет!"}); pass = p;
                 }
-                n.readOnly = true;
+                n.readOnly = true; myName = n.value;
+                document.getElementById('mp-status').innerText = "Готов к бою";
+                document.getElementById('my-profile-info').innerText = `Вы: ${myName}`;
             }
-            push(ref(db, 'msgs'), {name: n.value, text: m.value, likes: 0});
-            m.value = "";
+            push(ref(db, 'msgs'), {name: myName, text: m.value}); m.value = "";
+        };
+
+        window.updateStatus = () => {
+            const st = document.getElementById('statusInp').value;
+            if(!myName) return alert("Войди!");
+            update(ref(db, 'users/'+myName), {status: st}); alert("Статус обновлен!");
         };
 
         window.addScore = () => {
-            const n = document.getElementById('nInp').value;
-            if(!pass) return alert(curLang=='ru'?"Сначала войди в чат!":"Login first!");
-            let s = document.getElementById('score');
-            let cur = parseInt(s.innerText) + 1;
-            s.innerText = cur;
-            if(cur === 100) alert(curLang=='ru'?"100 кликов! иди потрогай траву задрот":"100 clicks! go touch grass nerd");
-            update(ref(db, 'users/'+n), {score: cur});
+            if(!pass) return alert("Войди!");
+            let s = document.getElementById('score'), cur = parseInt(s.innerText) + 1;
+            s.innerText = cur; update(ref(db, 'users/'+myName), {score: cur});
         };
 
-        window.resetMyScore = () => {
-            const n = document.getElementById('nInp').value;
-            if(!pass || !confirm("Reset?")) return;
-            document.getElementById('score').innerText = 0;
-            update(ref(db, 'users/'+n), {score: 0});
+        // МУЛЬТИПЛЕЕР С ПОБЕДАМИ
+        window.findGame = async () => {
+            if(!pass) return alert("Войди!");
+            document.getElementById('find-btn').style.display = 'none';
+            const queueRef = ref(db, 'queue');
+            const snap = await get(queueRef);
+            if(snap.exists() && snap.val().name !== myName) {
+                const gameId = 'game_' + Date.now();
+                myRole = 'O';
+                await set(ref(db, 'games/' + gameId), { p1: snap.val().name, p2: myName, board: Array(9).fill(""), turn: 'X' });
+                await remove(queueRef); initGame(gameId);
+            } else {
+                myRole = 'X'; set(queueRef, { name: myName });
+                onValue(ref(db, 'games'), (s) => { s.forEach(g => { if(g.val().p1 === myName) initGame(g.key); }); });
+            }
         };
 
-        window.doLike = (id, cur) => {
-            if(likedMsgs.includes(id)) return alert("Already liked!");
-            likedMsgs.push(id); localStorage.setItem('likedMsgs', JSON.stringify(likedMsgs));
-            update(ref(db, 'msgs/'+id), {likes: (cur || 0) + 1});
-        };
+        function initGame(gid) {
+            currentGameId = gid;
+            document.getElementById('game-area').style.display = 'block';
+            onValue(ref(db, 'games/' + gid), async (s) => {
+                const data = s.val(); if(!data) return;
+                const grid = document.getElementById('ttt-grid'); grid.innerHTML = "";
+                data.board.forEach((val, i) => {
+                    const cell = document.createElement('div'); cell.className = 'ttt-cell';
+                    cell.innerText = val; cell.onclick = () => makeMove(i, data); grid.appendChild(cell);
+                });
+                document.getElementById('turn-info').innerText = (data.turn === myRole) ? "ТВОЙ ХОД!" : "Ждем оппонента...";
+                
+                const win = checkWin(data.board);
+                if(win) {
+                    if(data.turn !== myRole) { // Тот кто НЕ ходит сейчас - победил
+                        alert("ТЫ ПОБЕДИЛ!");
+                        const userSnap = await get(ref(db, 'users/'+myName));
+                        update(ref(db, 'users/'+myName), {wins: (userSnap.val().wins || 0) + 1});
+                    } else { alert("ТЫ ПРОИГРАЛ!"); }
+                    remove(ref(db, 'games/' + gid)); location.reload();
+                }
+            });
+        }
 
-        window.delMsg = (id) => {
-            if(prompt("Admin Pass:") === "8070") remove(ref(db, 'msgs/'+id));
-        };
+        async function makeMove(i, data) {
+            if(data.turn !== myRole || data.board[i] !== "") return;
+            data.board[i] = myRole; data.turn = (myRole === 'X') ? 'O' : 'X';
+            update(ref(db, 'games/' + currentGameId), data);
+        }
+
+        function checkWin(b) {
+            const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            return wins.some(w => b[w[0]] && b[w[0]]==b[w[1]] && b[w[0]]==b[w[2]]);
+        }
 
         onValue(ref(db, 'msgs'), (s) => {
             const l = document.getElementById('cList'); l.innerHTML = "";
             s.forEach(m => {
                 const d = m.val();
-                l.innerHTML += `<div class="msg"><b>${d.name}</b> <span style="color:red;cursor:pointer;float:right" onclick="delMsg('${m.key}')">×</span><br>${d.text}<br>
-                <button class="react-btn" onclick="doLike('${m.key}', ${d.likes})">❤️ ${d.likes || 0}</button></div>`;
+                l.innerHTML += `<div class="msg"><b style="cursor:pointer" onclick="showProfile('${d.name}')">${d.name}</b>: ${d.text}</div>`;
             });
             l.scrollTop = l.scrollHeight;
         });
 
-        const setupTop = (path, elId) => {
-            onValue(query(ref(db, 'users'), orderByChild(path), limitToLast(5)), (s) => {
-                const l = document.getElementById(elId); l.innerHTML = "";
-                let arr = [];
-                s.forEach(u => { if(u.val()[path] !== undefined) arr.push({n: u.key, s: u.val()[path]}); });
-                arr.sort((a,b) => b.s - a.s).forEach(u => { l.innerHTML += `${u.n}: ${u.s}<br>`; });
-            });
-        };
-        setupTop('score', 'leader-list');
-        setupTop('snakeScore', 'snake-leader-list');
+        onValue(query(ref(db, 'users'), orderByChild('score'), limitToLast(5)), (s) => {
+            const l = document.getElementById('leader-list'); l.innerHTML = "<b>ТОП (кликни на имя):</b><br>";
+            let a = []; s.forEach(u => a.push({n:u.key, s:u.val().score}));
+            a.sort((x,y)=>y.s-x.s).forEach(u => l.innerHTML += `<span style="cursor:pointer" onclick="showProfile('${u.n}')">${u.n}</span>: ${u.s} [${getRank(u.s)}]<br>`);
+        });
 
-        window.saveSnake = async (val) => {
-            const n = document.getElementById('nInp').value;
-            if(!n || !pass) return;
-            const s = await get(ref(db, `users/${n}/snakeScore`));
-            if(!s.exists() || val > s.val()) update(ref(db, 'users/'+n), {snakeScore: val});
-        };
+        onValue(ref(db, 'games'), (s) => {
+            const list = document.getElementById('active-rooms'); list.innerHTML = "";
+            s.forEach(g => { const d = g.val(); list.innerHTML += `${d.p1} VS ${d.p2} (Идет игра)<br>`; });
+        });
     </script>
 
     <script>
-        let curLang = 'ru';
-        const texts = {
-            ru: { title: "Мой первый сайт", sub: "Делал сам честно!", chat: "Чат", click: "Кликер", snake: "Змейка", support: "Поддержать", reset: "обнулить счет", doom: "⚠️ ТОЛЬКО ДЛЯ ПК: Стрелки, Ctrl, Пробел", settings: "Настройки" },
-            en: { title: "My First Site", sub: "Made it myself honestly!", chat: "Chat", click: "Clicker", snake: "Snake", support: "Support Me", reset: "reset score", doom: "⚠️ PC ONLY: Arrows, Ctrl, Space", settings: "Settings" },
-            ua: { title: "Мій перший сайт", sub: "Робив сам чесно!", chat: "Чат", click: "Клікер", snake: "Змійка", support: "Підтримати", reset: "обнулити рахунок", doom: "⚠️ ТІЛЬКИ ДЛЯ ПК: Стрілки, Ctrl, Пробіл", settings: "Налаштування" }
-        };
-        function changeLang(l) {
-            curLang = l; const t = texts[l];
-            document.getElementById('h-title').innerText = t.title; document.getElementById('h-subtitle').innerText = t.sub;
-            document.getElementById('h-chat').innerText = t.chat; document.getElementById('h-click').innerText = t.click;
-            document.getElementById('h-snake').innerText = t.snake; document.getElementById('btn-support').innerText = t.support;
-            document.getElementById('h-reset').innerText = t.reset; document.getElementById('h-doom').innerText = t.doom;
-            document.getElementById('set-txt').innerText = t.settings;
-        }
-        function changeTheme(v) {
-            document.body.className = 'theme-' + v;
-            document.getElementById('matrixCanvas').style.display = (v === 'hacker') ? 'block' : 'none';
-            document.getElementById('snowCanvas').style.display = (v === 'snow') ? 'block' : 'none';
-        }
+        function changeTheme(v) { document.body.className = 'theme-' + v; document.getElementById('matrixCanvas').style.display = (v==='hacker')?'block':'none'; document.getElementById('snowCanvas').style.display = (v==='snow')?'block':'none'; }
         function toggleSettings() { const s = document.getElementById('sMenu'); s.style.display = s.style.display==='block'?'none':'block'; }
-
-        // Матрица
-        const mC = document.getElementById('matrixCanvas'); const mX = mC.getContext('2d');
+        
+        const mC = document.getElementById('matrixCanvas'), mX = mC.getContext('2d');
         mC.width = window.innerWidth; mC.height = window.innerHeight;
         const drops = Array(Math.floor(mC.width/16)).fill(1);
-        function drawM() {
-            mX.fillStyle = 'rgba(0,0,0,0.05)'; mX.fillRect(0,0,mC.width,mC.height);
-            mX.fillStyle = '#0F0'; mX.font = '16px monospace';
-            drops.forEach((y, i) => { mX.fillText(Math.random()>0.5?'0':'1', i*16, y*16); if(y*16>mC.height && Math.random()>0.975) drops[i]=0; drops[i]++; });
-        }
-        setInterval(drawM, 33);
-
-        // Снег
-        const sC = document.getElementById('snowCanvas'); const sX = sC.getContext('2d');
-        sC.width = window.innerWidth; sC.height = window.innerHeight;
-        let flakes = Array(100).fill(0).map(() => ({ x: Math.random()*sC.width, y: Math.random()*sC.height, r: Math.random()*4+1, d: Math.random()*1 }));
-        function drawS() {
-            sX.clearRect(0,0,sC.width,sC.height); sX.fillStyle = "white"; sX.beginPath();
-            flakes.forEach(f => {
-                sX.moveTo(f.x, f.y); sX.arc(f.x, f.y, f.r, 0, Math.PI*2, true);
-                f.y += Math.cos(f.d) + 1 + f.r/2; f.x += Math.sin(f.d);
-                if(f.y > sC.height) { f.y = -10; f.x = Math.random()*sC.width; }
-            });
-            sX.fill();
-        }
-        setInterval(drawS, 33);
-
-        // Змейка
-        let snake = [{x:200,y:200}], food = {x:100,y:100}, d = "", sScore = 0;
-        const snC = document.getElementById("snakeGame"); const snX = snC.getContext("2d");
-        window.setD = (v) => { if(v=='up'&&d!='down')d=v; if(v=='down'&&d!='up')d=v; if(v=='left'&&d!='right')d=v; if(v=='right'&&d!='left')d=v; };
-        function drawSnake() {
-            snX.fillStyle = "#000"; snX.fillRect(0,0,400,400);
-            snX.fillStyle = "red"; snX.fillRect(food.x, food.y, 20, 20);
-            snake.forEach((s, i) => { snX.fillStyle = i==0?"#ADFF2F":"#008000"; snX.fillRect(s.x, s.y, 20, 20); });
-            let hX = snake[0].x, hY = snake[0].y;
-            if(d=="up") hY-=20; if(d=="down") hY+=20; if(d=="left") hX-=20; if(d=="right") hX+=20;
-            if(hX==food.x && hY==food.y) {
-                sScore+=10; document.getElementById('s-score').innerText="Score: "+sScore;
-                food = {x:Math.floor(Math.random()*19)*20, y:Math.floor(Math.random()*19)*20};
-            } else if(d) snake.pop();
-            if(d) {
-                if(hX<0||hX>=400||hY<0||hY>=400||snake.some(s=>s.x==hX&&s.y==hY)) {
-                    window.saveSnake(sScore); alert("Game Over!");
-                    d=""; snake=[{x:200,y:200}]; sScore=0; document.getElementById('s-score').innerText="Score: 0";
-                } else snake.unshift({x:hX, y:hY});
-            }
-        }
-        setInterval(drawSnake, 120);
+        setInterval(() => { mX.fillStyle = 'rgba(0,0,0,0.05)'; mX.fillRect(0,0,mC.width,mC.height); mX.fillStyle = '#0F0'; mX.font = '16px monospace'; drops.forEach((y, i) => { mX.fillText(Math.random()>0.5?'0':'1', i*16, y*16); if(y*16>mC.height && Math.random()>0.975) drops[i]=0; drops[i]++; }); }, 33);
+        
         window.onload = () => { Dos(document.getElementById("doom-container")).run("https://js-dos.com/v7/build/archive/doom.zip"); };
     </script>
 </body>
 </html>
- 
