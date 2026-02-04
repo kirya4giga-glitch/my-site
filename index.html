@@ -1,3 +1,4 @@
+Манул, [04.02.2026 18:07]
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -97,3 +98,242 @@
 </body>
 </html>
 
+Манул, [04.02.2026 18:11]
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" style="touch-action: manipulation;">
+    <title>Мой сайт с играми</title>
+    <style>
+        /* --- ТВОИ СТАРЫЕ СТИЛИ --- */
+        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f0f0f0; }
+        .button { 
+            display: inline-block; padding: 10px 20px; background: #eee; text-decoration: none; 
+            color: black; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 20px;
+        }
+        .game-box {
+            background: white; padding: 20px; border-radius: 15px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: inline-block;
+            margin-bottom: 20px; /* Отступ между играми */
+            max-width: 100%; /* Чтобы не вылезало на маленьких экранах */
+        }
+        #score { font-size: 30px; font-weight: bold; color: limegreen; }
+        .click-btn {
+            padding: 15px 40px; font-size: 20px; background: lime; border: none; 
+            border-radius: 10px; cursor: pointer; font-weight: bold; display: block; margin: 10px auto;
+        }
+        .reset-btn {
+            padding: 5px 15px; font-size: 14px; background: #ff4d4d; color: white; 
+            border: none; border-radius: 5px; cursor: pointer; margin-top: 15px;
+        }
+
+        /* --- НОВЫЕ СТИЛИ ДЛЯ ЗМЕЙКИ --- */
+        #snakeCanvas {
+            background-color: #000;
+            border: 3px solid #555;
+            display: block;
+            margin: 0 auto 15px auto; /* Центрируем и отступ снизу */
+            /* Ограничиваем размер, чтобы на телефонах не было слишком мелко или крупно */
+            width: 280px; 
+            height: 280px;
+        }
+
+        /* Сетка для кнопок управления на телефоне */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 60px); /* 3 колонки по 60px */
+            gap: 5px; /* Расстояние между кнопками */
+            justify-content: center;
+        }
+        .snake-btn {
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            background: #ddd;
+            border: 2px solid #bbb;
+            border-radius: 10px;
+            cursor: pointer;
+            /* Чтобы на телефоне кнопки быстро реагировали и не выделяли текст */
+            touch-action: manipulation;
+            user-select: none;
+        }
+        .snake-btn:active { background: #ccc; }
+    </style>
+</head>
+<body>
+
+    <h1>Мой первый сайт!</h1>
+    <p>делал сам честно!</p>
+    
+    <a href="#" class="button" onclick="alert('скинуть будущему программисту на чай: +79216274225 сбербанк')">Нажми сюда</a>
+
+    <hr>
+
+    <div class="game-box">
+        <h3>Игра 1: Кликер</h3>
+        <p>Счет: <span id="score">0</span></p>
+        <button class="click-btn" onclick="addScore()">КЛИК!</button>
+        <button class="reset-btn" onclick="resetScore()">Обнулить счет</button>
+    </div>
+
+    <br> <div class="game-box">
+        <h3>Игра 2: Змейка</h3>
+        <canvas id="snakeCanvas" width="280" height="280"></canvas>
+        
+        <div class="controls-grid">
+            <div></div> <button class="snake-btn" onclick="setDirection('up')">↑</button>
+            <div></div> <button class="snake-btn" onclick="setDirection('left')">←</button>
+            <button class="snake-btn" onclick="setDirection('down')">↓</button>
+            <button class="snake-btn" onclick="setDirection('right')">→</button>
+        </div>
+        <p style="font-size: 14px; color: #666;">(На ПК можно использовать стрелки клавиатуры)</p>
+    </div>
+
+
+    <script>
+        // ==========================================
+        // ЛОГИКА КЛИКЕРА (ТВОЙ СТАРЫЙ КОД)
+        // ==========================================
+        let count = localStorage.getItem('myScore') ? parseInt(localStorage.getItem('myScore')) : 0;
+
+        window.onload = function() {
+            document.getElementById('score').innerText = count;
+        };
+
+Манул, [04.02.2026 18:11]
+function addScore() {
+            count = count + 1;
+            document.getElementById('score').innerText = count;
+            localStorage.setItem('myScore', count);
+            if (count === 100) { alert("иди потрогай траву! задрот"); }
+        }
+
+        function resetScore() {
+            if (confirm("Точно хочешь всё удалить?")) {
+                count = 0;
+                document.getElementById('score').innerText = count;
+                localStorage.removeItem('myScore');
+            }
+        }
+
+        // ==========================================
+        // ЛОГИКА ЗМЕЙКИ (НОВЫЙ КОД)
+        // ==========================================
+        const canvas = document.getElementById('snakeCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const box = 20; // Размер одной клетки змейки и еды
+        // Начальная позиция змейки (голова)
+        let snake = [{ x: 7 * box, y: 7 * box }];
+        
+        let direction = ''; // Текущее направление
+        let scoreSnake = 0;
+
+        // Создаем еду в случайном месте
+        let food = {
+            x: Math.floor(Math.random() * (canvas.width / box)) * box,
+            y: Math.floor(Math.random() * (canvas.height / box)) * box
+        };
+
+        // Обработка нажатий клавиатуры (для ПК)
+        document.addEventListener('keydown', function(event) {
+            if(event.keyCode == 37) setDirection('left');
+            else if(event.keyCode == 38) setDirection('up');
+            else if(event.keyCode == 39) setDirection('right');
+            else if(event.keyCode == 40) setDirection('down');
+        });
+
+        // Функция изменения направления (используется и кнопоками, и клавиатурой)
+        function setDirection(newDir) {
+            // Проверка, чтобы змейка не могла развернуться на 180 градусов мгновенно
+            if (newDir === 'left' && direction !== 'right') direction = 'left';
+            else if (newDir === 'up' && direction !== 'down') direction = 'up';
+            else if (newDir === 'right' && direction !== 'left') direction = 'right';
+            else if (newDir === 'down' && direction !== 'up') direction = 'down';
+        }
+
+        // Проверка столкновений (со стеной или с собой)
+        function collision(head, array) {
+            // Проверка выхода за стены
+            if (head.x < 0  head.x >= canvas.width  head.y < 0 || head.y >= canvas.height) {
+                return true;
+            }
+            // Проверка столкновения с хвостом
+            for (let i = 0; i < array.length; i++) {
+                if (head.x === array[i].x && head.y === array[i].y) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Основная функция рисования игры
+        function drawGame() {
+            // Очищаем поле
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Рисуем еду
+            ctx.fillStyle = 'red';
+            ctx.fillRect(food.x, food.y, box, box);
+
+            // Рисуем змейку
+            for (let i = 0; i < snake.length; i++) {
+                // Голова зеленая, тело чуть темнее
+                ctx.fillStyle = (i === 0) ? 'lime' : '#008000';
+                ctx.fillRect(snake[i].x, snake[i].y, box, box);
+                
+                // Обводка для красоты
+                ctx.strokeStyle = '#000';
+                ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+            }
+
+            // Координаты головы
+            let snakeX = snake[0].x;
+            let snakeY = snake[0].y;
+
+            // Двигаем голову в зависимости от направления
+            if (direction === 'left') snakeX -= box;
+            if (direction === 'up') snakeY -= box;
+            if (direction === 'right') snakeX += box;
+            if (direction === 'down') snakeY += box;
+
+Манул, [04.02.2026 18:11]
+// Проверка: змейка съела еду?
+            if (snakeX === food.x && snakeY === food.y) {
+                scoreSnake++;
+                // Создаем новую еду
+                food = {
+                    x: Math.floor(Math.random() * (canvas.width / box)) * box,
+                    y: Math.floor(Math.random() * (canvas.height / box)) * box
+                };
+                // Хвост не удаляем, змейка растет
+            } else {
+                // Удаляем последний элемент хвоста, змейка движется
+                snake.pop();
+            }
+
+            // Новая голова
+            let newHead = { x: snakeX, y: snakeY };
+
+            // Проверка на проигрыш
+            // Если игра только началась (direction пустой), проверку не делаем
+            if (direction !== '' && collision(newHead, snake)) {
+                clearInterval(gameLoop); // Останавливаем игру
+                alert('Игра окончена! Твой счет в змейке: ' + scoreSnake);
+                location.reload(); // Перезагружаем страницу для новой игры
+                return;
+            }
+
+            // Добавляем новую голову в начало массива
+            snake.unshift(newHead);
+        }
+
+        // Запуск игрового цикла (рисуем каждые 150 миллисекунд)
+        let gameLoop = setInterval(drawGame, 150);
+
+    </script>
+
+</body>
+</html>
