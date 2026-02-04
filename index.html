@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Мой сайт</title>
+    <title>Мой супер сайт</title>
     <style>
-        /* --- СТИЛИ --- */
         body { font-family: -apple-system, sans-serif; text-align: center; padding: 20px; background-color: #f0f0f0; margin: 0; }
         .game-box {
             background: white; padding: 15px; border-radius: 15px; 
@@ -19,16 +18,18 @@
 
         /* ЧАТ */
         #cList {
-            height: 250px; overflow-y: auto; background: #e5ddd5; 
+            height: 300px; overflow-y: auto; background: #e5ddd5; 
             padding: 10px; border-radius: 10px; display: flex; flex-direction: column; border: 1px solid #ddd;
         }
         .message {
-            max-width: 80%; margin-bottom: 8px; padding: 8px 12px;
+            max-width: 85%; margin-bottom: 8px; padding: 8px 12px;
             border-radius: 12px; font-size: 14px; text-align: left; box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+            background: white; align-self: flex-start;
         }
-        .msg-my { align-self: flex-end; background: #efffde; border-bottom-right-radius: 2px; }
-        .msg-name { font-weight: bold; font-size: 11px; color: #3390ec; display: block; }
-        .msg-time { font-size: 9px; color: #999; float: right; margin-top: 4px; margin-left: 5px; }
+        .msg-name { font-weight: bold; font-size: 11px; color: #3390ec; display: flex; justify-content: space-between; }
+        .msg-time { font-size: 9px; color: #999; margin-top: 4px; text-align: right; display: block; }
+        .del-btn { color: #ff4d4d; cursor: pointer; font-weight: normal; margin-left: 10px; }
+
         .chat-input-area { display: flex; gap: 5px; margin-top: 10px; }
         .chat-input-area input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
         .send-btn { background: #3390ec; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
@@ -41,15 +42,23 @@
         /* ЗМЕЙКА */
         canvas { background: #000; display: block; margin: 10px auto; width: 280px; height: 280px; border-radius: 5px; }
         .snake-ctrl { display: grid; grid-template-columns: repeat(3, 55px); gap: 8px; justify-content: center; }
-        .s-btn { width: 55px; height: 55px; background: #fff; border: 1px solid #ccc; border-radius: 10px; font-size: 18px; cursor: pointer; }
+        .s-btn { width: 55px; height: 55px; background: #fff; border: 1px solid #ccc; border-radius: 10px; font-size: 18px; }
     </style>
 </head>
 <body>
 
-    <h1>Мой первый сайт!</h1>
-    <div class="button-tea" onclick="alert('скинуть будущему программисту на чай: +79216274225 сбербанк')">Нажми сюда ☕</div>
+    <h1>Мой сайт</h1>
+    <div class="button-tea" onclick="alert('скинуть на чай: +79216274225')">На чай ☕</div>
 
-    <hr>
+    <div class="game-box">
+        <h3>чат (прототип номер 1)</h3>
+        <div id="cList"></div>
+        <div class="chat-input-area">
+            <input type="text" id="nInp" placeholder="Имя" style="width: 70px;">
+            <input type="text" id="mInp" placeholder="Сообщение...">
+            <button class="send-btn" onclick="addC()">></button>
+        </div>
+    </div>
 
     <div class="game-box">
         <h3>Кликер</h3>
@@ -69,28 +78,15 @@
         </div>
     </div>
 
-    <div class="game-box">
-        <h3>чат (прототип номер 1)</h3>
-        <div id="cList"></div>
-        <div class="chat-input-area">
-            <input type="text" id="nInp" placeholder="Имя" style="width: 70px;">
-            <input type="text" id="mInp" placeholder="Сообщение...">
-            <button class="send-btn" onclick="addC()">></button>
-        </div>
-    </div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Твои настройки из скриншота
         const firebaseConfig = {
             apiKey: "AIzaSyChSk0gETRBQ391e4BjPqFsKc_dzjBmT58",
             authDomain: "my-chat-52203.firebaseapp.com",
             databaseURL: "https://my-chat-52203-default-rtdb.firebaseio.com",
             projectId: "my-chat-52203",
-            storageBucket: "my-chat-52203.firebasestorage.app",
-            messagingSenderId: "336944595953",
             appId: "1:336944595953:web:24bfdf5041fc2040d17a50"
         };
 
@@ -109,73 +105,70 @@
             }
         };
 
+        window.deleteMsg = function(id) {
+            const password = prompt("Пароль админа:");
+            if (password === "1234") { // <--- ЗАМЕНИ 1234 НА СВОЙ ПАРОЛЬ
+                remove(ref(db, 'chat_messages/' + id));
+            } else {
+                alert("Неверно!");
+            }
+        };
+
         onValue(messagesRef, (snapshot) => {
             const data = snapshot.val();
             const list = document.getElementById('cList');
             list.innerHTML = "";
             for (let id in data) {
                 const msg = data[id];
-                list.innerHTML += `<div class="message msg-my"><span class="msg-name">${msg.name}</span>${msg.text}<span class="msg-time">${msg.time}</span></div>`;
+                list.innerHTML += `
+                    <div class="message">
+                        <span class="msg-name">${msg.name} <span class="del-btn" onclick="deleteMsg('${id}')">×</span></span>
+                        ${msg.text}
+                        <span class="msg-time">${msg.time}</span>
+                    </div>`;
             }
             list.scrollTop = list.scrollHeight;
         });
     </script>
 
     <script>
-        // КЛИКЕР
         let count = parseInt(localStorage.getItem('myScore')) || 0;
         document.getElementById('score').innerText = count;
-
         function addScore() {
             count++;
             document.getElementById('score').innerText = count;
             localStorage.setItem('myScore', count);
             if(count === 100) alert("100 кликов! Иди потрогай траву)");
         }
-
         function resetScore() {
-            if(confirm("Обнулить счет?")) {
-                count = 0;
-                document.getElementById('score').innerText = 0;
-                localStorage.removeItem('myScore');
-            }
+            if(confirm("Обнулить?")) { count=0; document.getElementById('score').innerText=0; localStorage.removeItem('myScore'); }
         }
 
-        // ЗМЕЙКА
         const canvas = document.getElementById("snakeGame");
         const ctx = canvas.getContext("2d");
         const box = 20;
         let snake = [{x: 10 * box, y: 10 * box}];
         let food = { x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box };
         let d = "";
-
-        function setD(newD) {
+        window.setD = (newD) => {
             if(newD=="left" && d!="right") d="left";
             if(newD=="up" && d!="down") d="up";
             if(newD=="right" && d!="left") d="right";
             if(newD=="down" && d!="up") d="down";
-        }
-
-        function drawSnake() {
+        };
+        function draw() {
             ctx.fillStyle = "black"; ctx.fillRect(0,0,400,400);
             ctx.fillStyle = "red"; ctx.fillRect(food.x, food.y, box, box);
-            for(let i=0; i<snake.length; i++) {
-                ctx.fillStyle = (i==0) ? "lime" : "green";
-                ctx.fillRect(snake[i].x, snake[i].y, box, box);
-            }
+            for(let i=0; i<snake.length; i++) { ctx.fillStyle = (i==0) ? "lime" : "green"; ctx.fillRect(snake[i].x, snake[i].y, box, box); }
             let sX = snake[0].x; let sY = snake[0].y;
             if(d=="left") sX-=box; if(d=="up") sY-=box; if(d=="right") sX+=box; if(d=="down") sY+=box;
-            if(sX==food.x && sY==food.y) {
-                food = { x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box };
-            } else if(d!="") { snake.pop(); }
+            if(sX==food.x && sY==food.y) { food = { x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box }; } else if(d!="") { snake.pop(); }
             if(d!="") {
                 let head = {x:sX, y:sY};
-                if(sX<0 || sX>=400 || sY<0 || sY>=400 || snake.some(s => s.x==head.x && s.y==head.y)) {
-                    d=""; snake=[{x: 10*box, y: 10*box}]; alert("Game Over!");
-                } else { snake.unshift(head); }
+                if(sX<0 || sX>=400 || sY<0 || sY>=400 || snake.some(s => s.x==head.x && s.y==head.y)) { d=""; snake=[{x: 10*box, y: 10*box}]; alert("Game Over!"); } else { snake.unshift(head); }
             }
         }
-        setInterval(drawSnake, 150);
+        setInterval(draw, 150);
     </script>
 </body>
 </html>
