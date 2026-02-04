@@ -3,237 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Мой супер сайт</title>
+    <title>Super App v5</title>
     <script src="https://js-dos.com/v7/build/releases/latest/js-dos.js"></script>
     <style>
-        :root { --bg-color: #0a0a0a; --main-color: #0F0; --box-bg: rgba(10, 25, 10, 0.7); --text-color: #0F0; }
-        body.theme-tg { --bg-color: #17212b; --main-color: #5288c1; --box-bg: #242f3d; --text-color: #fff; }
-        body.theme-light { --bg-color: #f0f2f5; --main-color: #0088cc; --box-bg: #ffffff; --text-color: #000; }
-        body { font-family: 'Consolas', monospace; text-align: center; padding: 20px; background-color: var(--bg-color); color: var(--text-color); margin: 0; overflow-x: hidden; transition: 0.3s; }
-        .settings-btn { position: fixed; top: 15px; right: 15px; z-index: 100; cursor: pointer; background: var(--box-bg); padding: 8px; border-radius: 10px; border: 1px solid var(--main-color); }
-        .settings-menu { display: none; position: fixed; top: 60px; right: 15px; z-index: 101; background: var(--box-bg); padding: 15px; border-radius: 10px; border: 1px solid var(--main-color); text-align: left; width: 200px; }
-        .settings-menu select, .settings-menu button { background: #000; color: #0F0; border: 1px solid #0F0; margin-bottom: 10px; width: 100%; cursor: pointer; }
-        h1, h2 { color: var(--main-color); text-shadow: 0 0 5px var(--main-color); }
-        .game-box { background: var(--box-bg); padding: 20px; border-radius: 15px; box-shadow: 0 0 15px rgba(0, 255, 0, 0.2); display: inline-block; margin-bottom: 30px; width: 95%; max-width: 450px; border: 1px solid var(--main-color); position: relative; z-index: 2; }
-        .button-tea { display: inline-block; padding: 12px 25px; background: rgba(0, 200, 0, 0.2); color: var(--main-color); border: 1px solid var(--main-color); border-radius: 8px; margin-bottom: 25px; cursor: pointer; font-weight: bold; }
-        #cList { height: 250px; overflow-y: auto; background: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 10px; display: flex; flex-direction: column; border: 1px solid var(--main-color); margin-bottom: 10px; }
-        .message { margin-bottom: 8px; padding: 8px 12px; border-radius: 12px; font-size: 14px; background: rgba(0, 255, 0, 0.1); border: 1px solid rgba(0,255,0,0.2); align-self: flex-start; text-align: left; width: fit-content; max-width: 90%; }
-        .chat-input-area { display: flex; gap: 5px; }
-        .chat-input-area input { flex: 1; padding: 12px; border: 1px solid var(--main-color); border-radius: 20px; background: #000; color: #0F0; outline: none; font-size: 16px; }
-        .send-btn { background: var(--main-color); color: #000; border: none; min-width: 50px; height: 50px; border-radius: 50%; cursor: pointer; font-weight: bold; font-size: 20px; }
-        .mini-top { margin-top: 15px; font-size: 13px; text-align: left; border-top: 1px solid var(--main-color); padding-top: 10px; }
-        .leader-item { display: flex; justify-content: space-between; padding: 2px 0; }
-        canvas#snakeGame { background: #000; display: block; margin: 10px auto; width: 280px; height: 280px; border: 1px solid var(--main-color); }
-        #doom-container { width: 100%; height: 300px; background: #000; border: 2px solid var(--main-color); margin-top: 10px; }
-        #matrixCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-color: #000; }
-        input[readonly] { background: #222 !important; color: #888 !important; border-color: #444 !important; cursor: not-allowed; }
+        :root { --bg: #0a0a0a; --main: #0F0; --box: rgba(10, 25, 10, 0.7); --txt: #0F0; }
+        body.theme-tg { --bg: #17212b; --main: #5288c1; --box: #242f3d; --txt: #fff; }
+        body.theme-light { --bg: #f0f2f5; --main: #0088cc; --box: #ffffff; --txt: #000; }
+        body.theme-retro { --bg: #1a1200; --main: #ffb000; --box: #2b1d00; --txt: #ffb000; }
+        body.theme-cyber { --bg: #0d0015; --main: #ff00ff; --box: #1a0029; --txt: #00ffff; }
+
+        body { font-family: 'Consolas', monospace; text-align: center; padding: 20px; background-color: var(--bg); color: var(--txt); margin: 0; transition: 0.3s; }
+        .settings-btn { position: fixed; top: 15px; right: 15px; z-index: 100; cursor: pointer; background: var(--box); padding: 8px; border-radius: 10px; border: 1px solid var(--main); }
+        .settings-menu { display: none; position: fixed; top: 60px; right: 15px; z-index: 101; background: var(--box); padding: 15px; border-radius: 10px; border: 1px solid var(--main); text-align: left; width: 220px; }
+        
+        .game-box { background: var(--box); padding: 20px; border-radius: 15px; box-shadow: 0 0 15px rgba(0,0,0,0.5); display: inline-block; margin-bottom: 30px; width: 95%; max-width: 450px; border: 1px solid var(--main); }
+        .button-tea { display: inline-block; padding: 12px 25px; background: rgba(0,0,0,0.3); color: var(--main); border: 1px solid var(--main); border-radius: 8px; margin: 10px 0; cursor: pointer; font-weight: bold; }
+        
+        #cList { height: 300px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; display: flex; flex-direction: column; border: 1px solid var(--main); margin-bottom: 10px; }
+        .msg { margin-bottom: 10px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.05); align-self: flex-start; text-align: left; width: 90%; position: relative; }
+        .react-btn { background: none; border: 1px solid var(--main); color: var(--main); font-size: 10px; border-radius: 5px; cursor: pointer; margin-top: 5px; padding: 2px 5px; }
+        
+        .chat-area { display: flex; gap: 5px; }
+        .chat-area input { flex: 1; padding: 12px; border: 1px solid var(--main); border-radius: 20px; background: #000; color: var(--main); outline: none; }
+        
+        canvas#snakeGame { background: #000; display: block; margin: 10px auto; width: 280px; height: 280px; border: 1px solid var(--main); }
+        #doom-container { width: 100%; height: 300px; background: #000; border: 1px solid var(--main); }
+        .doom-info { font-size: 11px; color: #ff4d4d; margin-top: 10px; line-height: 1.4; }
+        
+        #matrixCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.3; }
+        input[readonly] { opacity: 0.6; cursor: not-allowed; }
     </style>
 </head>
-<body>
+<body class="theme-hacker">
     <canvas id="matrixCanvas"></canvas>
-    <div class="settings-btn" onclick="toggleSettings()">⚙️ <span id="set-txt">Настройки</span></div>
     
+    <div class="settings-btn" onclick="toggleSettings()">⚙️ <span id="set-txt">Настройки</span></div>
     <div class="settings-menu" id="sMenu">
-        <label id="set-theme">Тема:</label>
+        <label>Тема:</label>
         <select onchange="changeTheme(this.value)">
             <option value="hacker">Hacker</option>
             <option value="tg">Telegram</option>
             <option value="light">Light</option>
+            <option value="retro">Retro Amber</option>
+            <option value="cyber">Cyberpunk</option>
         </select>
-        <label id="set-lang">Язык:</label>
-        <select onchange="changeLang(this.value)">
-            <option value="ru">Русский</option>
-            <option value="en">English</option>
-            <option value="ua">Українська</option>
-        </select>
-        <button onclick="showThanks()" id="btn-thanks" style="margin-top:10px">Благодарность</button>
+        <hr>
+        <button onclick="alert('Сбербанк: +79216274225')">Поддержать</button>
     </div>
-    
-    <h1 id="h-title">Мой первый сайт</h1>
-    <h2 id="h-subtitle">Делал сам честно!</h2>
-    <div class="button-tea" id="btn-tea" onclick="alert('Сбербанк: +79216274225')">Нажми!</div>
+
+    <h1>Super App v5</h1>
 
     <div class="game-box">
-        <h3 id="h-chat">Чат (v4)</h3>
+        <h3>Чат с реакциями</h3>
         <div id="cList"></div>
-        <div class="chat-input-area">
-            <input type="text" id="nInp" placeholder="Имя" style="width: 70px;">
-            <input type="text" id="mInp" placeholder="Сообщение...">
-            <button class="send-btn" onclick="addC()">></button>
+        <div class="chat-area">
+            <input type="text" id="nInp" placeholder="Имя" style="width:70px">
+            <input type="text" id="mInp" placeholder="Текст...">
+            <button class="button-tea" style="margin:0; border-radius:50%" onclick="addC()">></button>
         </div>
     </div>
 
     <div class="game-box">
-        <h3 id="h-click">Кликер</h3>
-        <div id="score" style="font-size: 35px; font-weight: bold;">0</div>
-        <button class="button-tea" onclick="addScore()" id="btn-click">КЛИКНИ!</button>
-        <div class="mini-top">
-            <b id="h-top">ТОП КЛИКЕРОВ:</b>
-            <div id="leaders-list">...</div>
-        </div>
+        <h3>Кликер</h3>
+        <div id="score" style="font-size:30px">0</div>
+        <button class="button-tea" onclick="addScore()">КЛИКНИ!</button>
+        <div id="leader-list" style="font-size:12px; text-align:left; border-top:1px solid var(--main); margin-top:10px"></div>
     </div>
 
     <div class="game-box">
-        <h3 id="h-snake">Змейка</h3>
-        <div id="s-score" style="font-size: 20px;">Score: 0</div>
+        <h3>Змейка</h3>
+        <div id="s-score">Score: 0</div>
         <canvas id="snakeGame" width="400" height="400"></canvas>
-        <div style="margin-top:10px">
-            <button class="button-tea" style="padding:10px 20px" onclick="setD('up')">▲</button><br>
-            <button class="button-tea" style="padding:10px 20px" onclick="setD('left')">◀</button>
-            <button class="button-tea" style="padding:10px 20px" onclick="setD('down')">▼</button>
-            <button class="button-tea" style="padding:10px 20px" onclick="setD('right')">▶</button>
-        </div>
-        <div class="mini-top">
-            <b id="h-top-snake">ТОП ЗМЕЙКИ:</b>
-            <div id="snake-leaders-list">...</div>
-        </div>
+        <button class="button-tea" onclick="setD('up')">▲</button><br>
+        <button class="button-tea" onclick="setD('left')">◀</button>
+        <button class="button-tea" onclick="setD('down')">▼</button>
+        <button class="button-tea" onclick="setD('right')">▶</button>
     </div>
 
     <div class="game-box">
-        <h3>DOOM</h3>
+        <h3>DOOM 1993</h3>
         <div id="doom-container"></div>
+        <div class="doom-info">
+            💻 <b>ТОЛЬКО ДЛЯ ПК</b><br>
+            Ходить: стрелки | Огонь: Ctrl | Дверь: Пробел | Бег: Shift
+        </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push, onValue, get, set, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, push, onValue, set, get, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        const firebaseConfig = {
+        const conf = {
             apiKey: "AIzaSyChSk0gETRBQ391e4BjPqFsKc_dzjBmT58",
-            authDomain: "my-chat-52203.firebaseapp.com",
             databaseURL: "https://my-chat-52203-default-rtdb.firebaseio.com",
-            projectId: "my-chat-52203",
-            appId: "1:336944595953:web:24bfdf5041fc2040d17a50"
+            projectId: "my-chat-52203"
         };
-
-        const app = initializeApp(firebaseConfig);
+        const app = initializeApp(conf);
         const db = getDatabase(app);
-        let currentPass = ""; 
-        let userClicks = 0;
+        let pass = "";
 
-        // Блокировка ника и авторизация
-        window.addC = async function() {
-            const n = document.getElementById('nInp').value.trim();
-            const m = document.getElementById('mInp').value.trim();
-            if(!n || !m) return;
+        window.addC = async () => {
+            const n = document.getElementById('nInp');
+            const m = document.getElementById('mInp');
+            if(!n.value || !m.value) return;
 
-            if (!currentPass) {
-                const snap = await get(ref(db, 'users/' + n));
-                if(snap.exists()){
-                    const p = prompt(curLang === 'ru' ? "Введите пароль:" : "Enter password:");
-                    if(p !== snap.val().password) return alert("Error!");
-                    currentPass = p;
-                    userClicks = snap.val().score || 0;
-                    document.getElementById('score').innerText = userClicks;
+            if(!pass) {
+                const s = await get(ref(db, 'users/'+n.value));
+                if(s.exists()){
+                    let p = prompt("Пароль:");
+                    if(p !== s.val().password) return alert("Неверно!");
+                    pass = p;
                 } else {
-                    const np = prompt(curLang === 'ru' ? "Придумайте пароль:" : "Create password:");
-                    if(!np) return;
-                    await set(ref(db, 'users/' + n), {password: np, score: 0, snakeScore: 0});
-                    currentPass = np;
+                    let p = prompt("Придумай пароль:");
+                    if(!p) return;
+                    await set(ref(db, 'users/'+n.value), {password: p, score: 0});
+                    pass = p;
                 }
-                // Блокируем поле ИМЯ после входа
-                document.getElementById('nInp').readOnly = true;
+                n.readOnly = true;
             }
-            
-            push(ref(db, 'chat_messages'), { name: n, text: m, time: new Date().toLocaleTimeString().slice(0,5) });
-            document.getElementById('mInp').value = "";
+            push(ref(db, 'msgs'), {name: n.value, text: m.value, likes: 0});
+            m.value = "";
         };
 
-        window.addScore = function() {
-            const n = document.getElementById('nInp').value.trim();
-            if(!currentPass) return alert(curLang === 'ru' ? "Сначала напиши сообщение в чат!" : "Send a message first!");
-            userClicks++;
-            document.getElementById('score').innerText = userClicks;
-            if(userClicks === 100) alert(langs[curLang].easter);
-            set(ref(db, 'users/' + n + '/score'), userClicks);
+        window.addScore = () => {
+            const n = document.getElementById('nInp').value;
+            if(!pass) return alert("Войдите в чат!");
+            const s = document.getElementById('score');
+            let cur = parseInt(s.innerText) + 1;
+            s.innerText = cur;
+            if(cur === 100) alert("100 кликов! Иди траву потрогай");
+            update(ref(db, 'users/'+n), {score: cur});
         };
 
-        const setupTop = (path, elId, unit) => {
-            onValue(query(ref(db, 'users'), orderByChild(path), limitToLast(5)), (s) => {
-                const list = document.getElementById(elId); list.innerHTML = ""; let arr = [];
-                s.forEach(c => { if(c.val()[path] !== undefined) arr.push({name: c.key, score: c.val()[path]}); });
-                arr.sort((a,b) => b.score - a.score).forEach((u, i) => {
-                    list.innerHTML += `<div class="leader-item"><span>${i+1}. ${u.name}</span> <b>${u.score} ${langs[curLang][unit]}</b></div>`;
-                });
+        window.doLike = (id, cur) => {
+            update(ref(db, 'msgs/'+id), {likes: (cur || 0) + 1});
+        };
+
+        window.delMsg = (id) => {
+            if(prompt("Пароль админа:") === "8070") remove(ref(db, 'msgs/'+id));
+        };
+
+        onValue(ref(db, 'msgs'), (s) => {
+            const l = document.getElementById('cList'); l.innerHTML = "";
+            s.forEach(m => {
+                const d = m.val();
+                l.innerHTML += `<div class="msg">
+                    <b>${d.name}</b> <span style="cursor:pointer;color:red" onclick="delMsg('${m.key}')">×</span><br>${d.text}<br>
+                    <button class="react-btn" onclick="doLike('${m.key}', ${d.likes})">❤️ ${d.likes || 0}</button>
+                </div>`;
             });
-        };
-
-        setupTop('score', 'leaders-list', 'unit');
-        setupTop('snakeScore', 'snake-leaders-list', 'unit_s');
-
-        onValue(ref(db, 'chat_messages'), (s) => {
-            const list = document.getElementById('cList'); list.innerHTML = "";
-            const data = s.val();
-            for(let id in data) {
-                list.innerHTML += `<div class="message"><b>${data[id].name}</b>: ${data[id].text}</div>`;
-            }
-            list.scrollTop = list.scrollHeight;
+            l.scrollTop = l.scrollHeight;
         });
 
-        // Глобальные функции для змейки
-        window.saveSnake = async (val) => {
-            const n = document.getElementById('nInp').value.trim();
-            if(!n || !currentPass) return;
-            const snap = await get(ref(db, `users/${n}/snakeScore`));
-            if(!snap.exists() || val > snap.val()) set(ref(db, `users/${n}/snakeScore`), val);
-        };
+        onValue(ref(db, 'users'), (s) => {
+            const l = document.getElementById('leader-list'); l.innerHTML = "<b>ТОП:</b><br>";
+            let users = [];
+            s.forEach(u => users.push({n: u.key, s: u.val().score}));
+            users.sort((a,b)=>b.s-a.s).slice(0,5).forEach(u => {
+                l.innerHTML += `${u.n}: ${u.s} кликов<br>`;
+            });
+        });
     </script>
 
     <script>
-        let curLang = 'ru';
-        const langs = {
-            ru: { title: "Мой первый сайт", subtitle: "Делал сам честно!", chat: "Чат (v4)", click: "Кликер", snake: "Змейка", top: "ТОП КЛИКЕРОВ:", top_s: "ТОП ЗМЕЙКИ:", unit: "клик.", unit_s: "очк.", easter: "100 кликов! Иди траву потрогай" },
-            en: { title: "My First Site", subtitle: "Made it myself!", chat: "Chat (v4)", click: "Clicker", snake: "Snake", top: "TOP CLICKERS:", top_s: "TOP SNAKE:", unit: "cl.", unit_s: "pts.", easter: "100 clicks! Go touch grass" },
-            ua: { title: "Мій перший сайт", subtitle: "Робив сам чесно!", chat: "Чат (v4)", click: "Клікер", snake: "Змійка", top: "ТОП КЛІКЕРІВ:", top_s: "ТОП ЗМІЙКИ:", unit: "клік.", unit_s: "очк.", easter: "100 кліків! Йди траву поторкай" }
-        };
-
-        function changeLang(l) {
-            curLang = l; const d = langs[l];
-            document.getElementById('h-title').innerText = d.title; document.getElementById('h-chat').innerText = d.chat;
-            document.getElementById('h-click').innerText = d.click; document.getElementById('h-snake').innerText = d.snake;
-            document.getElementById('h-top').innerText = d.top; document.getElementById('h-top-snake').innerText = d.top_s;
+        function toggleSettings() { 
+            const m = document.getElementById('sMenu'); 
+            m.style.display = m.style.display === 'block' ? 'none' : 'block'; 
         }
+        function changeTheme(v) { document.body.className = 'theme-' + v; }
 
-        function toggleSettings() { const m = document.getElementById('sMenu'); m.style.display = m.style.display === 'block' ? 'none' : 'block'; }
-        function showThanks() { alert("Андрюха, Вадек, Саша, Настя — лучшие!"); }
-        function changeTheme(v) { document.body.className = v === 'hacker' ? '' : 'theme-' + v; }
-
-        let snake = [{x: 200, y: 200}], food = {x: 100, y: 100}, d = "", sScore = 0;
+        // Змейка
+        let snake = [{x:200,y:200}], food = {x:100,y:100}, d = "", sScore = 0;
         const sCanvas = document.getElementById("snakeGame"); const sCtx = sCanvas.getContext("2d");
-        window.setD = (v) => { if(v==='up'&&d!=='down')d=v; if(v==='down'&&d!=='up')d=v; if(v==='left'&&d!=='right')d=v; if(v==='right'&&d!=='left')d=v; };
-        
+        window.setD = (v) => { if(v=='up'&&d!='down')d=v; if(v=='down'&&d!='up')d=v; if(v=='left'&&d!='right')d=v; if(v=='right'&&d!='left')d=v; };
         function drawS() {
             sCtx.fillStyle = "#000"; sCtx.fillRect(0,0,400,400);
             sCtx.fillStyle = "red"; sCtx.fillRect(food.x, food.y, 20, 20);
-            snake.forEach((s, i) => { sCtx.fillStyle = (i === 0) ? "#ADFF2F" : "#008000"; sCtx.fillRect(s.x, s.y, 20, 20); });
+            snake.forEach((s, i) => { sCtx.fillStyle = i==0?"#ADFF2F":"#008000"; sCtx.fillRect(s.x, s.y, 20, 20); });
             let hX = snake[0].x, hY = snake[0].y;
             if(d=="up") hY-=20; if(d=="down") hY+=20; if(d=="left") hX-=20; if(d=="right") hX+=20;
             if(hX==food.x && hY==food.y) {
-                sScore += 10; document.getElementById('s-score').innerText = "Score: " + sScore;
-                food = {x: Math.floor(Math.random()*19)*20, y: Math.floor(Math.random()*19)*20};
+                sScore+=10; document.getElementById('s-score').innerText="Score: "+sScore;
+                food = {x:Math.floor(Math.random()*19)*20, y:Math.floor(Math.random()*19)*20};
             } else if(d) snake.pop();
             if(d) {
-                if(hX < 0 || hX >= 400 || hY < 0 || hY >= 400 || snake.some(s=>s.x==hX && s.y==hY)) {
-                    window.saveSnake(sScore); alert("Game Over! Score: " + sScore);
-                    d=""; snake=[{x:200,y:200}]; sScore=0; document.getElementById('s-score').innerText = "Score: 0";
+                if(hX<0||hX>=400||hY<0||hY>=400||snake.some(s=>s.x==hX&&s.y==hY)) {
+                    d=""; snake=[{x:200,y:200}]; sScore=0; document.getElementById('s-score').innerText="Score: 0";
+                    alert("Game Over!");
                 } else snake.unshift({x:hX, y:hY});
             }
         }
         setInterval(drawS, 120);
 
+        // Матрица
         const mCanvas = document.getElementById('matrixCanvas'); const mCtx = mCanvas.getContext('2d');
         mCanvas.width = window.innerWidth; mCanvas.height = window.innerHeight;
         const drops = Array(Math.floor(mCanvas.width/16)).fill(1);
         function drawM() {
-            mCtx.fillStyle = 'rgba(0, 0, 0, 0.05)'; mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
+            mCtx.fillStyle = 'rgba(0,0,0,0.05)'; mCtx.fillRect(0,0,mCanvas.width,mCanvas.height);
             mCtx.fillStyle = '#0F0'; mCtx.font = '16px monospace';
-            drops.forEach((y, i) => { mCtx.fillText(Math.random() > 0.5 ? '0' : '1', i * 16, y * 16); if (y * 16 > mCanvas.height && Math.random() > 0.975) drops[i] = 0; drops[i]++; });
+            drops.forEach((y, i) => {
+                mCtx.fillText(Math.random()>0.5?'0':'1', i*16, y*16);
+                if(y*16>mCanvas.height && Math.random()>0.975) drops[i]=0;
+                drops[i]++;
+            });
         }
         setInterval(drawM, 33);
-        Dos(document.getElementById("doom-container")).run("https://js-dos.com/v7/build/archive/doom.zip");
+
+        // DOOM Запуск
+        try {
+            Dos(document.getElementById("doom-container"), { 
+                url: "https://js-dos.com/v7/build/archive/doom.zip",
+                style: "none"
+            });
+        } catch(e) { console.log("DOOM error:", e); }
     </script>
 </body>
 </html>
+
 
 
 
