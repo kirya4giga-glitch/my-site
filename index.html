@@ -3,68 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Мой сайт</title>
+    <title>Мой супер сайт</title>
     <script src="https://js-dos.com/v7/build/releases/latest/js-dos.js"></script>
     <style>
-        :root {
-            --bg-color: #0a0a0a;
-            --main-color: #0F0;
-            --box-bg: rgba(10, 25, 10, 0.6);
-            --text-color: #0F0;
-        }
-
+        :root { --bg-color: #0a0a0a; --main-color: #0F0; --box-bg: rgba(10, 25, 10, 0.6); --text-color: #0F0; }
         body.theme-tg { --bg-color: #17212b; --main-color: #5288c1; --box-bg: #242f3d; --text-color: #fff; }
         body.theme-light { --bg-color: #f0f2f5; --main-color: #0088cc; --box-bg: #ffffff; --text-color: #000; }
-
-        body { 
-            font-family: 'Consolas', monospace; text-align: center; padding: 20px; 
-            background-color: var(--bg-color); color: var(--text-color); margin: 0; overflow-x: hidden;
-            transition: 0.3s;
-        }
-
-        .settings-btn {
-            position: fixed; top: 15px; right: 15px; z-index: 100;
-            cursor: pointer; background: var(--box-bg); padding: 8px; border-radius: 10px; border: 1px solid var(--main-color);
-        }
-        .settings-menu {
-            display: none; position: fixed; top: 60px; right: 15px; z-index: 101;
-            background: var(--box-bg); padding: 15px; border-radius: 10px; border: 1px solid var(--main-color);
-            text-align: left; box-shadow: 0 0 15px rgba(0,0,0,0.5); width: 200px;
-        }
-        .settings-menu select, .settings-menu button { 
-            background: #000; color: #0F0; border: 1px solid #0F0; margin-bottom: 10px; width: 100%; cursor: pointer;
-        }
-
+        body { font-family: 'Consolas', monospace; text-align: center; padding: 20px; background-color: var(--bg-color); color: var(--text-color); margin: 0; overflow-x: hidden; transition: 0.3s; }
+        .settings-btn { position: fixed; top: 15px; right: 15px; z-index: 100; cursor: pointer; background: var(--box-bg); padding: 8px; border-radius: 10px; border: 1px solid var(--main-color); }
+        .settings-menu { display: none; position: fixed; top: 60px; right: 15px; z-index: 101; background: var(--box-bg); padding: 15px; border-radius: 10px; border: 1px solid var(--main-color); text-align: left; box-shadow: 0 0 15px rgba(0,0,0,0.5); width: 200px; }
+        .settings-menu select, .settings-menu button { background: #000; color: #0F0; border: 1px solid #0F0; margin-bottom: 10px; width: 100%; cursor: pointer; }
         h1, h2 { color: var(--main-color); text-shadow: 0 0 5px var(--main-color); }
-        .game-box {
-            background: var(--box-bg); padding: 20px; border-radius: 15px; 
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2); display: inline-block;
-            margin-bottom: 30px; width: 95%; max-width: 450px;
-            border: 1px solid var(--main-color); position: relative; z-index: 2;
-        }
-        .button-tea { 
-            display: inline-block; padding: 12px 25px; background: rgba(0, 200, 0, 0.2); 
-            color: var(--main-color); border: 1px solid var(--main-color); border-radius: 8px; 
-            margin-bottom: 25px; cursor: pointer; font-weight: bold;
-        }
-
-        #cList {
-            height: 250px; overflow-y: auto; background: rgba(0, 0, 0, 0.5); 
-            padding: 10px; border-radius: 10px; display: flex; flex-direction: column; border: 1px solid var(--main-color);
-        }
-        .message {
-            max-width: 85%; margin-bottom: 8px; padding: 8px 12px; border-radius: 12px; font-size: 14px;
-            background: rgba(0, 255, 0, 0.1); border: 1px solid rgba(0,255,0,0.2); align-self: flex-start; text-align: left;
-        }
+        .game-box { background: var(--box-bg); padding: 20px; border-radius: 15px; box-shadow: 0 0 15px rgba(0, 255, 0, 0.2); display: inline-block; margin-bottom: 30px; width: 95%; max-width: 450px; border: 1px solid var(--main-color); position: relative; z-index: 2; }
+        .button-tea { display: inline-block; padding: 12px 25px; background: rgba(0, 200, 0, 0.2); color: var(--main-color); border: 1px solid var(--main-color); border-radius: 8px; margin-bottom: 25px; cursor: pointer; font-weight: bold; }
+        #cList { height: 250px; overflow-y: auto; background: rgba(0, 0, 0, 0.5); padding: 10px; border-radius: 10px; display: flex; flex-direction: column; border: 1px solid var(--main-color); }
+        .message { max-width: 85%; margin-bottom: 8px; padding: 8px 12px; border-radius: 12px; font-size: 14px; background: rgba(0, 255, 0, 0.1); border: 1px solid rgba(0,255,0,0.2); align-self: flex-start; text-align: left; }
         .message img { max-width: 100%; border-radius: 10px; margin-top: 5px; display: block; }
         .del-btn { color: #ff4d4d; cursor: pointer; margin-left: 10px; }
         .chat-input-area { display: flex; gap: 5px; margin-top: 15px; }
         .chat-input-area input { flex: 1; padding: 10px; border: 1px solid var(--main-color); border-radius: 20px; background: #000; color: #0F0; outline: none; }
         .send-btn { background: var(--main-color); color: #000; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold; }
-
         #leaderboard { margin-top: 15px; font-size: 14px; text-align: left; border-top: 1px solid var(--main-color); padding-top: 10px; }
         .leader-item { display: flex; justify-content: space-between; padding: 2px 0; }
-
         canvas#snakeGame { background: #000; display: block; margin: 10px auto; width: 280px; height: 280px; border: 1px solid var(--main-color); }
         #doom-container { width: 100%; height: 300px; background: #000; border: 2px solid var(--main-color); margin-top: 10px; }
         #matrixCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-color: #000; }
@@ -109,9 +69,9 @@
 
     <div class="game-box">
         <h3 id="h-click">Кликер</h3>
-        <div id="score" style="font-size: 35px; font-weight: bold;">0</div>
+        <div id="score" style="font-size: 24px; font-weight: bold; min-height: 40px;">0</div>
         <button class="button-tea" onclick="addScore()" id="btn-click">КЛИКНИ!</button>
-        <div style="color: #ff4d4d; text-decoration: underline; cursor: pointer; font-size: 11px; margin-top: 5px;" onclick="resetScore()">обнулить счет</div>
+        <div style="color: #ff4d4d; text-decoration: underline; cursor: pointer; font-size: 11px; margin-top: 5px;" onclick="resetScore()">обнулить мой рекорд</div>
         
         <div id="leaderboard">
             <b id="h-top">ТОП ИГРОКОВ:</b>
@@ -152,25 +112,32 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         let currentSessionPass = ""; 
+        let userClicks = 0;
 
+        // Вход в систему (через чат)
         window.addC = async function() {
             const n = document.getElementById('nInp').value.trim();
             let m = document.getElementById('mInp').value.trim();
             if(!n || !m) return;
             const uRef = ref(db, 'users/' + n);
+            const snap = await get(uRef);
+
             if (!currentSessionPass) {
-                const snap = await get(uRef);
                 if(snap.exists()){
                     const p = prompt("Пароль:");
                     if(p !== snap.val().password) return alert("Неверно!");
                     currentSessionPass = p;
+                    userClicks = snap.val().score || 0;
+                    document.getElementById('score').innerText = userClicks;
                 } else {
                     const np = prompt("Придумай пароль:");
                     if(!np) return;
                     await set(uRef, {password: np, score: 0});
                     currentSessionPass = np;
+                    userClicks = 0;
                 }
             }
+
             let imgUrl = null;
             if (m.match(/\.(jpeg|jpg|gif|png)$/) != null) { imgUrl = m; m = ""; }
             const now = new Date();
@@ -178,77 +145,80 @@
             document.getElementById('mInp').value = "";
         };
 
+        // КЛИКЕР
+        window.addScore = async function() {
+            userClicks++;
+            const scoreDisplay = document.getElementById('score');
+            
+            if(userClicks >= 100) {
+                scoreDisplay.innerText = "100 кликов! Иди траву потрогай";
+                scoreDisplay.style.fontSize = "16px";
+            } else {
+                scoreDisplay.innerText = userClicks;
+                scoreDisplay.style.fontSize = "24px";
+            }
+
+            const n = document.getElementById('nInp').value.trim();
+            if(n && currentSessionPass) {
+                // Сразу сохраняем в базу при каждом клике
+                set(ref(db, 'users/' + n + '/score'), userClicks);
+            }
+        };
+
+        window.resetScore = async function() {
+            const n = document.getElementById('nInp').value.trim();
+            if(!n || !currentSessionPass) return alert("Сначала войди (введи имя в чате)!");
+            if(confirm("Обнулить твой рекорд?")) {
+                userClicks = 0;
+                document.getElementById('score').innerText = 0;
+                await set(ref(db, 'users/' + n + '/score'), 0);
+            }
+        };
+
+        // ТАБЛИЦА ТОП
+        const topQ = query(ref(db, 'users'), orderByChild('score'), limitToLast(5));
+        onValue(topQ, (s) => {
+            const list = document.getElementById('leaders-list');
+            list.innerHTML = ""; let arr = [];
+            s.forEach(c => { 
+                if(c.val().score !== undefined) arr.push({name: c.key, score: c.val().score}); 
+            });
+            arr.sort((a,b) => b.score - a.score).forEach((u, i) => {
+                list.innerHTML += `<div class="leader-item"><span>${i+1}. ${u.name}</span> <b>${u.score} кликов</b></div>`;
+            });
+        });
+
+        // Чат и Удаление
         onValue(ref(db, 'chat_messages'), (s) => {
             const list = document.getElementById('cList');
-            list.innerHTML = "";
-            const data = s.val();
+            list.innerHTML = ""; const data = s.val();
             for(let id in data) {
                 let img = data[id].image ? `<img src="${data[id].image}">` : "";
                 list.innerHTML += `<div class="message"><b>${data[id].name}</b> <span class="del-btn" onclick="deleteMsg('${id}')">×</span><br>${data[id].text} ${img} <small style="display:block;text-align:right">${data[id].time}</small></div>`;
             }
             list.scrollTop = list.scrollHeight;
         });
-
-        window.addScore = async function() {
-            let count = parseInt(document.getElementById('score').innerText) + 1;
-            document.getElementById('score').innerText = count;
-            const n = document.getElementById('nInp').value.trim();
-            if(n && currentSessionPass) {
-                const sRef = ref(db, 'users/' + n + '/score');
-                const snap = await get(sRef);
-                if(!snap.exists() || count > snap.val()) await set(sRef, count);
-            }
-        };
-
-        window.resetScore = async function() {
-            const n = document.getElementById('nInp').value.trim();
-            if(!n || !currentSessionPass) return alert("Сначала войди в чат!");
-            if(confirm("Обнулить рекорд?")) {
-                document.getElementById('score').innerText = 0;
-                await set(ref(db, 'users/' + n + '/score'), 0);
-            }
-        };
-
-        const topQ = query(ref(db, 'users'), orderByChild('score'), limitToLast(5));
-        onValue(topQ, (s) => {
-            const list = document.getElementById('leaders-list');
-            list.innerHTML = ""; let arr = [];
-            s.forEach(c => { arr.push({name: c.key, score: c.val().score || 0}); });
-            arr.reverse().forEach((u, i) => {
-                list.innerHTML += `<div class="leader-item"><span>${i+1}. ${u.name}</span> <b>${u.score} кликов</b></div>`;
-            });
-        });
-
         window.deleteMsg = (id) => { if(prompt("Админ-пароль:") === "8070") remove(ref(db, 'chat_messages/' + id)); };
     </script>
 
     <script>
-        function toggleSettings() { 
-            const m = document.getElementById('sMenu');
-            m.style.display = m.style.display === 'block' ? 'none' : 'block';
-        }
+        function toggleSettings() { const m = document.getElementById('sMenu'); m.style.display = m.style.display === 'block' ? 'none' : 'block'; }
         function showThanks() { alert("ОСОБАЯ БЛАГОДАРНОСТЬ:\n\n1. Анастасие землеройке\n2. Вадеку\n3. Андрюхе 😎\n4. Саше"); }
-        function changeTheme(v) {
-            document.body.className = v === 'hacker' ? '' : 'theme-' + v;
-            document.getElementById('matrixCanvas').style.display = (v === 'hacker') ? 'block' : 'none';
-        }
+        function changeTheme(v) { document.body.className = v === 'hacker' ? '' : 'theme-' + v; document.getElementById('matrixCanvas').style.display = (v === 'hacker') ? 'block' : 'none'; }
         const langs = {
             ru: { title: "Мой первый сайт", subtitle: "Делал сам честно!", chat: "Чат", click: "Кликер", snake: "Змейка", settings: "Настройки", top: "ТОП ИГРОКОВ:" },
             en: { title: "My First Site", subtitle: "Made it myself!", chat: "Chat", click: "Clicker", snake: "Snake", settings: "Settings", top: "TOP PLAYERS:" },
             ua: { title: "Мій перший сайт", subtitle: "Робив сам чесно!", chat: "Чат", click: "Клікер", snake: "Змійка", settings: "Налаштування", top: "ТОП ГРАВЦІВ:" }
         };
         function changeLang(l) {
-            document.getElementById('h-title').innerText = langs[l].title;
-            document.getElementById('h-subtitle').innerText = langs[l].subtitle;
-            document.getElementById('h-chat').innerText = langs[l].chat;
-            document.getElementById('h-click').innerText = langs[l].click;
-            document.getElementById('h-snake').innerText = langs[l].snake;
-            document.getElementById('set-txt').innerText = langs[l].settings;
+            document.getElementById('h-title').innerText = langs[l].title; document.getElementById('h-subtitle').innerText = langs[l].subtitle;
+            document.getElementById('h-chat').innerText = langs[l].chat; document.getElementById('h-click').innerText = langs[l].click;
+            document.getElementById('h-snake').innerText = langs[l].snake; document.getElementById('set-txt').innerText = langs[l].settings;
             document.getElementById('h-top').innerText = langs[l].top;
         }
 
-        const sCanvas = document.getElementById("snakeGame");
-        const sCtx = sCanvas.getContext("2d");
+        // ЗМЕЙКА
+        const sCanvas = document.getElementById("snakeGame"); const sCtx = sCanvas.getContext("2d");
         let snake = [{x: 200, y: 200}], food = {x: 100, y: 100}, d = "";
         window.setD = (v) => d = v;
         function drawS() {
@@ -269,8 +239,8 @@
         }
         setInterval(drawS, 150);
 
-        const mCanvas = document.getElementById('matrixCanvas');
-        const mCtx = mCanvas.getContext('2d');
+        // МАТРИЦА
+        const mCanvas = document.getElementById('matrixCanvas'); const mCtx = mCanvas.getContext('2d');
         mCanvas.width = window.innerWidth; mCanvas.height = window.innerHeight;
         const drops = Array(Math.floor(mCanvas.width/16)).fill(1);
         function drawM() {
@@ -287,4 +257,6 @@
     </script>
 </body>
 </html>
+
+
 
