@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super App v19 - Mute System</title>
+    <title>Super App v20 - Message Time</title>
     <style>
         :root { --bg: #0a0a0a; --main: #0F0; --box: rgba(15, 30, 15, 0.9); --txt: #0F0; }
         body.theme-tg { --bg: #17212b; --main: #5288c1; --box: #242f3d; --txt: #fff; }
@@ -18,10 +18,13 @@
         .msg { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-bottom: 8px; position: relative; border-left: 3px solid var(--main); cursor: pointer; }
         .del-btn { position: absolute; top: 5px; right: 5px; color: #ff4d4d; cursor: pointer; font-size: 10px; border: 1px solid #ff4d4d; border-radius: 3px; padding: 0 3px; }
         
+        /* Стиль для времени сообщения */
+        .msg-time { position: absolute; bottom: 5px; right: 10px; font-size: 10px; opacity: 0.5; font-style: italic; }
+        
         .top-del { color: #ff4d4d; font-size: 9px; cursor: pointer; margin-left: 5px; border: 1px solid #ff4d4d; padding: 0 2px; border-radius: 3px; }
         .top-mute { color: #ffa500; font-size: 9px; cursor: pointer; margin-left: 5px; border: 1px solid #ffa500; padding: 0 2px; border-radius: 3px; }
         
-        .react-bar { margin-top: 5px; font-size: 12px; display: flex; gap: 5px; flex-wrap: wrap; }
+        .react-bar { margin-top: 5px; font-size: 12px; display: flex; gap: 5px; flex-wrap: wrap; padding-right: 40px; }
         .react-item { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 10px; border: 1px solid var(--main); }
 
         .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--box); border: 2px solid var(--main); padding: 25px; border-radius: 15px; z-index: 2000; width: 300px; box-shadow: 0 0 50px #000; }
@@ -45,45 +48,44 @@
         <button class="button-tea" onclick="openMod('sMenu')">⚙️</button>
     </div>
 
-    <h1 id="h-title">Мой первый сайт</h1>
-    <h3 id="h-sub">сделал сам честно!</h3>
+    <h1>Мой первый сайт</h1>
+    <h3>v20: Time Edition</h3>
 
     <div id="pCard" class="modal">
         <h2 id="pc-name">Игрок</h2>
-        <p id="pc-rank" style="font-weight:bold; color:var(--main)"></p>
         <div id="pc-stats" style="text-align:left; line-height:1.6; margin-bottom:15px"></div>
         <button class="button-tea" onclick="resetScore()" style="color:red; border-color:red">Сбросить клики</button>
         <button class="button-tea" onclick="closeMod('pCard')">Закрыть</button>
     </div>
 
     <div id="sMenu" class="modal">
-        <h3 id="h-set">Настройки</h3>
+        <h3>Настройки</h3>
         Тема: <select onchange="changeTheme(this.value)"><option value="hacker">Hacker</option><option value="tg">Telegram</option><option value="snow">Snow</option><option value="cyber">Cyber</option></select><br><br>
         Язык: <select onchange="changeLang(this.value)"><option value="ru">RU</option><option value="en">EN</option><option value="ua">UA</option></select>
         <hr>
-        <button class="button-tea" onclick="alert('скинуть будущему программисту на чай: +79216274225')" id="b-tea">Поддержи меня</button>
+        <button class="button-tea" onclick="alert('Чай: +79216274225')">Поддержать</button>
         <button class="button-tea" onclick="logout()">Выход</button>
         <button class="button-tea" onclick="closeMod('sMenu')">X</button>
     </div>
 
     <div class="game-box">
-        <h3 id="h-chat">Чат</h3>
+        <h3>Чат</h3>
         <div id="cList"></div>
         <div style="display:flex; gap:5px">
-            <input type="text" id="mInp" placeholder="Текст..." style="flex:1; background:transparent; border:1px solid var(--main); color:inherit; padding:10px; border-radius:8px">
+            <input type="text" id="mInp" placeholder="Сообщение..." style="flex:1; background:transparent; border:1px solid var(--main); color:inherit; padding:10px; border-radius:8px">
             <button class="button-tea" onclick="sendMsg()">></button>
         </div>
     </div>
 
     <div class="game-box">
-        <h3 id="h-click">Кликер</h3>
+        <h3>Кликер</h3>
         <div id="score" style="font-size:55px; font-weight:bold">0</div>
-        <button class="button-tea" onclick="doClick()" id="b-click" style="padding:15px 35px; font-size:20px">КЛИКНИ!</button>
+        <button class="button-tea" onclick="doClick()" style="padding:15px 35px; font-size:20px">КЛИК!</button>
         <div id="topList" style="text-align:left; font-size:13px; margin-top:10px; border-top:1px solid var(--main); padding-top:10px"></div>
     </div>
 
     <div class="game-box">
-        <h3 id="h-games">Игры</h3>
+        <h3>Игры</h3>
         <div id="active-list" style="font-size:11px; color:yellow; margin-bottom:10px"></div>
         <div id="lobby">
             <button class="button-tea" onclick="startMM('ttt')">Крестики-Нолики</button>
@@ -92,7 +94,7 @@
         <div id="game-area" class="hidden">
             <div id="g-info"></div>
             <div id="board-container"></div>
-            <button class="button-tea" onclick="stopMM()" id="b-cancel">Отмена</button>
+            <button class="button-tea" onclick="stopMM()">Отмена</button>
         </div>
     </div>
 
@@ -103,27 +105,13 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, get, update, push, onValue, remove, query, orderByChild, limitToLast, off } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, set, get, update, push, onValue, remove, query, orderByChild, limitToLast, off, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const conf = { apiKey: "AIzaSyChSk0gETRBQ391e4BjPqFsKc_dzjBmT58", databaseURL: "https://my-chat-52203-default-rtdb.firebaseio.com", projectId: "my-chat-52203" };
         const db = getDatabase(initializeApp(conf));
 
-        let user = JSON.parse(localStorage.getItem('user_v19'));
+        let user = JSON.parse(localStorage.getItem('user_v20'));
         let selId = null, gid = null, myRole = '', mmSub = null;
-
-        const dict = {
-            ru: {title:"Мой первый сайт", sub:"сделал сам честно!", chat:"Чат", click:"Кликер", games:"Игры", tea:"Поддержи меня", bclick:"КЛИКНИ!"},
-            en: {title:"My First Web", sub:"honest work!", chat:"Chat", click:"Clicker", games:"Games", tea:"Support Me", bclick:"CLICK!"},
-            ua: {title:"Мій перший сайт", sub:"робив сам чесно!", chat:"Чат", click:"Клікер", games:"Ігри", tea:"Підтримай мене", bclick:"КЛІКНИ!"}
-        };
-
-        window.changeLang = (l) => {
-            const t = dict[l];
-            document.getElementById('h-title').innerText = t.title; document.getElementById('h-sub').innerText = t.sub;
-            document.getElementById('h-chat').innerText = t.chat; document.getElementById('h-click').innerText = t.click;
-            document.getElementById('h-games').innerText = t.games; document.getElementById('b-tea').innerText = t.tea;
-            document.getElementById('b-click').innerText = t.bclick;
-        };
 
         async function init() {
             if(!user) {
@@ -132,7 +120,7 @@
                 const s = await get(ref(db, 'users/'+n));
                 if(s.exists()){ if(s.val().password !== p) return location.reload(); user = {name: n, ...s.val()}; }
                 else { user = {name: n, password: p, score: 0, wins_ttt: 0, wins_chess: 0, muteUntil: 0}; await set(ref(db, 'users/'+n), user); }
-                localStorage.setItem('user_v19', JSON.stringify(user));
+                localStorage.setItem('user_v20', JSON.stringify(user));
             }
             document.getElementById('score').innerText = user.score;
             loadTop(); loadChat(); loadActive();
@@ -141,22 +129,32 @@
         window.doClick = () => {
             user.score++; document.getElementById('score').innerText = user.score;
             update(ref(db, 'users/'+user.name), {score: user.score});
-            localStorage.setItem('user_v19', JSON.stringify(user));
+            localStorage.setItem('user_v20', JSON.stringify(user));
         };
 
         function loadChat() {
             onValue(ref(db, 'msgs'), (s) => {
                 const l = document.getElementById('cList'); l.innerHTML = "";
                 s.forEach(d => {
-                    const m = d.val(); let rb = '<div class="react-bar">';
+                    const m = d.val();
+                    let timeStr = "";
+                    if(m.time) {
+                        const date = new Date(m.time);
+                        timeStr = date.getHours().toString().padStart(2,'0') + ":" + date.getMinutes().toString().padStart(2,'0');
+                    }
+
+                    let rb = '<div class="react-bar">';
                     if(m.r) Object.entries(m.r).forEach(([emoji, voters]) => {
                         let count = Object.keys(voters).length;
                         if(count > 0) rb += `<span class="react-item">${emoji} ${count}</span>`;
                     });
                     rb += '</div>';
+
                     const div = document.createElement('div'); div.className = 'msg';
                     div.innerHTML = `<span class="del-btn" onclick="event.stopPropagation(); delM('${d.key}')">X</span>
-                                     <b onclick="event.stopPropagation(); showP('${m.n}')">${m.n}</b>: ${m.t} ${rb}`;
+                                     <b onclick="event.stopPropagation(); showP('${m.n}')">${m.n}</b>: ${m.t} 
+                                     ${rb}
+                                     <span class="msg-time">${timeStr}</span>`;
                     div.onclick = (e) => { selId = d.key; const p = document.getElementById('reactPicker'); p.style.display = 'flex'; p.style.top = (e.clientY-40)+'px'; p.style.left = e.clientX+'px'; };
                     l.appendChild(div);
                 });
@@ -168,10 +166,11 @@
             const i = document.getElementById('mInp'); if(!i.value) return;
             const s = await get(ref(db, 'users/'+user.name));
             if(s.val().muteUntil && s.val().muteUntil > Date.now()) {
-                alert(`Вы в муте еще ${Math.ceil((s.val().muteUntil - Date.now())/60000)} мин!`);
-                return;
+                alert(`Вы в муте!`); return;
             }
-            push(ref(db, 'msgs'), {n:user.name, t:i.value}); i.value="";
+            // Добавляем время сервера в сообщение
+            push(ref(db, 'msgs'), {n:user.name, t:i.value, time: serverTimestamp()}); 
+            i.value="";
         };
 
         window.applyR = (e) => {
@@ -183,19 +182,11 @@
         window.delM = (id) => { if(prompt("Pass:") === "8070") remove(ref(db, 'msgs/'+id)); };
         window.delUser = (name) => { if(prompt(`Удалить ${name}? Pass:`) === "8070") remove(ref(db, 'users/'+name)); };
 
-        // Функция МУТА
         window.toggleMute = async (name) => {
             const s = await get(ref(db, 'users/'+name));
             const isMuted = s.val().muteUntil && s.val().muteUntil > Date.now();
-            if(isMuted) {
-                if(prompt(`Размутить ${name}? Pass:`) === "8070") update(ref(db, 'users/'+name), {muteUntil: 0});
-            } else {
-                let m = prompt(`На сколько минут замутить ${name}?`);
-                if(m && prompt("Admin Pass:") === "8070") {
-                    update(ref(db, 'users/'+name), {muteUntil: Date.now() + (m * 60000)});
-                    alert(`${name} замучен на ${m} мин.`);
-                }
-            }
+            if(isMuted) { if(prompt(`Размутить? Pass:`) === "8070") update(ref(db, 'users/'+name), {muteUntil: 0});
+            } else { let m = prompt(`Минуты:`); if(m && prompt("Pass:") === "8070") update(ref(db, 'users/'+name), {muteUntil: Date.now() + (m * 60000)}); }
         };
 
         window.showP = async (n) => {
@@ -221,7 +212,6 @@
             });
         }
 
-        // ИГРЫ
         window.startMM = async (type) => {
             document.getElementById('lobby').classList.add('hidden'); document.getElementById('game-area').classList.remove('hidden');
             const qRef = ref(db, 'queue_'+type); const snap = await get(qRef);
@@ -273,6 +263,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
