@@ -48,7 +48,6 @@
             margin-bottom: 25px; cursor: pointer; font-weight: bold;
         }
 
-        /* Чат */
         #cList {
             height: 250px; overflow-y: auto; background: rgba(0, 0, 0, 0.5); 
             padding: 10px; border-radius: 10px; display: flex; flex-direction: column; border: 1px solid var(--main-color);
@@ -57,19 +56,19 @@
             max-width: 85%; margin-bottom: 8px; padding: 8px 12px; border-radius: 12px; font-size: 14px;
             background: rgba(0, 255, 0, 0.1); border: 1px solid rgba(0,255,0,0.2); align-self: flex-start; text-align: left;
         }
+        .message img { max-width: 100%; border-radius: 10px; margin-top: 5px; display: block; }
         .del-btn { color: #ff4d4d; cursor: pointer; margin-left: 10px; }
         .chat-input-area { display: flex; gap: 5px; margin-top: 15px; }
         .chat-input-area input { flex: 1; padding: 10px; border: 1px solid var(--main-color); border-radius: 20px; background: #000; color: #0F0; outline: none; }
         .send-btn { background: var(--main-color); color: #000; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold; }
 
-        /* Игры */
+        #leaderboard { margin-top: 15px; font-size: 14px; text-align: left; border-top: 1px solid var(--main-color); padding-top: 10px; }
+        .leader-item { display: flex; justify-content: space-between; padding: 2px 0; }
+
         canvas#snakeGame { background: #000; display: block; margin: 10px auto; width: 280px; height: 280px; border: 1px solid var(--main-color); }
         #doom-container { width: 100%; height: 300px; background: #000; border: 2px solid var(--main-color); margin-top: 10px; }
         #matrixCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-color: #000; }
-        
-        /* Таблица рекордов */
-        #leaderboard { margin-top: 15px; font-size: 14px; text-align: left; border-top: 1px solid var(--main-color); padding-top: 10px; }
-        .leader-item { display: flex; justify-content: space-between; padding: 2px 0; }
+        .doom-controls { font-size: 11px; margin-top: 8px; color: #ff4d4d; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -99,11 +98,11 @@
     <div class="button-tea" id="btn-tea" onclick="alert('скинуть на чай будущему программисту:\n+79216274225 Сбербанк')">Нажми!</div>
 
     <div class="game-box">
-        <h3 id="h-chat">чат (v3)</h3>
+        <h3 id="h-chat">Чат (v4)</h3>
         <div id="cList"></div>
         <div class="chat-input-area">
             <input type="text" id="nInp" placeholder="Имя" style="width: 80px;">
-            <input type="text" id="mInp" placeholder="Сообщение...">
+            <input type="text" id="mInp" placeholder="Текст или ссылка на фото...">
             <button class="send-btn" onclick="addC()">></button>
         </div>
     </div>
@@ -112,7 +111,7 @@
         <h3 id="h-click">Кликер</h3>
         <div id="score" style="font-size: 35px; font-weight: bold;">0</div>
         <button class="button-tea" onclick="addScore()" id="btn-click">КЛИКНИ!</button>
-        <div style="color: #ff4d4d; text-decoration: underline; cursor: pointer; font-size: 12px; margin-top: 5px;" onclick="resetScore()">обнулить мой счет</div>
+        <div style="color: #ff4d4d; text-decoration: underline; cursor: pointer; font-size: 11px; margin-top: 5px;" onclick="resetScore()">обнулить счет</div>
         
         <div id="leaderboard">
             <b id="h-top">ТОП ИГРОКОВ:</b>
@@ -130,8 +129,12 @@
     </div>
 
     <div class="game-box">
-        <h3>DOOM</h3>
+        <h3>DOOM (1993)</h3>
         <div id="doom-container"></div>
+        <div class="doom-controls">
+            ⚠️ ТОЛЬКО ДЛЯ ПК!<br>
+            Ходить: стрелки | Стрелять: Ctrl | Открыть дверь: Пробел | Бег: Shift
+        </div>
     </div>
 
     <script type="module">
@@ -150,27 +153,28 @@
         const db = getDatabase(app);
         let currentSessionPass = ""; 
 
-        // --- ЛОГИКА ЧАТА ---
         window.addC = async function() {
             const n = document.getElementById('nInp').value.trim();
-            const m = document.getElementById('mInp').value.trim();
+            let m = document.getElementById('mInp').value.trim();
             if(!n || !m) return;
             const uRef = ref(db, 'users/' + n);
             if (!currentSessionPass) {
                 const snap = await get(uRef);
                 if(snap.exists()){
-                    const p = prompt("Введи пароль:");
+                    const p = prompt("Пароль:");
                     if(p !== snap.val().password) return alert("Неверно!");
                     currentSessionPass = p;
                 } else {
-                    const np = prompt("Создай пароль:");
+                    const np = prompt("Придумай пароль:");
                     if(!np) return;
                     await set(uRef, {password: np, score: 0});
                     currentSessionPass = np;
                 }
             }
+            let imgUrl = null;
+            if (m.match(/\.(jpeg|jpg|gif|png)$/) != null) { imgUrl = m; m = ""; }
             const now = new Date();
-            push(ref(db, 'chat_messages'), { name: n, text: m, time: now.getHours() + ":" + (now.getMinutes()<10?'0':'') + now.getMinutes() });
+            push(ref(db, 'chat_messages'), { name: n, text: m, image: imgUrl, time: now.getHours() + ":" + (now.getMinutes()<10?'0':'') + now.getMinutes() });
             document.getElementById('mInp').value = "";
         };
 
@@ -179,49 +183,43 @@
             list.innerHTML = "";
             const data = s.val();
             for(let id in data) {
-                list.innerHTML += `<div class="message"><b>${data[id].name}</b> <span class="del-btn" onclick="deleteMsg('${id}')">×</span><br>${data[id].text} <small style="display:block;text-align:right">${data[id].time}</small></div>`;
+                let img = data[id].image ? `<img src="${data[id].image}">` : "";
+                list.innerHTML += `<div class="message"><b>${data[id].name}</b> <span class="del-btn" onclick="deleteMsg('${id}')">×</span><br>${data[id].text} ${img} <small style="display:block;text-align:right">${data[id].time}</small></div>`;
             }
             list.scrollTop = list.scrollHeight;
         });
 
-        // --- ЛОГИКА РЕКОРДОВ ---
         window.addScore = async function() {
             let count = parseInt(document.getElementById('score').innerText) + 1;
             document.getElementById('score').innerText = count;
-            if(count === 100) alert("100 кликов! Иди потрогай траву, задрот! 😂");
-
             const n = document.getElementById('nInp').value.trim();
             if(n && currentSessionPass) {
-                const uRef = ref(db, 'users/' + n + '/score');
-                const snap = await get(uRef);
-                if(!snap.exists() || count > snap.val()) {
-                    await set(uRef, count);
-                }
+                const sRef = ref(db, 'users/' + n + '/score');
+                const snap = await get(sRef);
+                if(!snap.exists() || count > snap.val()) await set(sRef, count);
             }
         };
 
         window.resetScore = async function() {
             const n = document.getElementById('nInp').value.trim();
             if(!n || !currentSessionPass) return alert("Сначала войди в чат!");
-            if(confirm("Обнулить твой рекорд в таблице?")) {
+            if(confirm("Обнулить рекорд?")) {
                 document.getElementById('score').innerText = 0;
                 await set(ref(db, 'users/' + n + '/score'), 0);
             }
         };
 
-        // Подгрузка ТОП-5
-        const topQuery = query(ref(db, 'users'), orderByChild('score'), limitToLast(5));
-        onValue(topQuery, (s) => {
+        const topQ = query(ref(db, 'users'), orderByChild('score'), limitToLast(5));
+        onValue(topQ, (s) => {
             const list = document.getElementById('leaders-list');
-            list.innerHTML = "";
-            let arr = [];
-            s.forEach(child => { arr.push({name: child.key, score: child.val().score || 0}); });
+            list.innerHTML = ""; let arr = [];
+            s.forEach(c => { arr.push({name: c.key, score: c.val().score || 0}); });
             arr.reverse().forEach((u, i) => {
-                list.innerHTML += `<div class="leader-item"><span>${i+1}. ${u.name}</span> <b>${u.score}</b></div>`;
+                list.innerHTML += `<div class="leader-item"><span>${i+1}. ${u.name}</span> <b>${u.score} кликов</b></div>`;
             });
         });
 
-        window.deleteMsg = (id) => { if(prompt("Пароль админа:") === "8070") remove(ref(db, 'chat_messages/' + id)); };
+        window.deleteMsg = (id) => { if(prompt("Админ-пароль:") === "8070") remove(ref(db, 'chat_messages/' + id)); };
     </script>
 
     <script>
@@ -234,13 +232,11 @@
             document.body.className = v === 'hacker' ? '' : 'theme-' + v;
             document.getElementById('matrixCanvas').style.display = (v === 'hacker') ? 'block' : 'none';
         }
-
         const langs = {
             ru: { title: "Мой первый сайт", subtitle: "Делал сам честно!", chat: "Чат", click: "Кликер", snake: "Змейка", settings: "Настройки", top: "ТОП ИГРОКОВ:" },
             en: { title: "My First Site", subtitle: "Made it myself!", chat: "Chat", click: "Clicker", snake: "Snake", settings: "Settings", top: "TOP PLAYERS:" },
             ua: { title: "Мій перший сайт", subtitle: "Робив сам чесно!", chat: "Чат", click: "Клікер", snake: "Змійка", settings: "Налаштування", top: "ТОП ГРАВЦІВ:" }
         };
-
         function changeLang(l) {
             document.getElementById('h-title').innerText = langs[l].title;
             document.getElementById('h-subtitle').innerText = langs[l].subtitle;
@@ -251,7 +247,6 @@
             document.getElementById('h-top').innerText = langs[l].top;
         }
 
-        // --- ЗМЕЙКА С НОВОЙ ГОЛОВОЙ ---
         const sCanvas = document.getElementById("snakeGame");
         const sCtx = sCanvas.getContext("2d");
         let snake = [{x: 200, y: 200}], food = {x: 100, y: 100}, d = "";
@@ -259,25 +254,21 @@
         function drawS() {
             sCtx.fillStyle = "#000"; sCtx.fillRect(0,0,400,400);
             sCtx.fillStyle = "red"; sCtx.fillRect(food.x, food.y, 20, 20);
-            
-            snake.forEach((s, index) => {
-                sCtx.fillStyle = (index === 0) ? "#ADFF2F" : "#008000"; // Голова ярче
+            snake.forEach((s, i) => {
+                sCtx.fillStyle = (i === 0) ? "#ADFF2F" : "#008000"; 
                 sCtx.fillRect(s.x, s.y, 20, 20);
-                sCtx.strokeStyle = "#000"; sCtx.strokeRect(s.x, s.y, 20, 20); // Обводка
+                sCtx.strokeStyle = "#000"; sCtx.strokeRect(s.x, s.y, 20, 20);
             });
-
             let hX = snake[0].x, hY = snake[0].y;
             if(d=="up") hY-=20; if(d=="down") hY+=20; if(d=="left") hX-=20; if(d=="right") hX+=20;
             if(hX==food.x && hY==food.y) food = {x: Math.floor(Math.random()*19)*20, y: Math.floor(Math.random()*19)*20}; else if(d) snake.pop();
             if(d) {
-                if(hX<0 || hX>=400 || hY<0 || hY>=400 || snake.some(s => s.x==hX && s.y==hY)) { 
-                    d=""; snake=[{x:200,y:200}]; alert("Конец игры!");
-                } else snake.unshift({x:hX, y:hY});
+                if(hX<0 || hX>=400 || hY<0 || hY>=400 || snake.some(s=>s.x==hX && s.y==hY)) { d=""; snake=[{x:200,y:200}]; alert("Game Over!"); }
+                else snake.unshift({x:hX, y:hY});
             }
         }
         setInterval(drawS, 150);
 
-        // Матрица
         const mCanvas = document.getElementById('matrixCanvas');
         const mCtx = mCanvas.getContext('2d');
         mCanvas.width = window.innerWidth; mCanvas.height = window.innerHeight;
@@ -296,4 +287,3 @@
     </script>
 </body>
 </html>
-
