@@ -3,299 +3,257 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Мой сайт</title>
+    <title>Мой супер сайт</title>
     <script src="https://js-dos.com/v7/build/releases/latest/js-dos.js"></script>
     <style>
-        /* --- ГЛОБАЛЬНЫЕ СТИЛИ --- */
-        body { 
-            font-family: 'Consolas', monospace; /* Моноширинный шрифт для хакерского вида */
-            text-align: center; 
-            padding: 20px; 
-            background-color: #0a0a0a; /* Очень темный фон */
-            color: #0F0; /* Ярко-зеленый текст по умолчанию */
-            margin: 0; 
-            overflow-x: hidden;
+        :root {
+            --bg-color: #0a0a0a;
+            --main-color: #0F0;
+            --box-bg: rgba(10, 25, 10, 0.6);
+            --text-color: #0F0;
         }
-        h1, h2 { color: #0F0; text-shadow: 0 0 5px #0F0; } /* Свечение для заголовков */
+
+        /* Темы */
+        body.theme-tg {
+            --bg-color: #17212b;
+            --main-color: #5288c1;
+            --box-bg: #242f3d;
+            --text-color: #fff;
+        }
+        body.theme-light {
+            --bg-color: #f0f2f5;
+            --main-color: #0088cc;
+            --box-bg: #ffffff;
+            --text-color: #000;
+        }
+
+        body { 
+            font-family: 'Consolas', monospace; text-align: center; padding: 20px; 
+            background-color: var(--bg-color); color: var(--text-color); margin: 0; overflow-x: hidden;
+            transition: 0.3s;
+        }
+
+        /* Настройки */
+        .settings-btn {
+            position: fixed; top: 15px; right: 15px; z-index: 100;
+            cursor: pointer; background: var(--box-bg); padding: 8px; border-radius: 10px; border: 1px solid var(--main-color);
+        }
+        .settings-menu {
+            display: none; position: fixed; top: 60px; right: 15px; z-index: 101;
+            background: var(--box-bg); padding: 15px; border-radius: 10px; border: 1px solid var(--main-color);
+            text-align: left; box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+        .settings-menu select { background: #000; color: #0F0; border: 1px solid #0F0; margin-bottom: 10px; width: 100%; }
+
+        h1, h2 { color: var(--main-color); text-shadow: 0 0 5px var(--main-color); }
         .game-box {
-            background: rgba(10, 25, 10, 0.6); /* Темно-зеленый прозрачный фон */
-            padding: 20px; border-radius: 15px; 
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.4); /* Зеленое свечение */
-            display: inline-block;
+            background: var(--box-bg); padding: 20px; border-radius: 15px; 
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2); display: inline-block;
             margin-bottom: 30px; width: 95%; max-width: 450px;
-            border: 1px solid rgba(0, 255, 0, 0.5);
-            position: relative; z-index: 2; /* Поверх матрицы */
+            border: 1px solid var(--main-color); position: relative; z-index: 2;
         }
         .button-tea { 
-            display: inline-block; padding: 12px 25px; background: rgba(0, 200, 0, 0.3); 
-            color: #0F0; border: 1px solid #0F0; border-radius: 8px; 
+            display: inline-block; padding: 12px 25px; background: rgba(0, 200, 0, 0.2); 
+            color: var(--main-color); border: 1px solid var(--main-color); border-radius: 8px; 
             margin-bottom: 25px; cursor: pointer; font-weight: bold;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-            text-decoration: none;
         }
-        hr { border: none; border-top: 1px dashed rgba(0, 255, 0, 0.4); margin: 40px auto; width: 80%; }
 
-        /* --- ЧАТ СТИЛИ --- */
+        /* Чат */
         #cList {
-            height: 300px; overflow-y: auto; background: rgba(0, 0, 0, 0.8); /* Более темный фон чата */
-            padding: 10px; border-radius: 10px; display: flex; flex-direction: column; border: 1px solid #0F0;
-            box-shadow: inset 0 0 8px rgba(0, 255, 0, 0.3);
+            height: 250px; overflow-y: auto; background: rgba(0, 0, 0, 0.5); 
+            padding: 10px; border-radius: 10px; display: flex; flex-direction: column; border: 1px solid var(--main-color);
         }
         .message {
-            max-width: 85%; margin-bottom: 8px; padding: 8px 12px;
-            border-radius: 12px; font-size: 14px; text-align: left; box-shadow: 0 1px 3px rgba(0,0,0,0.4);
-            background: rgba(0, 255, 0, 0.15); /* Прозрачные зеленые сообщения */
-            color: #0F0; align-self: flex-start;
-            border: 1px solid rgba(0, 255, 0, 0.3);
+            max-width: 85%; margin-bottom: 8px; padding: 8px 12px; border-radius: 12px; font-size: 14px;
+            background: rgba(0, 255, 0, 0.1); border: 1px solid rgba(0,255,0,0.2); align-self: flex-start;
         }
-        .msg-name { font-weight: bold; font-size: 11px; color: #0F0; display: flex; justify-content: space-between; align-items: center; }
-        .msg-time { font-size: 9px; color: rgba(0, 255, 0, 0.7); margin-top: 4px; text-align: right; display: block; }
-        .del-btn { color: #ff4d4d; cursor: pointer; font-weight: normal; margin-left: 10px; text-shadow: none; }
-
+        .del-btn { color: #ff4d4d; cursor: pointer; margin-left: 10px; }
         .chat-input-area { display: flex; gap: 5px; margin-top: 15px; }
-        .chat-input-area input { 
-            flex: 1; padding: 10px; border: 1px solid #0F0; border-radius: 20px; 
-            background: rgba(0, 0, 0, 0.6); color: #0F0; outline: none;
-            box-shadow: inset 0 0 5px rgba(0, 255, 0, 0.3);
-        }
-        .chat-input-area input::placeholder { color: rgba(0, 255, 0, 0.6); }
-        .send-btn { background: #0F0; color: #0a0a0a; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold; font-size: 18px; }
+        .chat-input-area input { flex: 1; padding: 10px; border: 1px solid var(--main-color); border-radius: 20px; background: #000; color: #0F0; }
+        .send-btn { background: var(--main-color); color: #000; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
 
-        /* --- КЛИКЕР СТИЛИ --- */
-        #score { font-size: 40px; font-weight: bold; color: #0F0; margin: 5px 0; text-shadow: 0 0 8px #0F0; }
-        .click-btn { 
-            padding: 15px; background: #0F0; border: 2px solid #0a0a0a; border-radius: 12px; 
-            font-weight: bold; width: 100%; cursor: pointer; color: #0a0a0a;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.6);
-        }
-        .reset-link { color: #ff4d4d; text-decoration: underline; cursor: pointer; font-size: 12px; display: block; margin-top: 10px; }
-
-        /* --- ЗМЕЙКА СТИЛИ --- */
-        canvas#snakeGame { background: #000; display: block; margin: 10px auto; width: 280px; height: 280px; border-radius: 5px; border: 1px solid #0F0; box-shadow: 0 0 10px rgba(0,255,0,0.5); }
-        .snake-ctrl { display: grid; grid-template-columns: repeat(3, 55px); gap: 8px; justify-content: center; margin-top: 15px; }
-        .s-btn { 
-            width: 55px; height: 55px; background: rgba(0,255,0,0.2); color: #0F0; border: 1px solid #0F0; 
-            border-radius: 10px; font-size: 18px; cursor: pointer;
-            box-shadow: 0 0 8px rgba(0,255,0,0.4);
-        }
-
-        /* --- DOOM СТИЛИ --- */
-        #doom-container { 
-            width: 100%; height: 350px; /* Увеличил высоту */
-            background: #000; border: 2px solid #0F0; border-radius: 10px;
-            margin-top: 20px;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.7); /* Сильное свечение для Дума */
-        }
-        p { color: rgba(0, 255, 0, 0.8); } /* Цвет текста параграфов */
-
-        /* --- МАТРИЦА СТИЛИ --- */
-        #matrixCanvas { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; 
-            background-color: #000; /* Гарантируем черный фон */
-        }
+        /* Игры */
+        canvas#snakeGame { background: #000; display: block; margin: 10px auto; width: 280px; height: 280px; border: 1px solid var(--main-color); }
+        #doom-container { width: 100%; height: 300px; background: #000; border: 2px solid var(--main-color); margin-top: 10px; }
+        #matrixCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background-color: #000; }
     </style>
 </head>
 <body>
 
     <canvas id="matrixCanvas"></canvas>
-    
-    <h1>Мой первый сайт</h1>
-    <h2>Делал сам честно!</h2>
-    <div class="button-tea" onclick="alert(скинуть на чай будущему программисту:\n+79216274225 Сбербанк')">Нажми!</div>
 
-    <hr>
+    <div class="settings-btn" onclick="toggleSettings()">⚙️ <span id="set-txt">Настройки</span></div>
+    <div class="settings-menu" id="sMenu">
+        <label id="set-theme">Тема:</label>
+        <select onchange="changeTheme(this.value)">
+            <option value="hacker">Hacker (Green)</option>
+            <option value="tg">Telegram (Blue)</option>
+            <option value="light">Light (Day)</option>
+        </select>
+        <label id="set-lang">Язык:</label>
+        <select onchange="changeLang(this.value)">
+            <option value="ru">Русский</option>
+            <option value="en">English</option>
+            <option value="ua">Українська</option>
+        </select>
+    </div>
+    
+    <h1 id="h-title">Мой первый сайт</h1>
+    <h2 id="h-subtitle">Делал сам честно!</h2>
+    <div class="button-tea" id="btn-tea" onclick="alert('скинуть на чай будущему программисту:\n+79216274225 Сбербанк')">Нажми!</div>
 
     <div class="game-box">
-        <h3>чат (прототип номер 3)</h3>
+        <h3 id="h-chat">чат (прототип номер 3)</h3>
         <div id="cList"></div>
         <div class="chat-input-area">
-            <input type="text" id="nInp" placeholder="Имя" style="width: 70px;">
+            <input type="text" id="nInp" placeholder="Имя">
             <input type="text" id="mInp" placeholder="Сообщение...">
             <button class="send-btn" onclick="addC()">></button>
         </div>
     </div>
 
     <div class="game-box">
-        <h3>Кликер </h3>
-        <div id="score">0</div>
-        <button class="click-btn" onclick="addScore()">КЛИКНИ!</button>
-        <span class="reset-link" onclick="resetScore()">обнулить счет</span>
+        <h3 id="h-click">Кликер</h3>
+        <div id="score" style="font-size: 30px;">0</div>
+        <button class="button-tea" onclick="addScore()" id="btn-click">КЛИКНИ!</button>
     </div>
 
     <div class="game-box">
-        <h3>Змейка </h3>
+        <h3 id="h-snake">Змейка</h3>
         <canvas id="snakeGame" width="400" height="400"></canvas>
-        <div class="snake-ctrl">
-            <div></div><button class="s-btn" onclick="setD('up')">▲</button><div></div>
-            <button class="s-btn" onclick="setD('left')">◀</button>
-            <button class="s-btn" onclick="setD('down')">▼</button>
-            <button class="s-btn" onclick="setD('right')">▶</button>
-        </div>
+        <button class="button-tea" onclick="setD('up')">▲</button><br>
+        <button class="button-tea" onclick="setD('left')">◀</button>
+        <button class="button-tea" onclick="setD('down')">▼</button>
+        <button class="button-tea" onclick="setD('right')">▶</button>
     </div>
 
     <div class="game-box">
-        <h3>DOOM (1993) - Загрузка...</h3>
+        <h3>DOOM</h3>
         <div id="doom-container"></div>
-        <p style="font-size: 10px; color: #0F0;">Управление: стрелки, Ctrl (стрельба), Alt (страйф), Пробел (открыть).<br>Нажми на игровое окно, чтобы начать. РАБОТАЕТ ТОЛЬКО НА ПК!</p>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, push, onValue, remove, get, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // Твои настройки Firebase (скопированы из скриншота)
         const firebaseConfig = {
             apiKey: "AIzaSyChSk0gETRBQ391e4BjPqFsKc_dzjBmT58",
             authDomain: "my-chat-52203.firebaseapp.com",
             databaseURL: "https://my-chat-52203-default-rtdb.firebaseio.com",
             projectId: "my-chat-52203",
-            storageBucket: "my-chat-52203.firebasestorage.app",
-            messagingSenderId: "336944595953",
             appId: "1:336944595953:web:24bfdf5041fc2040d17a50"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        const messagesRef = ref(db, 'chat_messages');
 
-        window.addC = function() {
-            const n = document.getElementById('nInp').value;
-            const m = document.getElementById('mInp').value;
-            if(n && m) {
-                const now = new Date();
-                const time = now.getHours() + ":" + (now.getMinutes()<10?'0':'') + now.getMinutes();
-                push(messagesRef, { name: n, text: m, time: time });
-                document.getElementById('mInp').value = "";
-            }
-        };
+        // Регистрация и отправка
+        window.addC = async function() {
+            const n = document.getElementById('nInp').value.trim();
+            const m = document.getElementById('mInp').value.trim();
+            if(!n || !m) return;
 
-        window.deleteMsg = function(id) {
-            const password = prompt("Пароль админа:");
-            if (password === "8070") { // <--- ЗАМЕНИ 1234 НА СВОЙ СЕКРЕТНЫЙ ПАРОЛЬ
-                remove(ref(db, 'chat_messages/' + id));
+            const uRef = ref(db, 'users/' + n);
+            const snap = await get(uRef);
+
+            if(snap.exists()){
+                const p = prompt("Введите пароль для этого ника:");
+                if(p !== snap.val().password) return alert("Неверно!");
             } else {
-                alert("Неверно!");
+                const np = prompt("Придумайте пароль для защиты ника:");
+                if(!np) return;
+                await set(uRef, {password: np});
             }
+
+            const now = new Date();
+            push(ref(db, 'chat_messages'), { name: n, text: m, time: now.getHours() + ":" + (now.getMinutes()<10?'0':'') + now.getMinutes() });
+            document.getElementById('mInp').value = "";
         };
 
-        onValue(messagesRef, (snapshot) => {
-            const data = snapshot.val();
+        // Удаление (Пароль 8070)
+        window.deleteMsg = (id) => {
+            if(prompt("Пароль админа:") === "8070") remove(ref(db, 'chat_messages/' + id));
+        };
+
+        onValue(ref(db, 'chat_messages'), (s) => {
             const list = document.getElementById('cList');
             list.innerHTML = "";
-            if (data) { // Проверяем, есть ли данные
-                // Преобразуем объект в массив и сортируем по id (чтобы новые были внизу)
-                const messagesArray = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-                messagesArray.sort((a, b) => a.id.localeCompare(b.id)); // Сортировка по ключам Firebase
-                
-                messagesArray.forEach(msg => {
-                    list.innerHTML += `
-                        <div class="message">
-                            <span class="msg-name">${msg.name} <span class="del-btn" onclick="deleteMsg('${msg.id}')">×</span></span>
-                            ${msg.text}
-                            <span class="msg-time">${msg.time}</span>
-                        </div>`;
-                });
+            const data = s.val();
+            for(let id in data) {
+                list.innerHTML += `<div class="message"><b>${data[id].name}</b> <span class="del-btn" onclick="deleteMsg('${id}')">×</span><br>${data[id].text} <small style="display:block;text-align:right">${data[id].time}</small></div>`;
             }
             list.scrollTop = list.scrollHeight;
         });
     </script>
 
     <script>
-        // --- КЛИКЕР ---
-        let count = parseInt(localStorage.getItem('myScore')) || 0;
-        document.getElementById('score').innerText = count;
-        function addScore() {
-            count++;
-            document.getElementById('score').innerText = count;
-            localStorage.setItem('myScore', count);
-            if(count === 100) alert("100 кликов! Иди потрогай траву)");
-        }
-        function resetScore() {
-            if(confirm("Обнулить?")) { count=0; document.getElementById('score').innerText=0; localStorage.removeItem('myScore'); }
+        // Настройки
+        function toggleSettings() { 
+            const m = document.getElementById('sMenu');
+            m.style.display = m.style.display === 'block' ? 'none' : 'block';
         }
 
-        // --- ЗМЕЙКА ---
-        const snakeCanvas = document.getElementById("snakeGame"); // Переименовал для ясности
-        const snakeCtx = snakeCanvas.getContext("2d");
-        const box = 20;
-        let snake = [{x: 10 * box, y: 10 * box}];
-        let food = { x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box };
-        let d = "";
-        window.setD = (newD) => {
-            if(newD=="left" && d!="right") d="left";
-            if(newD=="up" && d!="down") d="up";
-            if(newD=="right" && d!="left") d="right";
-            if(newD=="down" && d!="up") d="down";
+        function changeTheme(v) {
+            document.body.className = v === 'hacker' ? '' : 'theme-' + v;
+            document.getElementById('matrixCanvas').style.display = (v === 'hacker') ? 'block' : 'none';
+        }
+
+        const langs = {
+            ru: { title: "Мой первый сайт", subtitle: "Делал сам честно!", chat: "Чат", click: "Кликер", snake: "Змейка", settings: "Настройки" },
+            en: { title: "My First Site", subtitle: "Made it myself!", chat: "Chat", click: "Clicker", snake: "Snake", settings: "Settings" },
+            ua: { title: "Мій перший сайт", subtitle: "Робив сам чесно!", chat: "Чат", click: "Клікер", snake: "Змійка", settings: "Налаштування" }
         };
-        function drawSnake() {
-            snakeCtx.fillStyle = "black"; snakeCtx.fillRect(0,0,400,400);
-            snakeCtx.fillStyle = "red"; snakeCtx.fillRect(food.x, food.y, box, box);
-            for(let i=0; i<snake.length; i++) { snakeCtx.fillStyle = (i==0) ? "lime" : "green"; snakeCtx.fillRect(snake[i].x, snake[i].y, box, box); }
-            let sX = snake[0].x; let sY = snake[0].y;
-            if(d=="left") sX-=box; if(d=="up") sY-=box; if(d=="right") sX+=box; if(d=="down") sY+=box;
-            if(sX==food.x && sY==food.y) { food = { x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box }; } else if(d!="") { snake.pop(); }
-            if(d!="") {
-                let head = {x:sX, y:sY};
-                if(sX<0 || sX>=400 || sY<0 || sY>=400 || snake.some(s => s.x==head.x && s.y==head.y)) { d=""; snake=[{x: 10*box, y: 10*box}]; alert("Game Over!"); } else { snake.unshift(head); }
+
+        function changeLang(l) {
+            document.getElementById('h-title').innerText = langs[l].title;
+            document.getElementById('h-subtitle').innerText = langs[l].subtitle;
+            document.getElementById('h-chat').innerText = langs[l].chat;
+            document.getElementById('h-click').innerText = langs[l].click;
+            document.getElementById('h-snake').innerText = langs[l].snake;
+            document.getElementById('set-txt').innerText = langs[l].settings;
+        }
+
+        // Кликер
+        let count = 0;
+        function addScore() { count++; document.getElementById('score').innerText = count; }
+
+        // Змейка
+        const sCanvas = document.getElementById("snakeGame");
+        const sCtx = sCanvas.getContext("2d");
+        let snake = [{x: 200, y: 200}], food = {x: 100, y: 100}, d = "";
+        window.setD = (v) => d = v;
+        function drawS() {
+            sCtx.fillStyle = "#000"; sCtx.fillRect(0,0,400,400);
+            sCtx.fillStyle = "red"; sCtx.fillRect(food.x, food.y, 20, 20);
+            sCtx.fillStyle = "lime"; snake.forEach(s => sCtx.fillRect(s.x, s.y, 20, 20));
+            let hX = snake[0].x, hY = snake[0].y;
+            if(d=="up") hY-=20; if(d=="down") hY+=20; if(d=="left") hX-=20; if(d=="right") hX+=20;
+            if(hX==food.x && hY==food.y) food = {x: Math.floor(Math.random()*19)*20, y: Math.floor(Math.random()*19)*20}; else if(d) snake.pop();
+            if(d) {
+                if(hX<0 || hX>=400 || hY<0 || hY>=400) { d=""; snake=[{x:200,y:200}]; }
+                else snake.unshift({x:hX, y:hY});
             }
         }
-        setInterval(drawSnake, 150);
+        setInterval(drawS, 150);
 
-
-        // --- ЭФФЕКТ МАТРИЦЫ ---
-        const matrixCanvas = document.getElementById('matrixCanvas');
-        const matrixCtx = matrixCanvas.getContext('2d');
-
-        matrixCanvas.width = window.innerWidth;
-        matrixCanvas.height = window.innerHeight;
-
-        const katakana = 'アァカサタナハマヤラワガザダバパヰギジヂビピヴエケセテネヘメレヱゲゼデベペホモヨロヲゴゾドボポユーューー';
-        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        const nums = '0123456789';
-        const chars = katakana + latin + nums;
-
-        const fontSize = 16;
-        const columns = matrixCanvas.width / fontSize;
-        const drops = [];
-
-        for (let x = 0; x < columns; x++) {
-            drops[x] = 1;
-        }
-
-        function drawMatrix() {
-            matrixCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            matrixCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
-
-            matrixCtx.fillStyle = '#0F0';
-            matrixCtx.font = fontSize + 'px monospace';
-
-            for (let i = 0; i < drops.length; i++) {
-                const text = chars.charAt(Math.floor(Math.random() * chars.length));
-                matrixCtx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-                if (drops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
+        // Матрица
+        const mCanvas = document.getElementById('matrixCanvas');
+        const mCtx = mCanvas.getContext('2d');
+        mCanvas.width = window.innerWidth; mCanvas.height = window.innerHeight;
+        const drops = Array(Math.floor(mCanvas.width/16)).fill(1);
+        function drawM() {
+            mCtx.fillStyle = 'rgba(0, 0, 0, 0.05)'; mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
+            mCtx.fillStyle = '#0F0'; mCtx.font = '16px monospace';
+            drops.forEach((y, i) => {
+                mCtx.fillText('01', i * 16, y * 16);
+                if (y * 16 > mCanvas.height && Math.random() > 0.975) drops[i] = 0;
                 drops[i]++;
-            }
+            });
         }
-        setInterval(drawMatrix, 33);
+        setInterval(drawM, 33);
 
-        window.addEventListener('resize', () => {
-            matrixCanvas.width = window.innerWidth;
-            matrixCanvas.height = window.innerHeight;
-            const columns = matrixCanvas.width / fontSize;
-            drops.length = 0;
-            for (let x = 0; x < columns; x++) {
-                drops[x] = 1;
-            }
-        });
-        
-        // --- ЗАПУСК DOOM (в самом конце) ---
-        Dos(document.getElementById("doom-container"), {
-            style: "none" // Стилизируем DOOM прямо в контейнере
-        }).run("https://js-dos.com/v7/build/archive/doom.zip"); // Запускаем DOOM
+        // DOOM
+        Dos(document.getElementById("doom-container"), { style: "none" }).run("https://js-dos.com/v7/build/archive/doom.zip");
     </script>
 </body>
 </html>
-
