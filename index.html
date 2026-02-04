@@ -5,146 +5,131 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Мой сайт</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f0f0f0; color: black; margin: 0; }
-        .button-tea { display: inline-block; padding: 10px 20px; background: #eee; text-decoration: none; color: black; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 20px; cursor: pointer; }
-        
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; text-align: center; padding: 20px; background-color: #f0f0f0; color: black; margin: 0; }
         .game-box {
-            background: white; padding: 20px; border-radius: 15px; 
+            background: white; padding: 15px; border-radius: 15px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: inline-block;
-            margin-bottom: 20px; width: 90%; max-width: 400px;
+            margin-bottom: 20px; width: 95%; max-width: 400px; overflow: hidden;
         }
 
-        #score { font-size: 40px; font-weight: bold; color: #2ecc71; margin: 10px 0; }
-        .click-btn { 
-            padding: 15px 40px; font-size: 22px; background: lime; border: 2px solid #333; 
-            border-radius: 15px; cursor: pointer; font-weight: bold; touch-action: manipulation; width: 80%; 
+        /* --- СТИЛЬ ТЕЛЕГРАМ-ЧАТА --- */
+        #cList {
+            height: 300px; 
+            overflow-y: auto; 
+            background-image: url('https://e7.pngegg.com/pngimages/517/303/png-clipart-blue-and-white-abstract-illustration-telegram-messaging-app-background-pattern-area-text-blue-area-thumbnail.png');
+            background-size: cover;
+            padding: 10px; 
+            border-radius: 10px; 
+            display: flex; 
+            flex-direction: column;
+            border: 1px solid #ddd;
         }
-        
-        /* Змейка */
-        canvas { background: #000; border: 3px solid #333; display: block; margin: 10px auto; width: 280px; height: 280px; touch-action: none; }
-        .snake-ctrl { display: grid; grid-template-columns: repeat(3, 60px); gap: 10px; justify-content: center; margin-top: 10px; }
-        .s-btn { width: 60px; height: 60px; background: #fff; border: 1px solid #ccc; border-radius: 10px; font-size: 20px; cursor: pointer; }
-
-        /* Магический шар */
-        .magic-ball {
-            width: 140px; height: 140px; background: radial-gradient(circle at 30% 30%, #444, #000);
-            border-radius: 50%; margin: 15px auto; display: flex; align-items: center; 
-            justify-content: center; color: white; font-size: 14px; cursor: pointer;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3); transition: 0.2s; padding: 10px;
+        .message {
+            max-width: 80%;
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+            position: relative;
+            line-height: 1.4;
+            word-wrap: break-word;
+            text-align: left;
         }
+        /* Сообщения слева (другие) */
+        .msg-other {
+            align-self: flex-start;
+            background: white;
+            color: black;
+            border-bottom-left-radius: 2px;
+        }
+        /* Сообщения справа (твои) */
+        .msg-my {
+            align-self: flex-end;
+            background: #efffde;
+            color: black;
+            border-bottom-right-radius: 2px;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+        }
+        .msg-name { font-weight: bold; font-size: 12px; color: #3390ec; display: block; margin-bottom: 2px; }
+        .msg-time { font-size: 10px; color: #999; float: right; margin-top: 5px; margin-left: 8px; }
 
-        input { width: 80%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; }
-        .comment-item { background: #f9f9f9; border-left: 4px solid lime; padding: 10px; margin-top: 10px; text-align: left; font-size: 14px; }
-        .reset-link { color: red; text-decoration: underline; cursor: pointer; font-size: 14px; margin-top: 15px; display: block; }
+        .chat-input-area { display: flex; gap: 5px; margin-top: 10px; }
+        .chat-input-area input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
+        .send-btn { background: #3390ec; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+
+        /* --- ОСТАЛЬНЫЕ СТИЛИ (КЛИКЕР, ШАР И Т.Д.) --- */
+        #score { font-size: 40px; font-weight: bold; color: #2ecc71; }
+        .click-btn { padding: 15px; background: lime; border: none; border-radius: 10px; font-weight: bold; width: 100%; cursor: pointer; }
+        canvas { background: #000; display: block; margin: 10px auto; width: 280px; height: 280px; }
+        .s-btn { width: 50px; height: 50px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <h1>Мой первый сайт!</h1>
-    <div class="button-tea" onclick="alert('скинуть будущему программисту на чай: +79216274225 сбербанк')">Нажми сюда</div>
-
-    <hr>
+    <h1>Мой сайт</h1>
 
     <div class="game-box">
-        <h3>Игра №1: Кликер</h3>
-        <div id="score">0</div>
-        <button class="click-btn" id="clickBtn">КЛИК!</button>
-        <div class="reset-link" id="resetBtn">обнулить счет</div>
-    </div>
-
-    <div class="game-box">
-        <h3>Игра №2: Змейка</h3>
-        <canvas id="snakeGame" width="400" height="400"></canvas>
-        <div class="snake-ctrl">
-            <div></div><button class="s-btn" onclick="setD('up')">▲</button><div></div>
-            <button class="s-btn" onclick="setD('left')">◀</button>
-            <button class="s-btn" onclick="setD('down')">▼</button>
-            <button class="s-btn" onclick="setD('right')">▶</button>
+        <h3>чат (прототип №1)</h3>
+        <div id="cList">
+            <div class="message msg-other">
+                <span class="msg-name">Админ</span>
+                Привет! Это прототип чата. Пока сообщения видишь только ты.
+                <span class="msg-time">12:00</span>
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="nInp" placeholder="Имя" style="max-width: 80px;">
+            <input type="text" id="mInp" placeholder="Сообщение...">
+            <button class="send-btn" onclick="addC()">></button>
         </div>
     </div>
 
     <div class="game-box">
-        <h3>Игра №3: Магический Шар 🎱</h3>
-        <div class="magic-ball" id="magicBall">Задай вопрос и жми!</div>
-    </div>
-
-    <div class="game-box">
-        <h3>чат (прототип номер 1)</h3>
-        <input type="text" id="nInp" placeholder="Имя">
-        <input type="text" id="mInp" placeholder="Сообщение">
-        <button class="click-btn" style="font-size: 16px; padding: 10px;" onclick="addC()">Отправить</button>
-        <div id="cList"></div>
+        <h3>Кликер</h3>
+        <div id="score">0</div>
+        <button class="click-btn" onclick="addScore()">КЛИК!</button>
     </div>
 
     <script>
-        // --- КЛИКЕР ---
+        // --- ЛОГИКА КЛИКЕРА ---
         let count = parseInt(localStorage.getItem('myScore')) || 0;
         document.getElementById('score').innerText = count;
-        document.getElementById('clickBtn').onclick = () => {
+        function addScore() {
             count++; document.getElementById('score').innerText = count;
             localStorage.setItem('myScore', count);
-        };
-        document.getElementById('resetBtn').onclick = () => { if(confirm("Сбросить?")) { count=0; document.getElementById('score').innerText=0; localStorage.removeItem('myScore'); }};
-
-        // --- ЗМЕЙКА ---
-        const canvas = document.getElementById("snakeGame");
-        const ctx = canvas.getContext("2d");
-        const box = 20;
-        let snake = [{x: 10 * box, y: 10 * box}];
-        let food = { x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box };
-        let d = "";
-
-        function setD(newD) {
-            if(newD=="left" && d!="right") d="left";
-            if(newD=="up" && d!="down") d="up";
-            if(newD=="right" && d!="left") d="right";
-            if(newD=="down" && d!="up") d="down";
         }
-        document.addEventListener("keydown", (e) => {
-            if(e.keyCode==37) setD("left"); if(e.keyCode==38) setD("up");
-            if(e.keyCode==39) setD("right"); if(e.keyCode==40) setD("down");
-        });
 
-        function draw() {
-            ctx.fillStyle = "black"; ctx.fillRect(0,0,400,400);
-            ctx.fillStyle = "red"; ctx.fillRect(food.x, food.y, box, box);
-            for(let i=0; i<snake.length; i++) {
-                ctx.fillStyle = (i==0) ? "lime" : "green";
-                ctx.fillRect(snake[i].x, snake[i].y, box, box);
-            }
-            let sX = snake[0].x; let sY = snake[0].y;
-            if(d=="left") sX-=box; if(d=="up") sY-=box; if(d=="right") sX+=box; if(d=="down") sY+=box;
-            if(sX==food.x && sY==food.y) {
-                food = { x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box };
-            } else if(d!="") { snake.pop(); }
-            if(d!="") {
-                let head = {x:sX, y:sY};
-                if(sX<0 || sX>=400 || sY<0 || sY>=400 || snake.some(s => s.x==head.x && s.y==head.y)) {
-                    d=""; snake=[{x: 10*box, y: 10*box}]; alert("Game Over!");
-                } else { snake.unshift(head); }
-            }
-        }
-        setInterval(draw, 150);
-
-        // --- ШАР ---
-        const ball = document.getElementById('magicBall');
-        const ans = ["Да", "Нет", "Возможно", "100%", "Никогда", "Попробуй снова"];
-        ball.onclick = () => {
-            ball.innerText = "...";
-            setTimeout(() => { ball.innerText = ans[Math.floor(Math.random()*ans.length)]; }, 400);
-        };
-
-        // --- ЧАТ ---
+        // --- ЛОГИКА ЧАТА ---
         let coms = JSON.parse(localStorage.getItem('myComs')) || [];
+        
         function showC() {
             const list = document.getElementById('cList');
-            list.innerHTML = "";
-            coms.slice().reverse().forEach(c => { list.innerHTML += `<div class="comment-item"><b>${c.n}:</b> ${c.m}</div>`; });
+            // Оставляем только приветствие админа, остальное чистим перед рендером
+            list.innerHTML = `<div class="message msg-other"><span class="msg-name">Админ</span>Привет! Это прототип чата. Пока сообщения видишь только ты.<span class="msg-time">12:00</span></div>`;
+            
+            coms.forEach(c => {
+                const now = new Date();
+                const time = now.getHours() + ":" + (now.getMinutes()<10?'0':'') + now.getMinutes();
+                list.innerHTML += `
+                    <div class="message msg-my">
+                        <span class="msg-name" style="color: #4caf50;">${c.n}</span>
+                        ${c.m}
+                        <span class="msg-time">${time}</span>
+                    </div>`;
+            });
+            // Прокрутка вниз
+            list.scrollTop = list.scrollHeight;
         }
+
         function addC() {
             const n = document.getElementById('nInp').value;
             const m = document.getElementById('mInp').value;
-            if(n && m) { coms.push({n:n, m:m}); localStorage.setItem('myComs', JSON.stringify(coms)); document.getElementById('nInp').value=""; document.getElementById('mInp').value=""; showC(); }
+            if(n && m) {
+                coms.push({n: n, m: m});
+                localStorage.setItem('myComs', JSON.stringify(coms));
+                document.getElementById('mInp').value = "";
+                showC();
+            }
         }
         showC();
     </script>
