@@ -1,51 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мой сайт</title>
     <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f0f0f0; }
         .button { 
             display: inline-block; 
             padding: 10px 20px; 
             background: #eee; 
             text-decoration: none; 
             color: black; 
+            border: 1px solid #ccc;
             border-radius: 5px; 
+            margin-bottom: 20px;
         }
+        .game-box {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: inline-block;
+        }
+        #score { font-size: 30px; font-weight: bold; color: limegreen; }
+        .click-btn {
+            padding: 15px 40px;
+            font-size: 20px;
+            background: lime;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.1s;
+        }
+        .click-btn:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
     <h1>Мой первый сайт!</h1>
     <p>делал сам честно!</p>
-    <br>
     
     <a href="#" class="button" onclick="alert('скинуть будущему программисту на чай: +79216274225 сбербанк')">Нажми сюда</a>
 
     <hr>
 
-    <div style="margin-top: 20px;">
+    <div class="game-box">
         <h3>моя первая мини игра!</h3>
         <p>Счет: <span id="score">0</span></p>
-        <button onclick="addScore()" style="padding: 15px 30px; font-size: 20px; background: lime; border: none; border-radius: 10px; cursor: pointer;">КЛИКНИ!</button>
+        <button class="click-btn" onclick="addScore()">КЛИК!</button>
     </div>
 
     <script>
-        // 1. Загружаем данные из памяти
+        // 1. Загружаем сохраненный счет
         let count = localStorage.getItem('myScore') ? parseInt(localStorage.getItem('myScore')) : 0;
 
-        // 2. Показываем счет сразу после загрузки страницы
+        // 2. Отображаем его сразу при загрузке
         window.onload = function() {
             document.getElementById('score').innerText = count;
         };
 
         // 3. Функция клика
         function addScore() {
-            count = count + 1; 
+            count = count + 1;
             document.getElementById('score').innerText = count;
             
             // Сохраняем в память браузера
             localStorage.setItem('myScore', count);
+
+            // Маленький прикол на 100 кликов
+            if (count === 100) {
+                alert("иди потрогай траву! задрот");
+            }
         }
     </script>
 
