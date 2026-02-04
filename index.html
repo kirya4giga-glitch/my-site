@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kiru OS v30 - JUBILEE ULTIMATE</title>
+    <title>Kiru OS v30.1 - JUBILEE FIX</title>
     <style>
         :root { 
             --bg: #000; --main: #0A84FF; --txt: #fff; 
@@ -39,10 +39,12 @@
         .msg { 
             background: rgba(255,255,255,0.06); padding: 12px; border-radius: 18px; 
             font-size: 14px; border-left: 4px solid var(--main); animation: pop 0.3s ease-out;
+            position: relative;
         }
+        .msg-time { font-size: 9px; opacity: 0.4; float: right; margin-top: 5px; }
+        .msg-del { position: absolute; right: 10px; top: 10px; color: var(--red); cursor: pointer; font-weight: bold; font-size: 16px; }
         @keyframes pop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-        /* ТОП ИГРОКОВ - КРАСИВЫЙ СПИСОК */
         .top-list { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
         .top-item { 
             display: flex; justify-content: space-between; align-items: center; 
@@ -51,7 +53,6 @@
         }
         .my-rank { border: 1.5px solid var(--main); background: rgba(10,132,255,0.15); }
 
-        /* ИГРЫ */
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 240px; margin: 15px auto; }
         .cell { background: rgba(255,255,255,0.1); border-radius: 12px; height: 75px; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; cursor: pointer; }
 
@@ -73,8 +74,8 @@
 
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding: 0 5px;">
         <div>
-            <h1 style="margin:0; font-size: 24px; font-weight: 800;">Kiru OS <span style="color:var(--main)">v30</span></h1>
-            <div id="status" style="font-size: 10px; opacity: 0.5;">● Система активна</div>
+            <h1 style="margin:0; font-size: 24px; font-weight: 800;">Kiru OS <span style="color:var(--main)">v30.1</span></h1>
+            <div style="font-size: 10px; opacity: 0.5;">● Система активна</div>
         </div>
         <div style="display:flex; gap:8px;">
             <button class="btn" onclick="openMod('shopWin')">🛒</button>
@@ -135,8 +136,8 @@
 
     <div id="thanksWin" class="modal">
         <h3>Wall of Fame</h3>
-        <ul style="text-align:left; font-size:14px; opacity:0.8;">
-            <li>Вадек (Главный тестер)</li><li>Муся ❤️ (Талисман)</li><li>Анастасия Землеройка</li><li>Саша, Андрей, Тепа</li><li>Gemini (Engine)</li>
+        <ul style="text-align:left; font-size:15px; line-height:1.8;">
+            <li>Вадек</li><li>Муся ❤️</li><li>Анастасия Землеройка</li><li>Саша</li><li>Андрей😎</li><li>Тепе</li><li>Gemini</li>
         </ul>
         <button class="btn" onclick="closeMod('thanksWin')" style="width:100%;">Назад</button>
     </div>
@@ -207,11 +208,19 @@
                 const l = document.getElementById('cList'); l.innerHTML = "";
                 s.forEach(d => {
                     const m = d.val();
-                    l.innerHTML += `<div class="msg"><span class="prefix" style="background:${m.col||'#fff'}">${m.pref||'USER'}</span><b onclick="showP('${m.n}')">${m.n}</b>: ${m.t}</div>`;
+                    const date = m.time ? new Date(m.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : "";
+                    l.innerHTML += `<div class="msg">
+                        <span class="msg-del" onclick="adminDelMsg('${d.key}')">×</span>
+                        <span class="prefix" style="background:${m.col||'#fff'}">${m.pref||'USER'}</span>
+                        <b onclick="showP('${m.n}')">${m.n}</b>: ${m.t}
+                        <div class="msg-time">${date}</div>
+                    </div>`;
                 });
                 l.scrollTop = l.scrollHeight;
             });
         }
+
+        window.adminDelMsg = (id) => { if(prompt("Pass:")==="8070") remove(ref(db, 'msgs/'+id)); };
 
         function loadTop() {
             onValue(ref(db, 'users'), s => {
@@ -293,6 +302,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
