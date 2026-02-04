@@ -1,124 +1,156 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kiru Ultimate v24</title>
+    <title>Kiru OS v25 - Ultimate Mega Update</title>
     <style>
         :root { 
-            --bg: #000; --main: #007AFF; --glass: rgba(255, 255, 255, 0.1); --txt: #fff; 
-            --grad: linear-gradient(135deg, #007AFF, #00C7FF);
+            --bg: #000; --main: #007AFF; --glass: rgba(255, 255, 255, 0.1); 
+            --txt: #fff; --card: rgba(30,30,30,0.8); 
         }
+        
+        /* ТЕМЫ */
+        body.theme-hacker { --bg: #0a0a0a; --main: #0f0; --txt: #0f0; --glass: rgba(0,255,0,0.05); }
+        body.theme-light { --bg: #f2f2f7; --main: #007aff; --txt: #000; --glass: rgba(255,255,255,0.8); --card: #fff; }
+        body.theme-tg { --bg: #17212b; --main: #5288c1; --txt: #fff; --glass: rgba(36,47,61,0.9); }
+        body.theme-cyber { --bg: #0d0015; --main: #ff00ff; --txt: #00ffff; --glass: rgba(26,0,41,0.9); }
+
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
-            background: #000; color: var(--txt); margin: 0; padding: 15px; 
-            transition: 0.3s; overflow-x: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: var(--bg); color: var(--txt); margin: 0; padding: 15px; 
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); min-height: 100vh;
         }
+
         .game-box { 
             background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             padding: 20px; border-radius: 28px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: slideUp 0.5s ease;
         }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
         .button-tea { 
-            padding: 12px 18px; background: var(--grad); color: #fff; border: none; 
-            border-radius: 14px; cursor: pointer; font-weight: 600; margin: 5px; 
-            transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 12px 18px; background: var(--main); color: #fff; border: none; 
+            border-radius: 14px; cursor: pointer; font-weight: 600; margin: 5px; transition: 0.2s;
         }
-        .button-tea:active { transform: scale(0.92); }
-        
-        #cList { height: 300px; overflow-y: auto; border-radius: 20px; padding: 10px; text-align: left; background: rgba(0,0,0,0.3); }
-        .msg { background: rgba(255,255,255,0.07); padding: 12px; border-radius: 16px; margin-bottom: 8px; position: relative; }
-        .del-msg { color: #ff3b30; cursor: pointer; float: right; font-weight: bold; margin-left: 10px; }
-        
+        .button-tea:active { transform: scale(0.9); }
+
+        /* Чат */
+        #cList { height: 320px; overflow-y: auto; border-radius: 20px; padding: 10px; background: rgba(0,0,0,0.2); }
+        .msg { background: rgba(255,255,255,0.08); padding: 12px; border-radius: 18px; margin-bottom: 10px; position: relative; border-left: 4px solid var(--main); }
+        .msg-time { font-size: 10px; opacity: 0.5; position: absolute; bottom: 5px; right: 12px; }
+        .del-msg { color: #ff3b30; cursor: pointer; float: right; font-weight: bold; margin-left: 8px; }
+
+        /* Модалки */
         .modal { 
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            background: rgba(25, 25, 25, 0.95); backdrop-filter: blur(40px);
+            background: var(--card); backdrop-filter: blur(50px);
             padding: 30px; border-radius: 35px; z-index: 3000; width: 85%; max-width: 380px;
-            border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 0 80px rgba(0,0,0,0.9);
+            border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 0 100px rgba(0,0,0,0.5);
         }
-        
-        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .shop-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        
-        .chess-board, .ttt-grid { display: grid; margin: 15px auto; border-radius: 15px; overflow: hidden; border: 3px solid var(--main); }
+
+        /* Игры */
+        .chess-board, .ttt-grid { display: grid; margin: 15px auto; border-radius: 15px; overflow: hidden; border: 3px solid var(--main); background: #000; }
         .chess-board { grid-template-columns: repeat(8, 1fr); width: 280px; height: 280px; }
         .ttt-grid { grid-template-columns: repeat(3, 1fr); width: 210px; height: 210px; }
-        .cell { display: flex; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; }
-        .cell-w { background: #fff; color: #000; } .cell-b { background: #2c2c2e; color: #fff; }
-        
-        .prefix { font-size: 10px; padding: 2px 6px; border-radius: 5px; background: #fff; color: #000; font-weight: bold; margin-right: 5px; }
-        .react-bar { margin-top: 8px; display: flex; gap: 5px; }
-        .react-item { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 10px; font-size: 12px; }
-        
-        #reactPicker { display: none; position: fixed; background: rgba(40,40,40,0.95); backdrop-filter: blur(10px); padding: 10px; border-radius: 50px; z-index: 4000; border: 1px solid var(--main); }
+        .cell { display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; min-height: 35px; }
+        .cell-w { background: #fff; color: #000; } .cell-b { background: #333; color: #fff; }
+
+        .rank-badge { font-size: 10px; padding: 2px 6px; border-radius: 6px; background: gold; color: #000; font-weight: bold; margin-right: 5px; }
+        #reactPicker { display: none; position: fixed; background: #222; padding: 10px; border-radius: 30px; z-index: 4000; border: 1px solid var(--main); }
         .hidden { display: none; }
     </style>
 </head>
-<body>
+<body class="theme-hacker">
 
     <div style="position:fixed; top:20px; right:20px; z-index:1001; display:flex; gap:10px;">
         <button class="button-tea" onclick="openMod('shopWin')">🛒 Shop</button>
         <button class="button-tea" onclick="openMod('sMenu')">⚙️</button>
     </div>
 
-    <h1 id="h-title" style="font-weight:800; letter-spacing:-1px;">Kiru OS v24</h1>
+    <h1 id="h-title" style="font-weight:900;">Kiru OS v25</h1>
     <h3 onclick="eggClick()" style="cursor:pointer">Balance: <span id="userBalance" style="color:var(--main)">0</span> 💰</h3>
 
     <div id="shopWin" class="modal">
-        <h3>🛒 Apple Market</h3>
-        <div class="shop-grid">
-            <div class="shop-card">
-                <span>🤖 Autoclicker</span><br>
-                <small>+1/sec</small><br>
+        <h3>🛒 Market</h3>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:15px;">
+                <span>🤖 AutoClick</span><br>
                 <button class="button-tea" onclick="buy('auto', 5000, 1)">5000</button>
             </div>
-            <div class="shop-card">
-                <span>⚡ Multi-Click</span><br>
-                <small>+2 per click</small><br>
+            <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:15px;">
+                <span>⚡ MultiClick</span><br>
                 <button class="button-tea" onclick="buy('multi', 2000, 2)">2000</button>
             </div>
-            <div class="shop-card">
-                <span>🛡️ Anti-Mute</span><br>
-                <button class="button-tea" onclick="buy('item', 1500, 'shield')">1500</button>
-            </div>
-            <div class="shop-card">
-                <span>💎 [VIP] Tag</span><br>
-                <button class="button-tea" onclick="buy('prefix', 500, 'VIP')">500</button>
+            <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:15px;">
+                <span>🛡️ Shield</span><br>
+                <button class="button-tea" onclick="buy('item', 1000, 'shield')">1000</button>
             </div>
         </div>
         <button class="button-tea" onclick="closeMod('shopWin')" style="width:100%; margin-top:15px;">Close</button>
     </div>
 
-    <div id="thanksWin" class="modal">
-        <h3>🌟 Wall of Fame</h3>
-        <ol id="thanksList" style="text-align:left; line-height:2;">
-            <li>Вадеку</li>
-            <li>Мусе ❤️</li>
-            <li>Саше</li>
-            <li>Андрею 😎</li>
-            <li>Тепе</li>
-            <li>gemini</li>
-            <li>Анастасие Землеройке</li>
-        </ol>
-        <button class="button-tea" onclick="closeMod('thanksWin')">Close</button>
-    </div>
-
     <div id="sMenu" class="modal">
-        <h3 id="h-set">Settings</h3>
-        Language: <select id="langSelect" onchange="changeLang(this.value)">
+        <h3>⚙️ Settings</h3>
+        Theme: <select onchange="changeTheme(this.value)">
+            <option value="hacker">Hacker (Green)</option>
+            <option value="light">iOS Light</option>
+            <option value="tg">Telegram</option>
+            <option value="cyber">Cyberpunk</option>
+        </select><br><br>
+        Language: <select onchange="changeLang(this.value)">
             <option value="ru">Русский</option>
             <option value="en">English</option>
             <option value="ua">Українська</option>
-        </select><br><br>
-        Theme: <select onchange="document.body.className=this.value">
-            <option value="">Dark Mode</option>
-            <option value="light">Light Mode</option>
         </select>
         <hr style="opacity:0.1">
         <button class="button-tea" onclick="openMod('thanksWin')">🌟 Credits</button>
-        <button class="button-tea" onclick="logout()" style="background:#ff3b30">Exit</button>
+        <button class="button-tea" onclick="logout()" style="background:#ff3b30">Logout</button>
         <button class="button-tea" onclick="closeMod('sMenu')">X</button>
+    </div>
+
+    <div id="thanksWin" class="modal">
+        <h3>🌟 Wall of Fame</h3>
+        <ul style="text-align:left; line-height:1.8;">
+            <li>1. Вадеку</li>
+            <li>2. Мусе ❤️</li>
+            <li>3. Саше</li>
+            <li>4. Андрею 😎</li>
+            <li>5. Тепе</li>
+            <li>6. gemini</li>
+            <li>7. Анастасие Землеройке</li>
+        </ul>
+        <button class="button-tea" onclick="closeMod('thanksWin')">Close</button>
+    </div>
+
+    <div class="game-box">
+        <h3 id="h-chat">iMessage</h3>
+        <div id="cList"></div>
+        <div style="display:flex; gap:10px">
+            <input type="text" id="mInp" placeholder="Текст..." style="flex:1; background:rgba(255,255,255,0.1); border:none; color:inherit; padding:15px; border-radius:15px; outline:none;">
+            <button class="button-tea" onclick="sendMsg()">></button>
+        </div>
+    </div>
+
+    <div class="game-box">
+        <h3 id="h-click">Mining</h3>
+        <div id="score" style="font-size:50px; font-weight:900;">0</div>
+        <button class="button-tea" onclick="doClick()" style="width:100%; padding:20px; font-size:20px; border-radius:20px;">КЛИК!</button>
+        <div id="topList" style="text-align:left; margin-top:15px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;"></div>
+    </div>
+
+    <div class="game-box">
+        <h3 id="h-games">Casino</h3>
+        <div id="active-list" style="font-size:11px; color:var(--main); margin-bottom:5px;"></div>
+        <div id="lobby">
+            <button class="button-tea" onclick="startMM('ttt')">Tic-Tac-Toe</button>
+            <button class="button-tea" onclick="startMM('chess')">Chess</button>
+        </div>
+        <div id="game-area" class="hidden">
+            <div id="g-info" style="font-weight:bold; margin-bottom:5px;"></div>
+            <div id="board-container"></div>
+            <button class="button-tea" onclick="stopMM()" style="background:#ff3b30">Exit</button>
+        </div>
     </div>
 
     <div id="pCard" class="modal">
@@ -126,49 +158,19 @@
         <div id="pc-stats" style="text-align:left; line-height:1.8"></div>
         <hr style="opacity:0.1">
         <button class="button-tea" onclick="sendMoneyPrompt()">💸 Transfer</button>
-        <button class="button-tea" onclick="adminMute()" style="background:orange">🤐 Mute (Adm)</button>
-        <button class="button-tea" onclick="adminDeleteUser()" style="background:red">🗑️ Delete (Adm)</button>
+        <button class="button-tea" onclick="adminMute()" style="background:orange">Mute</button>
+        <button class="button-tea" onclick="adminDelUser()" style="background:red">Delete</button>
         <button class="button-tea" onclick="closeMod('pCard')">X</button>
     </div>
 
-    <div class="game-box">
-        <h3 id="h-chat">iChat</h3>
-        <div id="cList"></div>
-        <div style="display:flex; gap:8px">
-            <input type="text" id="mInp" placeholder="..." style="flex:1; background:rgba(255,255,255,0.1); border:none; color:#fff; padding:14px; border-radius:14px; outline:none;">
-            <button class="button-tea" onclick="sendMsg()">></button>
-        </div>
-    </div>
-
-    <div class="game-box">
-        <h3 id="h-click">Mining</h3>
-        <div id="score" style="font-size:55px; font-weight:800;">0</div>
-        <button class="button-tea" onclick="doClick()" style="width:100%; padding:18px; font-size:20px; border-radius:18px">TAP TAP TAP</button>
-        <div id="topList" style="text-align:left; margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;"></div>
-    </div>
-
-    <div class="game-box">
-        <h3 id="h-games">Casino Games</h3>
-        <div id="active-games" style="font-size:11px; color:var(--main); margin-bottom:10px;"></div>
-        <div id="lobby">
-            <button class="button-tea" onclick="startMM('ttt')">Tic-Tac-Toe</button>
-            <button class="button-tea" onclick="startMM('chess')">Chess</button>
-        </div>
-        <div id="game-area" class="hidden">
-            <div id="g-info"></div>
-            <div id="board-container"></div>
-            <button class="button-tea" onclick="stopMM()" style="background:#ff3b30">Surrender</button>
-        </div>
-    </div>
-
     <div id="musyaEaster" class="modal">
-        <h2 style="color:pink">🐾 СЕКРЕТНАЯ МУСЯ</h2>
+        <h2>🐾 Муся</h2>
         <img src="https://i.postimg.cc/mD3mB8Qf/image.jpg" style="width:100%; border-radius:20px;">
-        <button class="button-tea" onclick="closeMod('musyaEaster')">Meow!</button>
+        <button class="button-tea" onclick="closeMod('musyaEaster')">Закрыть</button>
     </div>
 
     <div id="reactPicker">
-        <span onclick="applyR('🔥')">🔥</span><span onclick="applyR('❤️')">❤️</span><span onclick="applyR('😂')">😂</span><span onclick="applyR('💀')">💀</span>
+        <span onclick="applyR('🔥')">🔥</span><span onclick="applyR('❤️')">❤️</span><span onclick="applyR('😂')">😂</span>
     </div>
 
     <script type="module">
@@ -178,21 +180,15 @@
         const conf = { apiKey: "AIzaSyChSk0gETRBQ391e4BjPqFsKc_dzjBmT58", databaseURL: "https://my-chat-52203-default-rtdb.firebaseio.com", projectId: "my-chat-52203" };
         const db = getDatabase(initializeApp(conf));
 
-        let user = JSON.parse(localStorage.getItem('user_v24'));
+        let user = JSON.parse(localStorage.getItem('user_v25'));
         let selId = null, gid = null, myRole = '', eggCounter = 0, viewUser = null;
 
-        const langDict = {
-            ru: {chat:"Чат", click:"Майнинг", games:"Игры", set:"Настройки", balance:"Баланс"},
-            en: {chat:"iChat", click:"Mining", games:"Games", set:"Settings", balance:"Balance"},
-            ua: {chat:"Чат", click:"Майнінг", games:"Ігри", set:"Налаштування", balance:"Баланс"}
-        };
-
-        window.changeLang = (l) => {
-            const d = langDict[l];
-            document.getElementById('h-chat').innerText = d.chat;
-            document.getElementById('h-click').innerText = d.click;
-            document.getElementById('h-games').innerText = d.games;
-            document.getElementById('h-set').innerText = d.set;
+        const getRank = (s) => {
+            if(s > 100000) return "Бог Экономики";
+            if(s > 50000) return "Рокфеллер";
+            if(s > 10000) return "Барон";
+            if(s > 1000) return "Майнер";
+            return "Новичок";
         };
 
         async function init() {
@@ -201,10 +197,11 @@
                 let p = prompt("Pass:");
                 const s = await get(ref(db, 'users/'+n));
                 if(s.exists()){ if(s.val().password !== p) return location.reload(); user = {name: n, ...s.val()}; }
-                else { user = {name: n, password: p, score: 0, w_ttt:0, w_chess:0, autoclicker: 0, mult: 1}; await set(ref(db, 'users/'+n), user); }
-                localStorage.setItem('user_v24', JSON.stringify(user));
+                else { user = {name: n, password: p, score: 0, autoclicker: 0, mult: 1}; await set(ref(db, 'users/'+n), user); }
+                localStorage.setItem('user_v25', JSON.stringify(user));
             }
-            syncUser(); loadChat(); loadTop(); loadActive(); startAutoClickerLoop();
+            syncUser(); loadChat(); loadTop(); loadActive(); 
+            setInterval(() => { if(user.autoclicker > 0) update(ref(db, 'users/'+user.name), {score: (user.score || 0) + user.autoclicker}); }, 1000);
         }
 
         function syncUser() {
@@ -213,36 +210,16 @@
                 user = {name: user.name, ...d};
                 document.getElementById('userBalance').innerText = d.score || 0;
                 document.getElementById('score').innerText = d.score || 0;
-                localStorage.setItem('user_v24', JSON.stringify(user));
             });
-        }
-
-        function startAutoClickerLoop() {
-            setInterval(() => {
-                if(user.autoclicker > 0) {
-                    update(ref(db, 'users/'+user.name), { score: (user.score || 0) + user.autoclicker });
-                }
-            }, 1000);
         }
 
         window.doClick = () => update(ref(db, 'users/'+user.name), {score: (user.score || 0) + (user.mult || 1)});
 
-        window.buy = async (type, price, val) => {
-            if(user.score < price) return alert("No money!");
-            let up = { score: user.score - price };
-            if(type === 'auto') up.autoclicker = (user.autoclicker || 0) + val;
-            if(type === 'multi') up.mult = (user.mult || 1) + val;
-            if(type === 'prefix') up.prefix = val;
-            if(type === 'item') up.shield = (user.shield || 0) + 1;
-            await update(ref(db, 'users/'+user.name), up);
-            alert("Success!");
-        };
-
         window.sendMsg = async () => {
             const i = document.getElementById('mInp'); if(!i.value) return;
-            const s = await get(ref(db, 'users/'+user.name));
-            if(s.val().muteUntil > Date.now()) return alert("Muted!");
-            push(ref(db, 'msgs'), { n: user.name, t: i.value, time: serverTimestamp(), pref: s.val().prefix||'', col: s.val().color||'' });
+            const snap = await get(ref(db, 'users/'+user.name));
+            if(snap.val().muteUntil > Date.now()) return alert("Muted!");
+            push(ref(db, 'msgs'), { n: user.name, t: i.value, time: serverTimestamp(), rank: getRank(user.score) });
             i.value="";
         };
 
@@ -251,9 +228,11 @@
                 const l = document.getElementById('cList'); l.innerHTML = "";
                 s.forEach(d => {
                     const m = d.val();
+                    const date = m.time ? new Date(m.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : "";
                     const div = document.createElement('div'); div.className = 'msg';
                     div.innerHTML = `<span class="del-msg" onclick="event.stopPropagation(); adminDelMsg('${d.key}')">×</span>
-                        ${m.pref ? `<span class="prefix">${m.pref}</span>`:''}<b onclick="event.stopPropagation(); showP('${m.n}')">${m.n}</b>: ${m.t}`;
+                        <span class="rank-badge">${m.rank || 'Новичок'}</span><b onclick="event.stopPropagation(); showP('${m.n}')">${m.n}</b>: ${m.t}
+                        <span class="msg-time">${date}</span>`;
                     div.onclick = (e) => { selId = d.key; const p = document.getElementById('reactPicker'); p.style.display='block'; p.style.top=(e.clientY-40)+'px'; p.style.left=e.clientX+'px'; };
                     l.appendChild(div);
                 });
@@ -261,19 +240,12 @@
             });
         }
 
-        window.applyR = (e) => {
-            set(ref(db, `msgs/${selId}/r/${e}/${user.name}`), true);
-            document.getElementById('reactPicker').style.display = 'none';
-        };
-
         window.loadTop = () => {
             onValue(ref(db, 'users'), (s) => {
-                const t = document.getElementById('topList'); t.innerHTML = "";
+                const t = document.getElementById('topList'); t.innerHTML = "<b>Leaders:</b><br>";
                 let a = []; s.forEach(u => a.push({n:u.key, s:u.val().score||0}));
                 a.sort((x,y)=>y.s-x.s).slice(0,10).forEach((u,i) => {
-                    t.innerHTML += `<div style="padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05)">
-                        ${i+1}. <span onclick="showP('${u.n}')" style="cursor:pointer">${u.n}</span> — ${u.s} 💰
-                    </div>`;
+                    t.innerHTML += `<div style="padding:5px 0; border-bottom:1px solid rgba(255,255,255,0.05)">${i+1}. ${u.n} — ${u.s} 💰</div>`;
                 });
             });
         };
@@ -281,21 +253,10 @@
         window.showP = async (n) => {
             viewUser = n; const s = await get(ref(db, 'users/'+n)); const d = s.val();
             document.getElementById('pc-name').innerText = n;
-            document.getElementById('pc-stats').innerHTML = `💰 Balance: ${d.score}<br>🤖 Auto: ${d.autoclicker||0}<br>⚔️ Wins: ${d.w_ttt||0}/${d.w_chess||0}<br>🛡️ Shields: ${d.shield||0}`;
+            document.getElementById('pc-stats').innerHTML = `🏆 Rank: ${getRank(d.score)}<br>💰 Balance: ${d.score}<br>🤖 Auto: ${d.autoclicker||0}<br>🛡️ Shield: ${d.shield||0}`;
             openMod('pCard');
         };
 
-        // ADMIN FUNCTIONS
-        window.adminDelMsg = (id) => { if(prompt("AdmPass:")==="8070") remove(ref(db, 'msgs/'+id)); };
-        window.adminMute = async () => { 
-            if(prompt("AdmPass:")!=="8070") return;
-            const s = await get(ref(db, 'users/'+viewUser));
-            if(s.val().shield > 0) { update(ref(db, 'users/'+viewUser), {shield: s.val().shield-1}); alert("Shield broken!"); return; }
-            update(ref(db, 'users/'+viewUser), {muteUntil: Date.now() + 600000}); alert("Muted 10m");
-        };
-        window.adminDeleteUser = () => { if(prompt("AdmPass:")==="8070") remove(ref(db, 'users/'+viewUser)); };
-
-        // GAMES ENGINE
         window.startMM = async (type) => {
             const qRef = ref(db, 'queue_'+type); const snap = await get(qRef);
             if(snap.exists() && snap.val() !== user.name) {
@@ -308,36 +269,30 @@
         function join(id, role) {
             gid = id; myRole = role; document.getElementById('lobby').classList.add('hidden'); document.getElementById('game-area').classList.remove('hidden');
             onValue(ref(db, 'games/'+id), (s) => {
-                const d = s.val(); if(!d) return location.reload(); draw(d);
-                document.getElementById('g-info').innerText = d.turn === (role==='p1'?'p1':'p2') ? "YOUR MOVE" : "WAIT...";
+                const d = s.val(); if(!d) return location.reload();
+                const cont = document.getElementById('board-container'); cont.innerHTML = "";
+                const board = document.createElement('div'); board.className = d.type==='ttt'?'ttt-grid':'chess-board';
+                const bArr = Array.isArray(d.board) ? d.board : d.board.split('');
+                bArr.forEach((v, i) => {
+                    const c = document.createElement('div'); c.className = 'cell ' + (d.type==='chess' ? ((Math.floor(i/8)+i%8)%2 ? 'cell-b' : 'cell-w') : 'cell-b');
+                    c.innerText = d.type==='chess' ? ({"r":"♜","n":"♞","b":"♝","q":"♛","k":"♚","p":"♟","R":"♖","N":"♘","B":"♗","Q":"♕","K":"♔","P":"♙"}[v]||"") : v;
+                    c.onclick = () => {
+                        if(d.turn !== (myRole==='p1'?'p1':'p2')) return;
+                        let nb = Array.isArray(d.board) ? [...d.board] : d.board.split('');
+                        if(d.type==='ttt'){ if(nb[i]!=='')return; nb[i]=myRole==='p1'?'X':'O'; }
+                        else { let s=localStorage.getItem('cs'); if(!s){ if(nb[i]!=='.')localStorage.setItem('cs',i); return;} nb[i]=nb[s]; nb[s]='.'; localStorage.removeItem('cs'); }
+                        update(ref(db, 'games/'+gid), {board: Array.isArray(d.board)?nb:nb.join(''), turn: d.turn==='p1'?'p2':'p1'});
+                    };
+                    board.appendChild(c);
+                });
+                cont.appendChild(board);
+                document.getElementById('g-info').innerText = d.turn === (role==='p1'?'p1':'p2') ? "ТВОЙ ХОД" : "ЖДИ...";
             });
         }
 
-        function draw(d) {
-            const cont = document.getElementById('board-container'); cont.innerHTML = "";
-            const board = document.createElement('div'); board.className = d.type==='ttt'?'ttt-grid':'chess-board';
-            const bArr = Array.isArray(d.board) ? d.board : d.board.split('');
-            bArr.forEach((v, i) => {
-                const c = document.createElement('div'); c.className = 'cell ' + (d.type==='chess' ? ((Math.floor(i/8)+i%8)%2 ? 'cell-b' : 'cell-w') : 'cell-b');
-                c.innerText = d.type==='chess' ? ({"r":"♜","n":"♞","b":"♝","q":"♛","k":"♚","p":"♟","R":"♖","N":"♘","B":"♗","Q":"♕","K":"♔","P":"♙"}[v]||"") : v;
-                c.onclick = () => move(i, d); board.appendChild(c);
-            });
-            cont.appendChild(board);
-        }
-
-        async function move(i, d) {
-            if(d.turn !== (myRole==='p1'?'p1':'p2')) return;
-            let nb = Array.isArray(d.board) ? [...d.board] : d.board.split('');
-            if(d.type === 'ttt') { if(nb[i] !== '') return; nb[i] = myRole === 'p1' ? 'X' : 'O'; }
-            else { 
-                let sel = localStorage.getItem('cs'); 
-                if(!sel) { if(nb[i] !== '.') localStorage.setItem('cs', i); return; }
-                nb[i] = nb[sel]; nb[sel] = '.'; localStorage.removeItem('cs');
-            }
-            update(ref(db, 'games/'+gid), {board: Array.isArray(d.board) ? nb : nb.join(''), turn: d.turn === 'p1' ? 'p2' : 'p1'});
-        }
-
-        window.eggClick = () => { eggCounter++; if(eggCounter===5) { openMod('musyaEaster'); eggCounter=0; } setTimeout(()=>eggCounter=0, 2000); };
+        window.adminDelMsg = (id) => { if(prompt("Pass:")==="8070") remove(ref(db, 'msgs/'+id)); };
+        window.changeTheme = (v) => { document.body.className = 'theme-'+v; };
+        window.eggClick = () => { eggCounter++; if(eggCounter===5){ openMod('musyaEaster'); eggCounter=0;} setTimeout(()=>eggCounter=0, 2000); };
         window.openMod = (id) => document.getElementById(id).style.display = 'block';
         window.closeMod = (id) => document.getElementById(id).style.display = 'none';
         window.logout = () => { localStorage.clear(); location.reload(); };
@@ -347,6 +302,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
