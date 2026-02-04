@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super App v5</title>
+    <title>Мой Первый Сайт</title>
     <script src="https://js-dos.com/v7/build/releases/latest/js-dos.js"></script>
     <style>
         :root { --bg: #0a0a0a; --main: #0F0; --box: rgba(10, 25, 10, 0.7); --txt: #0F0; }
@@ -11,50 +11,59 @@
         body.theme-light { --bg: #f0f2f5; --main: #0088cc; --box: #ffffff; --txt: #000; }
         body.theme-retro { --bg: #1a1200; --main: #ffb000; --box: #2b1d00; --txt: #ffb000; }
         body.theme-cyber { --bg: #0d0015; --main: #ff00ff; --box: #1a0029; --txt: #00ffff; }
+        body.theme-snow { --bg: #001529; --main: #ffffff; --box: rgba(255,255,255,0.1); --txt: #ffffff; }
 
-        body { font-family: 'Consolas', monospace; text-align: center; padding: 20px; background-color: var(--bg); color: var(--txt); margin: 0; transition: 0.3s; }
+        body { font-family: 'Consolas', monospace; text-align: center; padding: 20px; background-color: var(--bg); color: var(--txt); margin: 0; transition: 0.3s; overflow-x: hidden; }
         .settings-btn { position: fixed; top: 15px; right: 15px; z-index: 100; cursor: pointer; background: var(--box); padding: 8px; border-radius: 10px; border: 1px solid var(--main); }
-        .settings-menu { display: none; position: fixed; top: 60px; right: 15px; z-index: 101; background: var(--box); padding: 15px; border-radius: 10px; border: 1px solid var(--main); text-align: left; width: 220px; }
+        .settings-menu { display: none; position: fixed; top: 60px; right: 15px; z-index: 101; background: var(--box); padding: 15px; border-radius: 10px; border: 1px solid var(--main); text-align: left; width: 240px; box-shadow: 0 0 20px rgba(0,0,0,0.8); }
+        .settings-menu select, .settings-menu button { background: #000; color: var(--main); border: 1px solid var(--main); margin-bottom: 10px; width: 100%; cursor: pointer; padding: 5px; }
         
-        .game-box { background: var(--box); padding: 20px; border-radius: 15px; box-shadow: 0 0 15px rgba(0,0,0,0.5); display: inline-block; margin-bottom: 30px; width: 95%; max-width: 450px; border: 1px solid var(--main); }
+        .game-box { background: var(--box); padding: 20px; border-radius: 15px; display: inline-block; margin-bottom: 30px; width: 95%; max-width: 450px; border: 1px solid var(--main); position: relative; z-index: 5; }
         .button-tea { display: inline-block; padding: 12px 25px; background: rgba(0,0,0,0.3); color: var(--main); border: 1px solid var(--main); border-radius: 8px; margin: 10px 0; cursor: pointer; font-weight: bold; }
         
-        #cList { height: 300px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; display: flex; flex-direction: column; border: 1px solid var(--main); margin-bottom: 10px; }
-        .msg { margin-bottom: 10px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.05); align-self: flex-start; text-align: left; width: 90%; position: relative; }
-        .react-btn { background: none; border: 1px solid var(--main); color: var(--main); font-size: 10px; border-radius: 5px; cursor: pointer; margin-top: 5px; padding: 2px 5px; }
+        #cList { height: 280px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 10px; display: flex; flex-direction: column; border: 1px solid var(--main); margin-bottom: 10px; }
+        .msg { margin-bottom: 10px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.05); align-self: flex-start; text-align: left; width: 92%; }
+        .react-btn { background: none; border: 1px solid var(--main); color: var(--main); font-size: 11px; border-radius: 5px; cursor: pointer; margin-top: 5px; }
         
         .chat-area { display: flex; gap: 5px; }
-        .chat-area input { flex: 1; padding: 12px; border: 1px solid var(--main); border-radius: 20px; background: #000; color: var(--main); outline: none; }
+        .chat-area input { flex: 1; padding: 10px; border: 1px solid var(--main); border-radius: 20px; background: #000; color: var(--main); outline: none; }
         
         canvas#snakeGame { background: #000; display: block; margin: 10px auto; width: 280px; height: 280px; border: 1px solid var(--main); }
         #doom-container { width: 100%; height: 300px; background: #000; border: 1px solid var(--main); }
-        .doom-info { font-size: 11px; color: #ff4d4d; margin-top: 10px; line-height: 1.4; }
         
-        #matrixCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.3; }
-        input[readonly] { opacity: 0.6; cursor: not-allowed; }
+        #matrixCanvas, #snowCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
     </style>
 </head>
 <body class="theme-hacker">
     <canvas id="matrixCanvas"></canvas>
+    <canvas id="snowCanvas" style="display:none"></canvas>
     
     <div class="settings-btn" onclick="toggleSettings()">⚙️ <span id="set-txt">Настройки</span></div>
     <div class="settings-menu" id="sMenu">
-        <label>Тема:</label>
+        <label id="l-theme">Тема:</label>
         <select onchange="changeTheme(this.value)">
             <option value="hacker">Hacker</option>
             <option value="tg">Telegram</option>
             <option value="light">Light</option>
-            <option value="retro">Retro Amber</option>
+            <option value="retro">Retro</option>
             <option value="cyber">Cyberpunk</option>
+            <option value="snow">Новый Год ❄️</option>
+        </select>
+        <label id="l-lang">Язык:</label>
+        <select onchange="changeLang(this.value)">
+            <option value="ru">Русский</option>
+            <option value="en">English</option>
+            <option value="ua">Українська</option>
         </select>
         <hr>
-        <button onclick="alert('Сбербанк: +79216274225')">Поддержать</button>
+        <button onclick="alert('Кинуть на чай будущему программисту:\n+79216274225 Сбербанк')" id="btn-support">Поддержать</button>
     </div>
 
-    <h1>Super App v5</h1>
+    <h1 id="h-title">Мой первый сайт</h1>
+    <h2 id="h-subtitle" style="font-size:16px; opacity:0.8">Делал сам честно!</h2>
 
     <div class="game-box">
-        <h3>Чат с реакциями</h3>
+        <h3 id="h-chat">Чат</h3>
         <div id="cList"></div>
         <div class="chat-area">
             <input type="text" id="nInp" placeholder="Имя" style="width:70px">
@@ -64,15 +73,16 @@
     </div>
 
     <div class="game-box">
-        <h3>Кликер</h3>
-        <div id="score" style="font-size:30px">0</div>
-        <button class="button-tea" onclick="addScore()">КЛИКНИ!</button>
-        <div id="leader-list" style="font-size:12px; text-align:left; border-top:1px solid var(--main); margin-top:10px"></div>
+        <h3 id="h-click">Кликер</h3>
+        <div id="score" style="font-size:35px">0</div>
+        <button class="button-tea" id="btn-main-click" onclick="addScore()">КЛИКНИ!</button><br>
+        <small id="h-reset" style="cursor:pointer; text-decoration:underline" onclick="resetMyScore()">обнулить счет</small>
+        <div id="leader-list" style="font-size:12px; text-align:left; border-top:1px solid var(--main); margin-top:10px; padding-top:5px"></div>
     </div>
 
     <div class="game-box">
-        <h3>Змейка</h3>
-        <div id="s-score">Score: 0</div>
+        <h3 id="h-snake">Змейка</h3>
+        <div id="s-score">Очки: 0</div>
         <canvas id="snakeGame" width="400" height="400"></canvas>
         <button class="button-tea" onclick="setD('up')">▲</button><br>
         <button class="button-tea" onclick="setD('left')">◀</button>
@@ -81,40 +91,32 @@
     </div>
 
     <div class="game-box">
-        <h3>DOOM 1993</h3>
+        <h3>DOOM (1993)</h3>
         <div id="doom-container"></div>
-        <div class="doom-info">
-            💻 <b>ТОЛЬКО ДЛЯ ПК</b><br>
-            Ходить: стрелки | Огонь: Ctrl | Дверь: Пробел | Бег: Shift
-        </div>
+        <div style="font-size:10px; color:red; margin-top:5px" id="h-doom">⚠️ ТОЛЬКО ДЛЯ ПК: Стрелки, Ctrl, Пробел</div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, push, onValue, set, get, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        const conf = {
-            apiKey: "AIzaSyChSk0gETRBQ391e4BjPqFsKc_dzjBmT58",
-            databaseURL: "https://my-chat-52203-default-rtdb.firebaseio.com",
-            projectId: "my-chat-52203"
-        };
+        const conf = { apiKey: "AIzaSyChSk0gETRBQ391e4BjPqFsKc_dzjBmT58", databaseURL: "https://my-chat-52203-default-rtdb.firebaseio.com", projectId: "my-chat-52203" };
         const app = initializeApp(conf);
         const db = getDatabase(app);
         let pass = "";
+        let likedMsgs = JSON.parse(localStorage.getItem('likedMsgs') || '[]');
 
         window.addC = async () => {
-            const n = document.getElementById('nInp');
-            const m = document.getElementById('mInp');
+            const n = document.getElementById('nInp'), m = document.getElementById('mInp');
             if(!n.value || !m.value) return;
-
             if(!pass) {
                 const s = await get(ref(db, 'users/'+n.value));
                 if(s.exists()){
-                    let p = prompt("Пароль:");
-                    if(p !== s.val().password) return alert("Неверно!");
-                    pass = p;
+                    let p = prompt(curLang=='ru'?"Пароль:":"Password:");
+                    if(p !== s.val().password) return alert("Error!");
+                    pass = p; document.getElementById('score').innerText = s.val().score || 0;
                 } else {
-                    let p = prompt("Придумай пароль:");
+                    let p = prompt(curLang=='ru'?"Придумай пароль:":"Create password:");
                     if(!p) return;
                     await set(ref(db, 'users/'+n.value), {password: p, score: 0});
                     pass = p;
@@ -127,59 +129,108 @@
 
         window.addScore = () => {
             const n = document.getElementById('nInp').value;
-            if(!pass) return alert("Войдите в чат!");
-            const s = document.getElementById('score');
+            if(!pass) return alert(curLang=='ru'?"Сначала войди в чат!":"Login first!");
+            let s = document.getElementById('score');
             let cur = parseInt(s.innerText) + 1;
             s.innerText = cur;
-            if(cur === 100) alert("100 кликов! Иди траву потрогай");
+            if(cur === 100) alert(curLang=='ru'?"100 кликов! иди потрогай траву задрот":"100 clicks! go touch grass nerd");
             update(ref(db, 'users/'+n), {score: cur});
         };
 
-        window.doLike = (id, cur) => {
-            update(ref(db, 'msgs/'+id), {likes: (cur || 0) + 1});
+        window.resetMyScore = () => {
+            const n = document.getElementById('nInp').value;
+            if(!pass || !confirm("Reset?")) return;
+            document.getElementById('score').innerText = 0;
+            update(ref(db, 'users/'+n), {score: 0});
         };
 
-        window.delMsg = (id) => {
-            if(prompt("Пароль админа:") === "8070") remove(ref(db, 'msgs/'+id));
+        window.doLike = (id, cur) => {
+            if(likedMsgs.includes(id)) return alert("Already liked!");
+            likedMsgs.push(id);
+            localStorage.setItem('likedMsgs', JSON.stringify(likedMsgs));
+            update(ref(db, 'msgs/'+id), {likes: (cur || 0) + 1});
         };
 
         onValue(ref(db, 'msgs'), (s) => {
             const l = document.getElementById('cList'); l.innerHTML = "";
             s.forEach(m => {
                 const d = m.val();
-                l.innerHTML += `<div class="msg">
-                    <b>${d.name}</b> <span style="cursor:pointer;color:red" onclick="delMsg('${m.key}')">×</span><br>${d.text}<br>
-                    <button class="react-btn" onclick="doLike('${m.key}', ${d.likes})">❤️ ${d.likes || 0}</button>
-                </div>`;
+                l.innerHTML += `<div class="msg"><b>${d.name}</b>: ${d.text}<br>
+                <button class="react-btn" onclick="doLike('${m.key}', ${d.likes})">❤️ ${d.likes || 0}</button></div>`;
             });
             l.scrollTop = l.scrollHeight;
         });
 
         onValue(ref(db, 'users'), (s) => {
-            const l = document.getElementById('leader-list'); l.innerHTML = "<b>ТОП:</b><br>";
+            const l = document.getElementById('leader-list'); l.innerHTML = "<b>TOP:</b><br>";
             let users = [];
             s.forEach(u => users.push({n: u.key, s: u.val().score}));
-            users.sort((a,b)=>b.s-a.s).slice(0,5).forEach(u => {
-                l.innerHTML += `${u.n}: ${u.s} кликов<br>`;
-            });
+            users.sort((a,b)=>b.s-a.s).slice(0,5).forEach(u => l.innerHTML += `${u.n}: ${u.s}<br>`);
         });
     </script>
 
     <script>
-        function toggleSettings() { 
-            const m = document.getElementById('sMenu'); 
-            m.style.display = m.style.display === 'block' ? 'none' : 'block'; 
+        let curLang = 'ru';
+        const texts = {
+            ru: { title: "Мой первый сайт", sub: "Делал сам честно!", chat: "Чат", click: "Кликер", snake: "Змейка", support: "Поддержать", reset: "обнулить счет", doom: "⚠️ ТОЛЬКО ДЛЯ ПК: Стрелки, Ctrl, Пробел", settings: "Настройки" },
+            en: { title: "My First Site", sub: "Made it myself honestly!", chat: "Chat", click: "Clicker", snake: "Snake", support: "Support Me", reset: "reset score", doom: "⚠️ PC ONLY: Arrows, Ctrl, Space", settings: "Settings" },
+            ua: { title: "Мій перший сайт", sub: "Робив сам чесно!", chat: "Чат", click: "Клікер", snake: "Змійка", support: "Підтримати", reset: "обнулити рахунок", doom: "⚠️ ТІЛЬКИ ДЛЯ ПК: Стрілки, Ctrl, Пробіл", settings: "Налаштування" }
+        };
+
+        function changeLang(l) {
+            curLang = l; const t = texts[l];
+            document.getElementById('h-title').innerText = t.title; document.getElementById('h-subtitle').innerText = t.sub;
+            document.getElementById('h-chat').innerText = t.chat; document.getElementById('h-click').innerText = t.click;
+            document.getElementById('h-snake').innerText = t.snake; document.getElementById('btn-support').innerText = t.support;
+            document.getElementById('h-reset').innerText = t.reset; document.getElementById('h-doom').innerText = t.doom;
+            document.getElementById('set-txt').innerText = t.settings;
         }
-        function changeTheme(v) { document.body.className = 'theme-' + v; }
+
+        function changeTheme(v) {
+            document.body.className = 'theme-' + v;
+            document.getElementById('matrixCanvas').style.display = (v === 'hacker') ? 'block' : 'none';
+            document.getElementById('snowCanvas').style.display = (v === 'snow') ? 'block' : 'none';
+        }
+
+        function toggleSettings() { const s = document.getElementById('sMenu'); s.style.display = s.style.display==='block'?'none':'block'; }
+
+        // Матрица
+        const mC = document.getElementById('matrixCanvas'); const mX = mC.getContext('2d');
+        mC.width = window.innerWidth; mC.height = window.innerHeight;
+        const drops = Array(Math.floor(mC.width/16)).fill(1);
+        function drawM() {
+            mX.fillStyle = 'rgba(0,0,0,0.05)'; mX.fillRect(0,0,mC.width,mC.height);
+            mX.fillStyle = '#0F0'; mX.font = '16px monospace';
+            drops.forEach((y, i) => {
+                mX.fillText(Math.random()>0.5?'0':'1', i*16, y*16);
+                if(y*16>mC.height && Math.random()>0.975) drops[i]=0; drops[i]++;
+            });
+        }
+        setInterval(drawM, 33);
+
+        // Снег
+        const sC = document.getElementById('snowCanvas'); const sX = sC.getContext('2d');
+        sC.width = window.innerWidth; sC.height = window.innerHeight;
+        let flakes = Array(100).fill(0).map(() => ({ x: Math.random()*sC.width, y: Math.random()*sC.height, r: Math.random()*4+1, d: Math.random()*1 }));
+        function drawS() {
+            sX.clearRect(0,0,sC.width,sC.height); sX.fillStyle = "white"; sX.beginPath();
+            flakes.forEach(f => {
+                sX.moveTo(f.x, f.y); sX.arc(f.x, f.y, f.r, 0, Math.PI*2, true);
+                f.y += Math.cos(f.d) + 1 + f.r/2; f.x += Math.sin(f.d);
+                if(f.y > sC.height) { f.y = -10; f.x = Math.random()*sC.width; }
+            });
+            sX.fill();
+        }
+        setInterval(drawS, 33);
 
         // Змейка
         let snake = [{x:200,y:200}], food = {x:100,y:100}, d = "", sScore = 0;
-        const sCanvas = document.getElementById("snakeGame"); const sCtx = sCanvas.getContext("2d");
+        const snC = document.getElementById("snakeGame"); const snX = snC.getContext("2d");
         window.setD = (v) => { if(v=='up'&&d!='down')d=v; if(v=='down'&&d!='up')d=v; if(v=='left'&&d!='right')d=v; if(v=='right'&&d!='left')d=v; };
-        function drawS() {
-            sCtx.fillStyle = "#000"; sCtx.fillRect(0,0,400,400);
-            sCtx.fillStyle = "red"; sCtx.fillRect(food.x, food.y, 20, 20);
-            snake.forEach((s, i) => { sCtx.fillStyle = i==0?"#ADFF2F":"#008000"; sCtx.fillRect(s.x, s.y, 20, 20); });
+        function drawSnake() {
+            snX.fillStyle = "#000"; snX.fillRect(0,0,400,400);
+            snX.fillStyle = "red"; snX.fillRect(food.x, food.y, 20, 20);
+            snake.forEach((s, i) => { snX.fillStyle = i==0?"#ADFF2F":"#008000"; snX.fillRect(s.x, s.y, 20, 20); });
             let hX = snake[0].x, hY = snake[0].y;
             if(d=="up") hY-=20; if(d=="down") hY+=20; if(d=="left") hX-=20; if(d=="right") hX+=20;
             if(hX==food.x && hY==food.y) {
@@ -193,36 +244,13 @@
                 } else snake.unshift({x:hX, y:hY});
             }
         }
-        setInterval(drawS, 120);
+        setInterval(drawSnake, 120);
 
-        // Матрица
-        const mCanvas = document.getElementById('matrixCanvas'); const mCtx = mCanvas.getContext('2d');
-        mCanvas.width = window.innerWidth; mCanvas.height = window.innerHeight;
-        const drops = Array(Math.floor(mCanvas.width/16)).fill(1);
-        function drawM() {
-            mCtx.fillStyle = 'rgba(0,0,0,0.05)'; mCtx.fillRect(0,0,mCanvas.width,mCanvas.height);
-            mCtx.fillStyle = '#0F0'; mCtx.font = '16px monospace';
-            drops.forEach((y, i) => {
-                mCtx.fillText(Math.random()>0.5?'0':'1', i*16, y*16);
-                if(y*16>mCanvas.height && Math.random()>0.975) drops[i]=0;
-                drops[i]++;
-            });
-        }
-        setInterval(drawM, 33);
-
-        // DOOM Запуск
-        try {
-            Dos(document.getElementById("doom-container"), { 
-                url: "https://js-dos.com/v7/build/archive/doom.zip",
-                style: "none"
-            });
-        } catch(e) { console.log("DOOM error:", e); }
+        // DOOM 
+        window.onload = () => {
+            Dos(document.getElementById("doom-container")).run("https://js-dos.com/v7/build/archive/doom.zip");
+        };
     </script>
 </body>
 </html>
-
-
-
-
-
 
