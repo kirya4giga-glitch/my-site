@@ -1,197 +1,111 @@
-
+Манул, [04.02.2026 12:20]
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Мой сайт</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моя Игра</title>
     <style>
-        /* Возвращаем твой старый стиль */
-        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f0f0f0; color: black; }
-        
-        .button { 
-            display: inline-block; 
-            padding: 10px 20px; 
-            background: #eee; 
-            text-decoration: none; 
-            color: black; 
-            border: 1px solid #ccc;
-            border-radius: 5px; 
-            margin-bottom: 20px;
-        }
-
-        .game-box {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            display: inline-block;
-            margin-top: 20px;
-        }
-
-        #score { font-size: 30px; font-weight: bold; color: limegreen; }
-
-        .click-btn {
-            padding: 15px 40px;
-            font-size: 20px;
-            background: lime;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        /* Стили для змейки */
-        canvas { 
-            background: #000; 
-            border: 2px solid #333; 
-            display: block; 
-            margin: 10px auto; 
-            width: 280px; 
-            height: 280px; 
-            touch-action: none; 
-        }
-
-        .controls { 
-            display: grid; 
-            grid-template-columns: repeat(3, 60px); 
-            gap: 10px; 
-            justify-content: center; 
-            margin-top: 10px; 
-        }
-
-        .btn-dir { 
-            width: 60px; 
-            height: 60px; 
-            background: #eee; 
-            border: 1px solid #ccc; 
-            border-radius: 10px; 
-            font-size: 20px; 
-        }
-
-        .reset-btn {
-            background: none;
-            border: none;
-            color: red;
-            text-decoration: underline;
-            cursor: pointer;
-            font-size: 12px;
-            margin-top: 10px;
-        }
+        body { font-family: sans-serif; text-align: center; background: #f0f0f0; margin: 0; padding: 20px; }
+        .box { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: inline-block; margin: 10px; min-width: 300px; }
+        #score { font-size: 40px; font-weight: bold; color: #2ecc71; }
+        button { cursor: pointer; user-select: none; touch-action: manipulation; }
+        .main-btn { padding: 20px 50px; font-size: 25px; background: #2ecc71; color: white; border: none; border-radius: 10px; width: 100%; }
+        canvas { background: #000; display: block; margin: 20px auto; border: 3px solid #333; width: 280px; height: 280px; }
+        .ctrl { display: grid; grid-template-columns: repeat(3, 70px); gap: 10px; justify-content: center; }
+        .d-btn { width: 70px; height: 70px; background: #ddd; border: 1px solid #ccc; font-size: 25px; border-radius: 10px; }
+        .tea-btn { background: #eee; border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; border-radius: 5px; }
     </style>
 </head>
 <body>
 
-    <h1>Мой первый сайт!</h1>
-    <p>делал сам честно!</p>
-    
-    <a href="#" class="button" onclick="alert('скинуть будущему программисту на чай: +79216274225 сбербанк')">Нажми сюда</a>
+    <button class="tea-btn" onclick="alert('Сбер: +79216274225')">На чай будущему программисту </button>
 
-    <hr>
-
-    <div class="game-box">
-        <h3>моя первая мини игра!</h3>
-        <p>Счет: <span id="score">0</span></p>
-        <button class="click-btn" onclick="addScore()">КЛИКНИ!</button>
-        <br>
-        <button class="reset-btn" onclick="resetScore()">обнулить счет</button>
+    <div class="box">
+        <h2>Кликер</h2>
+        <div id="score">0</div>
+        <button class="main-btn" onclick="handleButtonClick()">КЛИКНИ!</button>
+        <p style="color: red; text-decoration: underline; cursor: pointer;" onclick="localStorage.clear(); location.reload();">сбросить всё</p>
     </div>
 
-    <div class="game-box">
-        <h3>Змейка</h3>
+    <div class="box">
+        <h2>Змейка</h2>
         <canvas id="snakeGame" width="400" height="400"></canvas>
-        <div class="controls">
-            <div></div><button class="btn-dir" onclick="changeDir('up')">▲</button><div></div>
-            <button class="btn-dir" onclick="changeDir('left')">◀</button>
-            <button class="btn-dir" onclick="changeDir('down')">▼</button>
-            <button class="btn-dir" onclick="changeDir('right')">▶</button>
+        <div class="ctrl">
+            <div></div><button class="d-btn" onclick="move('up')">▲</button><div></div>
+            <button class="d-btn" onclick="move('left')">◀</button>
+            <button class="d-btn" onclick="move('down')">▼</button>
+            <button class="d-btn" onclick="move('right')">▶</button>
         </div>
     </div>
 
     <script>
-        // --- ЛОГИКА КЛИКЕРА ---
-        let count = localStorage.getItem('myScore') ? parseInt(localStorage.getItem('myScore')) : 0;
+        // ЛОГИКА КЛИКЕРА
+        let count = parseInt(localStorage.getItem('savedScore')) || 0;
+        const scoreElement = document.getElementById('score');
+        scoreElement.innerText = count;
 
-        window.onload = function() {
-            document.getElementById('score').innerText = count;
-        };
-
-        function addScore() {
-            count = count + 1;
-            document.getElementById('score').innerText = count;
-            localStorage.setItem('myScore', count);
-
-            if (count === 100) {
-                alert("иди потрогай траву! задрот");
-            }
+        function handleButtonClick() {
+            count++;
+            scoreElement.innerText = count;
+            localStorage.setItem('savedScore', count);
+            if(count === 100) alert("Ого, 100 кликов! Иди потрогай траву!");
         }
 
-        function resetScore() {
-            if (confirm("Точно обнулить?")) {
-                count = 0;
-                document.getElementById('score').innerText = count;
-                localStorage.removeItem('myScore');
-            }
-        }
-
-Манул, [04.02.2026 12:13]
-// --- ЛОГИКА ЗМЕЙКИ ---
+        // ЛОГИКА ЗМЕЙКИ
         const canvas = document.getElementById("snakeGame");
         const ctx = canvas.getContext("2d");
-        const box = 20;
-        let snake = [{x: 10 * box, y: 10 * box}];
-        let food = { x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box };
-        let dir;
+        const boxSize = 20;
+        let snake = [{x: 10 * boxSize, y: 10 * boxSize}];
+        let food = { x: Math.floor(Math.random()*19+1)*boxSize, y: Math.floor(Math.random()*19+1)*boxSize };
+        let currentDir = "";
 
-        function changeDir(newDir) {
-            if(newDir == "left" && dir != "right") dir = "left";
-            else if(newDir == "up" && dir != "down") dir = "up";
-            else if(newDir == "right" && dir != "left") dir = "right";
-            else if(newDir == "down" && dir != "up") dir = "down";
+        function move(dir) {
+            if(dir === 'left' && currentDir !== 'right') currentDir = 'left';
+            if(dir === 'up' && currentDir !== 'down') currentDir = 'up';
+            if(dir === 'right' && currentDir !== 'left') currentDir = 'right';
+            if(dir === 'down' && currentDir !== 'up') currentDir = 'down';
         }
 
-        function draw() {
+        function gameLoop() {
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+
             ctx.fillStyle = "red";
-            ctx.fillRect(food.x, food.y, box, box);
+            ctx.fillRect(food.x, food.y, boxSize, boxSize);
 
-            for(let i=0; i<snake.length; i++) {
-                ctx.fillStyle = (i==0) ? "lime" : "green";
-                ctx.fillRect(snake[i].x, snake[i].y, box, box);
+            for(let i = 0; i < snake.length; i++) {
+                ctx.fillStyle = (i === 0) ? "#2ecc71" : "#27ae60";
+                ctx.fillRect(snake[i].x, snake[i].y, boxSize, boxSize);
             }
 
-            let sX = snake[0].x;
-            let sY = snake[0].y;
+            let headX = snake[0].x;
+            let headY = snake[0].y;
 
-            if(dir=="left") sX-=box;
-            if(dir=="right") sX+=box;
-            if(dir=="up") sY-=box;
-            if(dir=="down") sY+=box;
+            if(currentDir === "left") headX -= boxSize;
+            if(currentDir === "right") headX += boxSize;
+            if(currentDir === "up") headY -= boxSize;
+            if(currentDir === "down") headY += boxSize;
 
-            if(sX==food.x && sY==food.y) {
-                food = { x: Math.floor(Math.random()*19+1)*box, y: Math.floor(Math.random()*19+1)*box };
-            } else { snake.pop(); }
-
-            let head = {x:sX, y:sY};
-
-            if(sX<0  sX>=canvas.width  sY<0  sY>=canvas.height  collision(head, snake)) {
-                clearInterval(game);
-                alert("Game Over!");
-                location.reload();
+Манул, [04.02.2026 12:20]
+if(headX === food.x && headY === food.y) {
+                food = { x: Math.floor(Math.random()*19+1)*boxSize, y: Math.floor(Math.random()*19+1)*boxSize };
+            } else if (currentDir !== "") {
+                snake.pop();
             }
-            snake.unshift(head);
+
+            if(currentDir !== "") {
+                let newHead = {x: headX, y: headY};
+                if(headX < 0  headX >= canvas.width  headY < 0  headY >= canvas.height  snake.some(s => s.x === newHead.x && s.y === newHead.y)) {
+                    alert("Игра окончена!");
+                    location.reload();
+                    return;
+                }
+                snake.unshift(newHead);
+            }
         }
 
-        function collision(head, array) {
-            for(let i=0; i<array.length; i++) {
-                if(head.x == array[i].x && head.y == array[i].y) return true;
-            }
-            return false;
-        }
-
-        let game = setInterval(draw, 150);
+        setInterval(gameLoop, 150);
     </script>
-
 </body>
 </html>
