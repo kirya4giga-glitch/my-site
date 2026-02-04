@@ -32,9 +32,7 @@
     </style>
 </head>
 <body>
-
     <canvas id="matrixCanvas"></canvas>
-
     <div class="settings-btn" onclick="toggleSettings()">⚙️ <span id="set-txt">Настройки</span></div>
     <div class="settings-menu" id="sMenu">
         <label id="set-theme">Тема:</label>
@@ -71,8 +69,7 @@
         <h3 id="h-click">Кликер</h3>
         <div id="score" style="font-size: 35px; font-weight: bold;">0</div>
         <button class="button-tea" onclick="addScore()" id="btn-click">КЛИКНИ!</button>
-        <div style="color: #ff4d4d; text-decoration: underline; cursor: pointer; font-size: 11px; margin-top: 5px;" onclick="resetScore()">обнулить мой рекорд</div>
-        
+        <div id="h-reset" style="color: #ff4d4d; text-decoration: underline; cursor: pointer; font-size: 11px; margin-top: 5px;" onclick="resetScore()">обнулить мой рекорд</div>
         <div id="leaderboard">
             <b id="h-top">ТОП ИГРОКОВ:</b>
             <div id="leaders-list">Загрузка...</div>
@@ -91,7 +88,7 @@
     <div class="game-box">
         <h3>DOOM (1993)</h3>
         <div id="doom-container"></div>
-        <div class="doom-controls">
+        <div class="doom-controls" id="h-doom-info">
             ⚠️ ТОЛЬКО ДЛЯ ПК!<br>
             Ходить: стрелки | Стрелять: Ctrl | Открыть дверь: Пробел | Бег: Shift
         </div>
@@ -114,6 +111,8 @@
         let currentSessionPass = ""; 
         let userClicks = 0;
 
+        document.getElementById('mInp').addEventListener('keypress', (e) => { if (e.key === 'Enter') addC(); });
+
         window.addC = async function() {
             const n = document.getElementById('nInp').value.trim();
             let m = document.getElementById('mInp').value.trim();
@@ -122,13 +121,13 @@
             const snap = await get(uRef);
             if (!currentSessionPass) {
                 if(snap.exists()){
-                    const p = prompt("Пароль:");
-                    if(p !== snap.val().password) return alert("Неверно!");
+                    const p = prompt(curLang === 'ru' ? "Пароль:" : (curLang === 'ua' ? "Пароль:" : "Password:"));
+                    if(p !== snap.val().password) return alert("Error!");
                     currentSessionPass = p;
                     userClicks = snap.val().score || 0;
                     document.getElementById('score').innerText = userClicks;
                 } else {
-                    const np = prompt("Придумай пароль:");
+                    const np = prompt(curLang === 'ru' ? "Придумай пароль:" : (curLang === 'ua' ? "Придумай пароль:" : "Create password:"));
                     if(!np) return;
                     await set(uRef, {password: np, score: 0});
                     currentSessionPass = np;
@@ -145,22 +144,15 @@
         window.addScore = async function() {
             userClicks++;
             document.getElementById('score').innerText = userClicks;
-            
-            // ВСПЛЫВАЮЩАЯ ПАСХАЛКА
-            if(userClicks === 100) {
-                alert("100 кликов! Иди траву потрогай");
-            }
-
+            if(userClicks === 100) alert(langs[curLang].easter);
             const n = document.getElementById('nInp').value.trim();
-            if(n && currentSessionPass) {
-                set(ref(db, 'users/' + n + '/score'), userClicks);
-            }
+            if(n && currentSessionPass) set(ref(db, 'users/' + n + '/score'), userClicks);
         };
 
         window.resetScore = async function() {
             const n = document.getElementById('nInp').value.trim();
-            if(!n || !currentSessionPass) return alert("Сначала войди через чат!");
-            if(confirm("Обнулить рекорд?")) {
+            if(!n || !currentSessionPass) return alert(curLang === 'ru' ? "Войди в чат!" : "Login first!");
+            if(confirm("Reset?")) {
                 userClicks = 0;
                 document.getElementById('score').innerText = 0;
                 await set(ref(db, 'users/' + n + '/score'), 0);
@@ -173,7 +165,7 @@
             list.innerHTML = ""; let arr = [];
             s.forEach(c => { if(c.val().score !== undefined) arr.push({name: c.key, score: c.val().score}); });
             arr.sort((a,b) => b.score - a.score).forEach((u, i) => {
-                list.innerHTML += `<div class="leader-item"><span>${i+1}. ${u.name}</span> <b>${u.score} кликов</b></div>`;
+                list.innerHTML += `<div class="leader-item"><span>${i+1}. ${u.name}</span> <b>${u.score} ${langs[curLang].unit}</b></div>`;
             });
         });
 
@@ -186,41 +178,48 @@
             }
             list.scrollTop = list.scrollHeight;
         });
-        window.deleteMsg = (id) => { if(prompt("Админ-пароль:") === "8070") remove(ref(db, 'chat_messages/' + id)); };
+        window.deleteMsg = (id) => { if(prompt("Pass:") === "8070") remove(ref(db, 'chat_messages/' + id)); };
     </script>
 
     <script>
-        function toggleSettings() { const m = document.getElementById('sMenu'); m.style.display = m.style.display === 'block' ? 'none' : 'block'; }
-        function showThanks() { alert("ОСОБАЯ БЛАГОДАРНОСТЬ:\n\n1. Анастасие землеройке\n2. Вадеку\n3. Андрюхе 😎\n4. Саше"); }
-        function changeTheme(v) { document.body.className = v === 'hacker' ? '' : 'theme-' + v; document.getElementById('matrixCanvas').style.display = (v === 'hacker') ? 'block' : 'none'; }
+        let curLang = 'ru';
         const langs = {
-            ru: { title: "Мой первый сайт", subtitle: "Делал сам честно!", chat: "Чат", click: "Кликер", snake: "Змейка", settings: "Настройки", top: "ТОП ИГРОКОВ:" },
-            en: { title: "My First Site", subtitle: "Made it myself!", chat: "Chat", click: "Clicker", snake: "Snake", settings: "Settings", top: "TOP PLAYERS:" },
-            ua: { title: "Мій перший сайт", subtitle: "Робив сам чесно!", chat: "Чат", click: "Клікер", snake: "Змійка", settings: "Налаштування", top: "ТОП ГРАВЦІВ:" }
+            ru: { title: "Мой первый сайт", subtitle: "Делал сам честно!", chat: "Чат (v4)", click: "Кликер", snake: "Змейка", settings: "Настройки", top: "ТОП ИГРОКОВ:", reset: "обнулить мой рекорд", tea: "Нажми!", thanks: "Особая благодарность", theme: "Тема:", lang: "Язык:", doom: "⚠️ ТОЛЬКО ДЛЯ ПК!<br>Ходить: стрелки | Стрелять: Ctrl | Открыть дверь: Пробел | Бег: Shift", unit: "кликов", easter: "100 кликов! Иди траву потрогай", nameP: "Имя", textP: "Текст или ссылка на фото..." },
+            en: { title: "My First Site", subtitle: "Made it myself!", chat: "Chat (v4)", click: "Clicker", snake: "Snake", settings: "Settings", top: "TOP PLAYERS:", reset: "reset my record", tea: "Click me!", thanks: "Special thanks", theme: "Theme:", lang: "Language:", doom: "⚠️ PC ONLY!<br>Move: Arrows | Shoot: Ctrl | Open door: Space | Run: Shift", unit: "clicks", easter: "100 clicks! Go touch grass", nameP: "Name", textP: "Text or image link..." },
+            ua: { title: "Мій перший сайт", subtitle: "Робив сам чесно!", chat: "Чат (v4)", click: "Клікер", snake: "Змійка", settings: "Налаштування", top: "ТОП ГРАВЦІВ:", reset: "обнулити мій рекорд", tea: "Натисни!", thanks: "Особлива подяка", theme: "Тема:", lang: "Мова:", doom: "⚠️ ТІЛЬКИ ДЛЯ ПК!<br>Ходити: стрілки | Стріляти: Ctrl | Відкрити двері: Пробіл | Біг: Shift", unit: "кліків", easter: "100 кліків! Йди траву поторкай", nameP: "Ім'я", textP: "Текст або посилання..." }
         };
+
         function changeLang(l) {
-            document.getElementById('h-title').innerText = langs[l].title; document.getElementById('h-subtitle').innerText = langs[l].subtitle;
-            document.getElementById('h-chat').innerText = langs[l].chat; document.getElementById('h-click').innerText = langs[l].click;
-            document.getElementById('h-snake').innerText = langs[l].snake; document.getElementById('set-txt').innerText = langs[l].settings;
-            document.getElementById('h-top').innerText = langs[l].top;
+            curLang = l; const d = langs[l];
+            document.getElementById('h-title').innerText = d.title; document.getElementById('h-subtitle').innerText = d.subtitle;
+            document.getElementById('h-chat').innerText = d.chat; document.getElementById('h-click').innerText = d.click;
+            document.getElementById('h-snake').innerText = d.snake; document.getElementById('set-txt').innerText = d.settings;
+            document.getElementById('h-top').innerText = d.top; document.getElementById('h-reset').innerText = d.reset;
+            document.getElementById('btn-tea').innerText = d.tea; document.getElementById('btn-thanks').innerText = d.thanks;
+            document.getElementById('set-theme').innerText = d.theme; document.getElementById('set-lang').innerText = d.lang;
+            document.getElementById('h-doom-info').innerHTML = d.doom;
+            document.getElementById('nInp').placeholder = d.nameP; document.getElementById('mInp').placeholder = d.textP;
         }
+
+        function toggleSettings() { const m = document.getElementById('sMenu'); m.style.display = m.style.display === 'block' ? 'none' : 'block'; }
+        function showThanks() { alert("THANKS:\n1. Анастасие землеройке\n2. Вадеку\n3. Андрюхе 😎\n4. Саше"); }
+        function changeTheme(v) { document.body.className = v === 'hacker' ? '' : 'theme-' + v; document.getElementById('matrixCanvas').style.display = (v === 'hacker') ? 'block' : 'none'; }
 
         const sCanvas = document.getElementById("snakeGame"); const sCtx = sCanvas.getContext("2d");
         let snake = [{x: 200, y: 200}], food = {x: 100, y: 100}, d = "";
-        window.setD = (v) => d = v;
+        window.setD = (v) => {
+            if(v==='up' && d!=='down') d=v; if(v==='down' && d!=='up') d=v;
+            if(v==='left' && d!=='right') d=v; if(v==='right' && d!=='left') d=v;
+        };
         function drawS() {
             sCtx.fillStyle = "#000"; sCtx.fillRect(0,0,400,400);
             sCtx.fillStyle = "red"; sCtx.fillRect(food.x, food.y, 20, 20);
-            snake.forEach((s, i) => {
-                sCtx.fillStyle = (i === 0) ? "#ADFF2F" : "#008000"; 
-                sCtx.fillRect(s.x, s.y, 20, 20);
-                sCtx.strokeStyle = "#000"; sCtx.strokeRect(s.x, s.y, 20, 20);
-            });
+            snake.forEach((s, i) => { sCtx.fillStyle = (i === 0) ? "#ADFF2F" : "#008000"; sCtx.fillRect(s.x, s.y, 20, 20); sCtx.strokeStyle = "#000"; sCtx.strokeRect(s.x, s.y, 20, 20); });
             let hX = snake[0].x, hY = snake[0].y;
             if(d=="up") hY-=20; if(d=="down") hY+=20; if(d=="left") hX-=20; if(d=="right") hX+=20;
             if(hX==food.x && hY==food.y) food = {x: Math.floor(Math.random()*19)*20, y: Math.floor(Math.random()*19)*20}; else if(d) snake.pop();
             if(d) {
-                if(hX<0 || hX>=400 || hY<0 || hY>=400 || snake.some(s=>s.x==hX && s.y==hY)) { d=""; snake=[{x:200,y:200}]; alert("Game Over!"); }
+                if(hX < 0 || hX >= 400 || hY < 0 || hY >= 400 || snake.some(s=>s.x==hX && s.y==hY)) { d=""; snake=[{x:200,y:200}]; alert("Game Over!"); }
                 else snake.unshift({x:hX, y:hY});
             }
         }
@@ -232,15 +231,13 @@
         function drawM() {
             mCtx.fillStyle = 'rgba(0, 0, 0, 0.05)'; mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
             mCtx.fillStyle = '#0F0'; mCtx.font = '16px monospace';
-            drops.forEach((y, i) => {
-                mCtx.fillText(Math.random() > 0.5 ? '0' : '1', i * 16, y * 16);
-                if (y * 16 > mCanvas.height && Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
-            });
+            drops.forEach((y, i) => { mCtx.fillText(Math.random() > 0.5 ? '0' : '1', i * 16, y * 16); if (y * 16 > mCanvas.height && Math.random() > 0.975) drops[i] = 0; drops[i]++; });
         }
         setInterval(drawM, 33);
         Dos(document.getElementById("doom-container"), { style: "none" }).run("https://js-dos.com/v7/build/archive/doom.zip");
     </script>
 </body>
 </html>
+
+
 
