@@ -3,178 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kiru OS v31.0 - TITAN EDITION</title>
+    <title>Kiru OS v32.0 - ULTIMATE TITAN</title>
     <style>
         :root { 
             --bg: #000; --main: #0A84FF; --txt: #fff; 
             --glass: rgba(255, 255, 255, 0.08); 
-            --card: rgba(28, 28, 30, 0.8);
-            --red: #FF453A; --green: #32D74B; --orange: #FF9F0A; --purple: #BF5AF2;
-            --gold: #FFD700;
+            --card: rgba(28, 28, 30, 0.9);
+            --red: #FF453A; --green: #32D74B; --orange: #FF9F0A; --purple: #BF5AF2; --gold: #FFD700;
         }
-        body.theme-hacker { --bg: #000; --main: #32D74B; --txt: #32D74B; --glass: rgba(0,255,0,0.05); }
-        body.theme-ios-light { --bg: #F2F2F7; --main: #007AFF; --txt: #000; --glass: rgba(255, 255, 255, 0.7); --card: rgba(255,255,255,0.9); }
+        /* ТЕМЫ */
+        body.theme-light { --bg: #F2F2F7; --main: #007AFF; --txt: #000; --glass: rgba(0,0,0,0.05); --card: #fff; }
+        body.theme-retro { --bg: #ffcfdf; --main: #ff5e7e; --txt: #333; --glass: rgba(255,255,255,0.5); }
+        body.theme-hacker { --bg: #000; --main: #00ff41; --txt: #00ff41; --glass: rgba(0,255,0,0.1); }
+        body.theme-snow { --bg: #e0f7fa; --main: #0288d1; --txt: #01579b; }
 
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
             background: var(--bg); color: var(--txt); margin: 0; padding: 15px; 
-            overflow-x: hidden; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-x: hidden; transition: 0.4s;
         }
 
-        /* АНИМАЦИИ */
-        @keyframes pop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-        @keyframes float-up { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
-        @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 100% { transform: translate(1px, -1px) rotate(0deg); } }
-        @keyframes gold-glow { 0% { box-shadow: 0 0 5px var(--gold); } 50% { box-shadow: 0 0 20px var(--gold); } 100% { box-shadow: 0 0 5px var(--gold); } }
+        /* СНЕЖИНКИ И МАТРИЦА */
+        #special-canvas { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index: -1; }
 
         .ios-card { 
-            background: var(--glass); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
             padding: 20px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); animation: pop 0.5s ease;
+            margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); animation: pop 0.4s ease;
         }
 
         .btn { 
             padding: 12px 16px; background: var(--main); color: #fff; border: none; 
-            border-radius: 14px; cursor: pointer; font-weight: 600; font-size: 15px;
-            transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 14px; cursor: pointer; font-weight: 600; font-size: 14px;
+            transition: 0.2s; display: inline-flex; align-items: center; justify-content: center;
         }
-        .btn:active { transform: scale(0.92); }
+        .btn:active { transform: scale(0.95); }
         .btn-red { background: var(--red); }
-        .btn-orange { background: var(--orange); }
-        .btn-gold { background: var(--gold); color: #000; animation: gold-glow 2s infinite; }
+        .btn-gold { background: var(--gold); color: #000; }
 
-        /* ИГРОВЫЕ ЭЛЕМЕНТЫ */
-        #cList { height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; scroll-behavior: smooth; }
-        .msg { background: rgba(255,255,255,0.06); padding: 12px; border-radius: 18px; font-size: 14px; border-left: 4px solid var(--main); position: relative; }
-        .msg-system { border-left-color: var(--gold); background: rgba(255,215,0,0.1); font-weight: bold; }
-        .msg-time { font-size: 9px; opacity: 0.4; float: right; }
+        #cList { height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+        .msg { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 15px; font-size: 13px; position: relative; border-left: 3px solid var(--main); }
         
-        .status-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .top-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 5px; }
         
-        .top-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(255,255,255,0.04); border-radius: 16px; margin-bottom: 5px; }
-        .my-rank { border: 1.5px solid var(--main); background: rgba(10,132,255,0.15); }
+        /* ИГРЫ */
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; width: 210px; margin: 10px auto; }
+        .cell { background: rgba(255,255,255,0.1); height: 70px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; border-radius: 10px; cursor: pointer; }
 
-        /* КЛИК-ЭФФЕКТ */
-        .click-particle { position: absolute; color: var(--gold); font-weight: 900; pointer-events: none; animation: float-up 0.8s forwards; z-index: 10000; }
-
-        /* ГОРЯЧКА */
-        #fever-bar { display: none; background: linear-gradient(90deg, var(--red), var(--orange)); padding: 5px; text-align: center; border-radius: 10px; font-weight: 900; color: white; margin-bottom: 10px; animation: shake 0.5s infinite; }
-
-        input { background: rgba(255,255,255,0.08); border: none; padding: 14px; border-radius: 14px; color: #fff; width: 100%; box-sizing: border-box; }
-        
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card); backdrop-filter: blur(50px); border-radius: 32px; width: 90%; max-width: 400px; z-index: 9999; padding: 25px; border: 1px solid rgba(255,255,255,0.15); max-height: 80vh; overflow-y: auto; }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card); border-radius: 30px; width: 90%; max-width: 400px; z-index: 9999; padding: 25px; border: 1px solid rgba(255,255,255,0.1); max-height: 85vh; overflow-y: auto; }
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9998; }
         
-        .badge { font-size: 10px; padding: 2px 6px; border-radius: 5px; margin-right: 5px; text-transform: uppercase; font-weight: bold; }
+        input, select { background: rgba(255,255,255,0.1); border: none; padding: 12px; border-radius: 12px; color: var(--txt); width: 100%; box-sizing: border-box; margin-bottom: 10px; }
         
-        /* СЕТКА ГРИД */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .prefix { font-size: 9px; padding: 2px 5px; border-radius: 4px; margin-right: 5px; background: #fff; color: #000; font-weight: 800; }
+        @keyframes pop { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
-<body class="theme-ios-dark">
+<body class="theme-dark">
 
-    <div id="fever-bar">🔥 ГОРЯЧКА X3 КЛИК АКТИВНА! 🔥</div>
+    <canvas id="special-canvas"></canvas>
     <div class="overlay" id="overlay"></div>
 
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
         <div>
-            <h1 style="margin:0; font-size: 26px; font-weight: 900;">Kiru OS <span style="color:var(--main)">v31.0</span></h1>
-            <div id="online-info" style="font-size: 11px; color: var(--green); font-weight: bold;">● Подключение...</div>
+            <h1 style="margin:0; font-size: 22px;">Kiru OS <span style="color:var(--main)">v32.0</span></h1>
+            <div id="online-tag" style="font-size: 10px; color: var(--green);">● Online: 0</div>
         </div>
-        <div style="display:flex; gap:8px;">
+        <div style="display:flex; gap:5px;">
             <button class="btn" onclick="openMod('clanWin')">🛡️</button>
-            <button class="btn btn-gold" onclick="openMod('dailyWin')">🎁</button>
             <button class="btn" onclick="openMod('shopWin')">🛒</button>
             <button class="btn" onclick="openMod('sMenu')">⚙️</button>
         </div>
     </div>
 
-    <div class="ios-card" style="text-align:center; position: relative;" id="tap-area">
-        <div id="jackpot-info" style="font-size: 12px; color: var(--gold); margin-bottom: 10px;">Джекпот: 0 💰</div>
-        <div style="opacity: 0.6; font-size: 14px;">Ваш капитал</div>
-        <div id="score" style="font-size: 60px; font-weight: 950; letter-spacing: -3px; margin: 5px 0;">0</div>
-        <div id="rebirth-level" style="color: var(--purple); font-weight: bold; margin-bottom: 10px;">Престиж: 0</div>
-        
-        <button class="btn" id="mainTapBtn" onclick="doClick(event)" style="width:100%; padding:25px; font-size:22px; border-radius:24px; box-shadow: 0 10px 30px rgba(10,132,255,0.4);">ТАПАТЬ</button>
-        
-        <div class="top-list" id="topContent" style="margin-top:20px;"></div>
+    <div class="ios-card" style="text-align:center;">
+        <div id="l-bal" style="opacity:0.6; font-size:12px;">Баланс</div>
+        <div id="score" style="font-size: 48px; font-weight: 900; margin: 5px 0;">0</div>
+        <div id="l-cl-info" style="font-size: 11px; color: var(--main); margin-bottom:10px;">Клан: Нет</div>
+        <button class="btn" onclick="doTap(event)" style="width:100%; padding:18px; font-size:18px; border-radius:18px;">ТАП</button>
+        <div id="topContent" style="margin-top:15px;"></div>
     </div>
 
     <div class="ios-card">
-        <div style="display:flex; justify-content:space-between;">
-            <h3 style="margin:0;">iChat Global</h3>
-            <span id="typing-notify" style="font-size: 10px; opacity: 0.5;"></span>
+        <h3 id="l-games">Мини-игры</h3>
+        <div id="lobby" style="display:flex; gap:10px;">
+            <button class="btn" onclick="startMM('ttt')" style="flex:1;">Крестики</button>
+            <button class="btn" onclick="startMM('chess')" style="flex:1;">Шахматы</button>
         </div>
+        <div id="game-area" style="display:none;">
+            <div id="g-status" style="text-align:center; font-weight:bold; margin-bottom:10px;"></div>
+            <div id="board-box"></div>
+            <button class="btn btn-red" onclick="quitGame()" style="width:100%; margin-top:10px;">Выйти</button>
+        </div>
+    </div>
+
+    <div class="ios-card">
+        <h3 id="l-chat">Global Chat</h3>
         <div id="cList"></div>
-        <div style="display:flex; gap:8px;">
-            <input type="text" id="mInp" placeholder="Написать в чат...">
-            <button class="btn" onclick="sendMsg()" style="width:60px;">→</button>
+        <div style="display:flex; gap:5px;">
+            <input type="text" id="mInp" placeholder="Сообщение...">
+            <button class="btn" onclick="sendMsg()" style="width:50px;">→</button>
         </div>
-    </div>
-
-    <div id="shopWin" class="modal">
-        <h2>Магазин Бустов</h2>
-        <div class="grid-2" id="shopItems">
-            <div class="top-item" style="flex-direction:column;">🤖 Авто +1<button class="btn" onclick="buy('auto', 5000, 1)">5k</button></div>
-            <div class="top-item" style="flex-direction:column;">🏭 Завод +50<button class="btn" onclick="buy('auto', 100000, 50)">100k</button></div>
-            <div class="top-item" style="flex-direction:column;">🚀 Турбо +10<button class="btn" onclick="buy('multi', 50000, 10)">50k</button></div>
-            <div class="top-item" style="flex-direction:column;">🌈 Цвет ника<button class="btn" onclick="buy('color', 25000, 'rainbow')">25k</button></div>
-            <div class="top-item" style="flex-direction:column;">🏆 [TITAN]<button class="btn" onclick="buy('prefix', 1000000, 'TITAN')">1M</button></div>
-        </div>
-        <hr>
-        <button class="btn btn-purple" style="width:100%" onclick="doRebirth()">Сделать ПРЕСТИЖ (Нужно 10М)</button>
-        <button class="btn" onclick="closeMod('shopWin')" style="width:100%; margin-top:10px;">Закрыть</button>
-    </div>
-
-    <div id="dailyWin" class="modal">
-        <h2>Ежедневная награда</h2>
-        <div id="daily-status" style="text-align:center; padding: 20px 0;"></div>
-        <button class="btn btn-gold" id="claimDailyBtn" onclick="claimDaily()" style="width:100%;">Забрать 5000 💰</button>
-        <button class="btn" onclick="closeMod('dailyWin')" style="width:100%; margin-top:10px;">Назад</button>
-    </div>
-
-    <div id="clanWin" class="modal">
-        <h2>Кланы</h2>
-        <div id="clan-info">
-            <input type="text" id="clanNameInp" placeholder="Название клана">
-            <button class="btn" onclick="createClan()" style="width:100%; margin-top:5px;">Создать клан (100к)</button>
-        </div>
-        <div id="clanList" style="margin-top:15px;"></div>
-        <button class="btn" onclick="closeMod('clanWin')" style="width:100%; margin-top:10px;">Закрыть</button>
     </div>
 
     <div id="sMenu" class="modal">
-        <h3>Настройки TITAN</h3>
-        <button class="btn btn-orange" onclick="openMod('thanksWin')" style="width:100%;">🌟 Авторы и Муся</button>
-        <button class="btn btn-red" onclick="resetItems()" style="width:100%; margin-top:10px;">Сброс улучшений</button>
-        <button class="btn btn-red" onclick="logout()" style="width:100%; margin-top:10px;">Выйти из аккаунта</button>
-        <button class="btn" onclick="closeMod('sMenu')" style="width:100%; margin-top:10px;">X</button>
+        <h3 id="l-set">Настройки</h3>
+        <select id="langSel" onchange="setLang(this.value)">
+            <option value="rus">Русский</option>
+            <option value="eng">English</option>
+            <option value="ukr">Українська</option>
+        </select>
+        <select onchange="setTheme(this.value)">
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+            <option value="retro">Retro</option>
+            <option value="hacker">Hacker (Matrix)</option>
+            <option value="snow">Snow (Зима)</option>
+        </select>
+        <button class="btn btn-gold" onclick="openMod('teaWin')" style="width:100%; margin-top:10px;">☕ Поддержать меня</button>
+        <button class="btn btn-orange" onclick="openMod('thanksWin')" style="width:100%; margin-top:10px;">🌟 Благодарности</button>
+        <button class="btn btn-red" onclick="logout()" style="width:100%; margin-top:10px;">Выход</button>
+        <button class="btn" onclick="closeMod('sMenu')" style="width:100%; margin-top:10px;">Закрыть</button>
+    </div>
+
+    <div id="teaWin" class="modal">
+        <h3>На чай программисту ☕</h3>
+        <p>Если тебе нравится Kiru OS, можешь закинуть на развитие:</p>
+        <b style="font-size: 18px;">+79216274225</b>
+        <p>Сбербанк / СБП</p>
+        <button class="btn" onclick="closeMod('teaWin')" style="width:100%;">Спасибо!</button>
+    </div>
+
+    <div id="clanWin" class="modal">
+        <h3 id="l-clan-title">Система Кланов</h3>
+        <div id="clan-create-box">
+            <input type="text" id="cnInp" placeholder="Название клана">
+            <button class="btn" onclick="createClan()" style="width:100%;">Создать (100к)</button>
+        </div>
+        <div id="my-clan-box" style="display:none;">
+            <h4 id="curClanName">Клан: -</h4>
+            <div id="clanStats">Банк: 0</div>
+            <div id="clanMembers" style="margin:10px 0;"></div>
+            <button class="btn btn-red" onclick="leaveClan()" style="width:100%;">Выйти из клана</button>
+        </div>
+        <hr>
+        <div id="allClansList"></div>
+        <button class="btn" onclick="closeMod('clanWin')" style="width:100%; margin-top:10px;">Закрыть</button>
+    </div>
+
+    <div id="pCard" class="modal">
+        <h2 id="pc-n">User</h2>
+        <div id="pc-stats"></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;">
+            <button class="btn" onclick="sendMoney()">Донат</button>
+            <button class="btn btn-orange" onclick="admAction('mute')">Mute</button>
+            <button class="btn btn-red" onclick="admAction('reset')">Обнулить $</button>
+            <button class="btn" onclick="closeMod('pCard')">X</button>
+        </div>
     </div>
 
     <div id="thanksWin" class="modal">
-        <h3>Легенды</h3>
-        <ul style="list-style:none; padding:0; line-height:2;">
-            <li>Вадек (Founder)</li>
-            <li id="musyaEaster" style="cursor:pointer; font-weight:900; color:var(--red);">Муся ❤️</li>
+        <h3>Wall of Fame</h3>
+        <ul style="list-style:none; padding:0; font-size:14px; line-height:2;">
+            <li>Вадек (Главный)</li>
             <li>Анастасия Землеройка</li>
             <li>Саша</li>
             <li>Андрей😎</li>
             <li>Тепе</li>
             <li>Gemini AI</li>
+            <li id="musyaBtn" style="cursor:pointer; opacity:0.7;">Муся ❤️</li>
         </ul>
         <button class="btn" onclick="closeMod('thanksWin')" style="width:100%;">Назад</button>
-    </div>
-
-    <div id="pCard" class="modal">
-        <h2 id="pc-name">User</h2>
-        <div id="pc-stats" style="margin-bottom:15px;"></div>
-        <div class="grid-2">
-            <button class="btn" onclick="sendMoney()">💸 Донат</button>
-            <button class="btn btn-orange" onclick="adminMute()">Mute</button>
-            <button class="btn btn-orange" onclick="adminUnmute()">Unmute</button>
-            <button class="btn btn-red" onclick="adminResetMoney()">Обнулить</button>
-        </div>
-        <button class="btn" onclick="closeMod('pCard')" style="width:100%; margin-top:10px;">X</button>
     </div>
 
     <script type="module">
@@ -184,114 +183,269 @@
         const conf = { apiKey: "AIzaSyChSk0gETRBQ391e4BjPqFsKc_dzjBmT58", databaseURL: "https://my-chat-52203-default-rtdb.firebaseio.com", projectId: "my-chat-52203" };
         const db = getDatabase(initializeApp(conf));
 
-        let user = JSON.parse(localStorage.getItem('k_user_v31'));
+        let user = JSON.parse(localStorage.getItem('k_user_v32'));
+        let curLang = 'rus';
+        let gid = null, myRole = null, viewUser = null;
         let mClicks = 0;
-        let isFever = false;
-        let viewUser = "";
 
-        // ИНИЦИАЛИЗАЦИЯ
+        const lang = {
+            rus: { bal: "Баланс", games: "Мини-игры", chat: "Чат", set: "Настройки", clan: "Кланы", buy: "Купить", join: "Вступить", kick: "Кик" },
+            eng: { bal: "Balance", games: "Games", chat: "Chat", set: "Settings", clan: "Clans", buy: "Buy", join: "Join", kick: "Kick" },
+            ukr: { bal: "Баланс", games: "Міні-ігри", chat: "Чат", set: "Налаштування", clan: "Клани", buy: "Купити", join: "Вступити", kick: "Кік" }
+        };
+
         async function init() {
             if(!user) {
-                let n = prompt("Ник:"); let p = prompt("Пароль:");
-                if(!n || !p) return;
+                let n = prompt("Ник / Nick:"); let p = prompt("Пароль / Pass:");
+                if(!n || !p) return location.reload();
                 const s = await get(ref(db, 'users/'+n));
-                if(s.exists()){ 
-                    if(s.val().password !== p) return location.reload(); 
-                    user={name:n, ...s.val()}; 
-                } else { 
-                    user={name:n, password:p, score:0, mult:1, autoclicker:0, rebirth:0, prefix:'', lastDaily:0}; 
-                    await set(ref(db, 'users/'+n), user); 
+                if(s.exists()){
+                    if(s.val().password !== p) return alert("Wrong pass!"), location.reload();
+                    user = {name:n, ...s.val()};
+                } else {
+                    user = {name:n, password:p, score:0, mult:1, autoclicker:0, wins:0, clicks:0, musyaUsed:false};
+                    await set(ref(db, 'users/'+n), user);
                 }
-                localStorage.setItem('k_user_v31', JSON.stringify(user));
+                localStorage.setItem('k_user_v32', JSON.stringify(user));
             }
 
-            // Статус онлайн
+            // Online Status
             const statusRef = ref(db, 'status/' + user.name);
             set(statusRef, true);
             onDisconnect(statusRef).remove();
+            onValue(ref(db, 'status'), s => document.getElementById('online-tag').innerText = "● Online: " + (s.size || 0));
 
-            // Слушатель данных игрока
+            // User Data Sync
             onValue(ref(db, 'users/'+user.name), s => {
                 if(s.exists()){
                     user = {name:user.name, ...s.val()};
                     document.getElementById('score').innerText = Math.floor(user.score).toLocaleString();
-                    document.getElementById('rebirth-level').innerText = "Престиж: " + (user.rebirth || 0);
+                    document.getElementById('l-cl-info').innerText = "Клан: " + (user.clan || "Нет");
+                    checkClanUI();
                 }
             });
 
-            // Слушатель глобальных событий (Горячка, Джекпот)
-            onValue(ref(db, 'global'), s => {
-                const data = s.val() || {};
-                isFever = data.fever || false;
-                document.getElementById('fever-bar').style.display = isFever ? 'block' : 'none';
-                document.getElementById('jackpot-info').innerText = `Джекпот: ${(data.jackpot || 0).toLocaleString()} 💰`;
-            });
-
-            loadChat(); loadTop(); loadClans(); checkOnlineCount();
-            
-            // Зацикленные процессы
-            setInterval(autoClick, 1000);
-            setInterval(onlineBonus, 60000); // Раз в минуту проверка на бонус
+            loadTop(); loadChat(); loadClans();
+            setInterval(() => { if(user.autoclicker > 0) update(ref(db, 'users/'+user.name), {score: Number(user.score) + user.autoclicker}); }, 1000);
         }
 
-        // ТАП И ЭФФЕКТЫ
-        window.doClick = (e) => {
-            let power = (user.mult || 1) * (user.rebirth > 0 ? user.rebirth * 2 : 1);
-            if(isFever) power *= 3;
+        // --- CORE ---
+        window.doTap = (e) => {
+            let pwr = user.mult || 1;
+            let up = { score: Number(user.score) + pwr, clicks: (user.clicks || 0) + 1 };
+            update(ref(db, 'users/'+user.name), up);
             
-            update(ref(db, 'users/'+user.name), {score: Number(user.score) + power});
-            
-            // Частица клика
-            const p = document.createElement('div');
-            p.className = 'click-particle';
-            p.innerText = `+${power}`;
-            p.style.left = e.pageX + 'px';
-            p.style.top = e.pageY + 'px';
-            document.body.appendChild(p);
-            setTimeout(() => p.remove(), 800);
-        };
-
-        function autoClick() {
-            if(user.autoclicker > 0) {
-                update(ref(db, 'users/'+user.name), {score: Number(user.score) + user.autoclicker});
-            }
-        }
-
-        // РЕБЁРТ
-        window.doRebirth = async () => {
-            if(user.score < 10000000) return alert("Нужно 10,000,000 коинов!");
-            if(confirm("Сбросить баланс и улучшения ради вечного x2 множителя?")){
-                await update(ref(db, 'users/'+user.name), {
-                    score: 0, mult: 1, autoclicker: 0, 
-                    rebirth: (user.rebirth || 0) + 1,
-                    prefix: 'PRESTIGE'
+            // Clan Bank Contribution (5%)
+            if(user.clan) {
+                get(ref(db, 'clans/'+user.clan)).then(s => {
+                    if(s.exists()) update(ref(db, 'clans/'+user.clan), { bank: (s.val().bank || 0) + (pwr * 0.05) });
                 });
-                systemMsg(`👑 Игрок ${user.name} совершил ПРЕСТИЖ! Уровень: ${user.rebirth + 1}`);
             }
         };
 
-        // ЕЖЕДНЕВКА
-        window.claimDaily = async () => {
-            const now = Date.now();
-            if(now - (user.lastDaily || 0) < 86400000) return alert("Приходи завтра!");
-            await update(ref(db, 'users/'+user.name), {score: Number(user.score) + 5000, lastDaily: now});
-            alert("Забрал 5,000 💰!");
+        // --- CLANS ---
+        window.createClan = async () => {
+            const cn = document.getElementById('cnInp').value.trim();
+            if(!cn || user.score < 100000) return alert("Need 100k!");
+            await set(ref(db, 'clans/'+cn), { owner: user.name, bank: 0, members: [user.name] });
+            await update(ref(db, 'users/'+user.name), { score: user.score - 100000, clan: cn });
         };
 
-        // ЧАТ
-        window.sendMsg = async () => {
-            const i = document.getElementById('mInp');
-            if(!i.value.trim()) return;
-            const s = await get(ref(db, 'users/'+user.name));
-            if(s.val().muteUntil > Date.now()) return alert("Вы замучены!");
-            
-            await push(ref(db, 'msgs'), {
-                n: user.name, t: i.value, time: serverTimestamp(),
-                pref: s.val().prefix, col: s.val().color
+        window.joinClan = async (cn) => {
+            const s = await get(ref(db, 'clans/'+cn));
+            let m = s.val().members || [];
+            if(!m.includes(user.name)) {
+                m.push(user.name);
+                await update(ref(db, 'clans/'+cn), { members: m });
+                await update(ref(db, 'users/'+user.name), { clan: cn });
+            }
+        };
+
+        window.leaveClan = async () => {
+            if(!user.clan) return;
+            const s = await get(ref(db, 'clans/'+user.clan));
+            let m = s.val().members.filter(i => i !== user.name);
+            if(s.val().owner === user.name) {
+                if(confirm("Вы владелец. Удалить клан?")) {
+                    await remove(ref(db, 'clans/'+user.clan));
+                    for(let name of s.val().members) update(ref(db, 'users/'+name), {clan:null});
+                    return;
+                }
+            }
+            await update(ref(db, 'clans/'+user.clan), { members: m });
+            await update(ref(db, 'users/'+user.name), { clan: null });
+        };
+
+        function loadClans() {
+            onValue(ref(db, 'clans'), s => {
+                const l = document.getElementById('allClansList'); l.innerHTML = "<h4>Все кланы:</h4>";
+                s.forEach(d => {
+                    l.innerHTML += `<div class="top-item">
+                        <span>${d.key} (${d.val().members?.length || 0})</span>
+                        <button class="btn" onclick="joinClan('${d.key}')">Вступить</button>
+                    </div>`;
+                });
             });
-            
-            // Шанс на джекпот при сообщении (0.5%)
-            if(Math.random() < 0.005) winJackpot();
+        }
+
+        function checkClanUI() {
+            const box = document.getElementById('my-clan-box');
+            const create = document.getElementById('clan-create-box');
+            if(user.clan) {
+                box.style.display = 'block'; create.style.display = 'none';
+                document.getElementById('curClanName').innerText = "Клан: " + user.clan;
+                get(ref(db, 'clans/'+user.clan)).then(s => {
+                    const d = s.val();
+                    document.getElementById('clanStats').innerText = `Банк: ${Math.floor(d.bank)} 💰 | Овнер: ${d.owner}`;
+                    let mList = document.getElementById('clanMembers'); mList.innerHTML = "Участники:<br>";
+                    d.members.forEach(m => {
+                        let kickBtn = (d.owner === user.name && m !== user.name) ? `<button onclick="kick('${m}')">X</button>` : '';
+                        mList.innerHTML += `<span>${m} ${kickBtn}</span> `;
+                    });
+                });
+            } else {
+                box.style.display = 'none'; create.style.display = 'block';
+            }
+        }
+
+        window.kick = async (m) => {
+            const s = await get(ref(db, 'clans/'+user.clan));
+            let nm = s.val().members.filter(i => i !== m);
+            await update(ref(db, 'clans/'+user.clan), {members: nm});
+            await update(ref(db, 'users/'+m), {clan: null});
+        };
+
+        // --- GAMES ---
+        window.startMM = async (type) => {
+            const qRef = ref(db, 'queue_'+type);
+            const s = await get(qRef);
+            if(s.exists() && s.val() !== user.name) {
+                gid = 'game_' + Date.now();
+                await set(ref(db, 'games/'+gid), {p1: s.val(), p2: user.name, type, turn: 'p1', board: Array(9).fill(""), active: true});
+                await remove(qRef);
+                joinGame(gid, 'p2');
+            } else {
+                set(qRef, user.name);
+                document.getElementById('g-status').innerText = "Поиск игрока...";
+                document.getElementById('lobby').style.display = 'none';
+                document.getElementById('game-area').style.display = 'block';
+                onValue(ref(db, 'games'), sn => {
+                    sn.forEach(g => { if(g.val().p1 === user.name) joinGame(g.key, 'p1'); });
+                });
+            }
+        };
+
+        function joinGame(id, role) {
+            gid = id; myRole = role;
+            document.getElementById('lobby').style.display = 'none';
+            document.getElementById('game-area').style.display = 'block';
+            onValue(ref(db, 'games/'+id), s => {
+                const d = s.val(); if(!d) return quitGame();
+                document.getElementById('g-status').innerText = (d.turn === myRole) ? "ВАШ ХОД!" : "Ожидание хода...";
+                const bBox = document.getElementById('board-box'); bBox.innerHTML = "";
+                const g = document.createElement('div'); g.className = 'grid';
+                d.board.forEach((v, i) => {
+                    const c = document.createElement('div'); c.className = 'cell'; c.innerText = v;
+                    c.onclick = () => {
+                        if(d.turn === myRole && v === "") {
+                            let nb = [...d.board]; nb[i] = (myRole === 'p1') ? 'X' : 'O';
+                            update(ref(db, 'games/'+gid), {board: nb, turn: (myRole === 'p1' ? 'p2' : 'p1')});
+                            checkWin(nb, d.p1, d.p2);
+                        }
+                    };
+                    g.appendChild(c);
+                });
+                bBox.appendChild(g);
+            });
+        }
+
+        function checkWin(b, p1, p2) {
+            const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            for(let w of wins) {
+                if(b[w[0]] && b[w[0]]===b[w[1]] && b[w[0]]===b[w[2]]) {
+                    let winner = b[w[0]]==='X' ? p1 : p2;
+                    alert("Winner: " + winner);
+                    update(ref(db, 'users/'+winner), {wins: (user.wins||0)+1, score: user.score + 5000});
+                    return quitGame();
+                }
+            }
+            if(!b.includes("")) { alert("Ничья!"); quitGame(); }
+        }
+
+        window.quitGame = () => {
+            if(gid) remove(ref(db, 'games/'+gid));
+            remove(ref(db, 'queue_ttt')); remove(ref(db, 'queue_chess'));
+            gid = null;
+            document.getElementById('lobby').style.display = 'flex';
+            document.getElementById('game-area').style.display = 'none';
+        };
+
+        // --- UI & THEMES ---
+        window.setTheme = (t) => {
+            document.body.className = 'theme-' + t;
+            const canvas = document.getElementById('special-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            if(t === 'hacker') startMatrix(ctx, canvas);
+            else if(t === 'snow') startSnow(ctx, canvas);
+            else ctx.clearRect(0,0,canvas.width,canvas.height);
+        };
+
+        function startMatrix(ctx, c) {
+            const chars = "010101ABCDEF".split("");
+            const drops = Array(Math.floor(c.width/15)).fill(1);
+            setInterval(() => {
+                ctx.fillStyle = "rgba(0,0,0,0.05)"; ctx.fillRect(0,0,c.width,c.height);
+                ctx.fillStyle = "#0f0"; ctx.font = "15px monospace";
+                drops.forEach((y, i) => {
+                    const text = chars[Math.floor(Math.random()*chars.length)];
+                    ctx.fillText(text, i*15, y*15);
+                    if(y*15 > c.height && Math.random() > 0.975) drops[i] = 0;
+                    drops[i]++;
+                });
+            }, 50);
+        }
+
+        function startSnow(ctx, c) {
+            const flakes = Array.from({length: 100}, () => ({x: Math.random()*c.width, y: Math.random()*c.height, r: Math.random()*3+1, d: Math.random()*1}));
+            setInterval(() => {
+                ctx.clearRect(0,0,c.width,c.height);
+                ctx.fillStyle = "white"; ctx.beginPath();
+                flakes.forEach(f => {
+                    ctx.moveTo(f.x, f.y); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2, true);
+                    f.y += Math.cos(f.d) + 1 + f.r/2; f.x += Math.sin(0)*2;
+                    if(f.y > c.height) { f.y = -10; f.x = Math.random()*c.width; }
+                });
+                ctx.fill();
+            }, 30);
+        }
+
+        window.setLang = (l) => {
+            curLang = l;
+            const d = lang[l];
+            document.getElementById('l-bal').innerText = d.bal;
+            document.getElementById('l-games').innerText = d.games;
+            document.getElementById('l-chat').innerText = d.chat;
+            document.getElementById('l-set').innerText = d.set;
+            document.getElementById('l-clan-title').innerText = d.clan;
+        };
+
+        // --- MUSYA & CHAT ---
+        document.getElementById('musyaBtn').onclick = () => {
+            if(user.musyaUsed) return alert("Муся уже помогала тебе!");
+            mClicks++;
+            if(mClicks >= 5) {
+                update(ref(db, 'users/'+user.name), {score: user.score + 50000, musyaUsed: true});
+                alert("💖 Муся подарила тебе 50,000 монет!");
+                mClicks = 0;
+            }
+        };
+
+        window.sendMsg = async () => {
+            const i = document.getElementById('mInp'); if(!i.value.trim()) return;
+            const s = await get(ref(db, 'users/'+user.name));
+            if(s.val().muteUntil > Date.now()) return alert("Muted!");
+            await push(ref(db, 'msgs'), { n: user.name, t: i.value, time: serverTimestamp(), pref: s.val().prefix, col: s.val().color });
             i.value = "";
         };
 
@@ -300,98 +454,45 @@
                 const l = document.getElementById('cList'); l.innerHTML = "";
                 s.forEach(d => {
                     const m = d.val();
-                    const isSys = m.n === 'SYSTEM';
-                    l.innerHTML += `
-                        <div class="msg ${isSys?'msg-system':''}">
-                            ${!isSys?'<span class="msg-del" onclick="adminDelMsg(\''+d.key+'\')">×</span>':''}
-                            <span class="prefix" style="background:${m.col==='rainbow'?'linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)':(m.col||'#fff')}">${m.pref||'USER'}</span>
-                            <b onclick="showP('${m.n}')" style="color:${m.col==='rainbow'?'#BF5AF2':(m.col||'inherit')}">${m.n}</b>: ${m.t}
-                        </div>
-                    `;
+                    l.innerHTML += `<div class="msg"><span class="prefix">${m.pref||'USER'}</span><b onclick="showP('${m.n}')">${m.n}</b>: ${m.t}</div>`;
                 });
                 l.scrollTop = l.scrollHeight;
             });
         }
 
-        // КЛАНЫ
-        window.createClan = async () => {
-            const name = document.getElementById('clanNameInp').value;
-            if(!name || user.score < 100000) return alert("Нужно 100к и название");
-            await set(ref(db, 'clans/'+name), { owner: user.name, bank: 0 });
-            await update(ref(db, 'users/'+user.name), { score: user.score - 100000, clan: name });
-            systemMsg(`🛡️ Создан новый клан: [${name}]`);
-        };
-
-        function loadClans() {
-            onValue(ref(db, 'clans'), s => {
-                const l = document.getElementById('clanList'); l.innerHTML = "<h4>Топ Кланов:</h4>";
-                s.forEach(d => {
-                    l.innerHTML += `<div class="top-item"><span>${d.key}</span><b>${d.val().bank} 💰</b></div>`;
-                });
-            });
-        }
-
-        // СИСТЕМНЫЕ ФУНКЦИИ
-        function winJackpot() {
-            get(ref(db, 'global/jackpot')).then(s => {
-                const win = s.val() || 50000;
-                update(ref(db, 'users/'+user.name), {score: Number(user.score) + win});
-                set(ref(db, 'global/jackpot'), 1000);
-                systemMsg(`🎰 ДЖЕКПОТ! ${user.name} выиграл ${win.toLocaleString()} 💰 за активность в чате!`);
-            });
-        }
-
-        async function systemMsg(txt) {
-            await push(ref(db, 'msgs'), { n: 'SYSTEM', t: txt, time: serverTimestamp(), col: '#FFD700', pref: '📢' });
-        }
-
-        window.buy = async (t, p, v) => {
-            if(user.score < p) return alert("Мало денег!");
-            let up = {score: Number(user.score) - p};
-            if(t==='auto') up.autoclicker = (user.autoclicker||0)+v;
-            if(t==='multi') up.mult = (user.mult||1)+v;
-            if(t==='prefix') up.prefix = v;
-            if(t==='color') up.color = v;
-            await update(ref(db, 'users/'+user.name), up);
-            systemMsg(`🛒 ${user.name} приобрёл апгрейд: ${v}`);
+        window.showP = async n => {
+            viewUser = n; const s = await get(ref(db, 'users/'+n)); const d = s.val();
+            document.getElementById('pc-n').innerText = n;
+            document.getElementById('pc-stats').innerText = `💰: ${Math.floor(d.score)} | Клик: ${d.clicks||0} | Wins: ${d.wins||0}`;
+            openMod('pCard');
         };
 
         function loadTop() {
             onValue(ref(db, 'users'), s => {
                 const c = document.getElementById('topContent'); c.innerHTML = "";
-                let a = []; s.forEach(u => { a.push({n: u.key, s: Number(u.val().score) || 0, r: u.val().rebirth||0}); });
+                let a = []; s.forEach(u => { a.push({n: u.key, s: u.val().score || 0}); });
                 a.sort((x,y) => y.s - x.s).slice(0,5).forEach((u,i) => {
-                    c.innerHTML += `<div class="top-item ${u.n===user.name?'my-rank':''}"><span>#${i+1} ${u.n} ${u.r>0?'⭐'+u.r:''}</span><b>${Math.floor(u.s).toLocaleString()}</b></div>`;
+                    c.innerHTML += `<div class="top-item"><span>#${i+1} ${u.n}</span><b>${Math.floor(u.s).toLocaleString()}</b></div>`;
                 });
             });
         }
 
-        // АДМИНКА
-        window.adminResetMoney = () => { if(prompt("Pass:")==="8070") update(ref(db, 'users/'+viewUser), {score: 0}); };
-        window.adminMute = () => { if(prompt("Pass:")==="8070") update(ref(db, 'users/'+viewUser), {muteUntil: Date.now()+3600000}); };
-        window.adminUnmute = () => { if(prompt("Pass:")==="8070") update(ref(db, 'users/'+viewUser), {muteUntil: 0}); };
-        window.adminDelMsg = (id) => { if(prompt("Pass:")==="8070") remove(ref(db, 'msgs/'+id)); };
-
-        // МУСЯ ❤️
-        document.getElementById('musyaEaster').onclick = () => {
-            mClicks++;
-            if(mClicks === 5) {
-                update(ref(db, 'users/'+user.name), {score: Number(user.score) + 50000});
-                alert("💖 МУСЯ ЛЮБИТ ТЕБЯ! +50,000 💰");
-                mClicks = 0;
-            }
+        window.admAction = (type) => {
+            if(prompt("Admin Pass:") !== "8070") return;
+            if(type==='reset') update(ref(db, 'users/'+viewUser), {score: 0});
+            if(type==='mute') update(ref(db, 'users/'+viewUser), {muteUntil: Date.now() + 3600000});
         };
 
-        window.showP = async n => { if(n==='SYSTEM')return; viewUser=n; const s=await get(ref(db, 'users/'+n)); const d=s.val(); document.getElementById('pc-name').innerText=n; document.getElementById('pc-stats').innerText=`Баллы: ${d.score} | Ребёрты: ${d.rebirth||0}`; openMod('pCard'); };
+        window.logout = () => { localStorage.clear(); location.reload(); };
         window.openMod = id => { document.getElementById(id).style.display='block'; document.getElementById('overlay').style.display='block'; };
         window.closeMod = id => { document.getElementById(id).style.display='none'; document.getElementById('overlay').style.display='none'; };
-        window.logout = () => { localStorage.clear(); location.reload(); };
-        function checkOnlineCount() { onValue(ref(db, 'status'), s => { document.getElementById('online-info').innerText = `● В СЕТИ: ${s.size || 0}`; }); }
 
         init();
     </script>
 </body>
 </html>
+
+
 
 
 
