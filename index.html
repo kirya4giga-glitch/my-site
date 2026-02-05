@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kiru OS v30.4 - MEGA UPDATE</title>
+    <title>Kiru OS v31.0 - TITAN EDITION</title>
     <style>
         :root { 
             --bg: #000; --main: #0A84FF; --txt: #fff; 
             --glass: rgba(255, 255, 255, 0.08); 
             --card: rgba(28, 28, 30, 0.8);
-            --red: #FF453A; --green: #32D74B; --orange: #FF9F0A;
+            --red: #FF453A; --green: #32D74B; --orange: #FF9F0A; --purple: #BF5AF2;
+            --gold: #FFD700;
         }
         body.theme-hacker { --bg: #000; --main: #32D74B; --txt: #32D74B; --glass: rgba(0,255,0,0.05); }
         body.theme-ios-light { --bg: #F2F2F7; --main: #007AFF; --txt: #000; --glass: rgba(255, 255, 255, 0.7); --card: rgba(255,255,255,0.9); }
@@ -17,13 +18,19 @@
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
             background: var(--bg); color: var(--txt); margin: 0; padding: 15px; 
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); -webkit-font-smoothing: antialiased;
+            overflow-x: hidden; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        /* АНИМАЦИИ */
+        @keyframes pop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes float-up { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-100px); } }
+        @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 100% { transform: translate(1px, -1px) rotate(0deg); } }
+        @keyframes gold-glow { 0% { box-shadow: 0 0 5px var(--gold); } 50% { box-shadow: 0 0 20px var(--gold); } 100% { box-shadow: 0 0 5px var(--gold); } }
 
         .ios-card { 
             background: var(--glass); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
             padding: 20px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            margin-bottom: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); animation: pop 0.5s ease;
         }
 
         .btn { 
@@ -31,316 +38,362 @@
             border-radius: 14px; cursor: pointer; font-weight: 600; font-size: 15px;
             transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center;
         }
-        .btn:active { transform: scale(0.92); opacity: 0.8; }
+        .btn:active { transform: scale(0.92); }
         .btn-red { background: var(--red); }
         .btn-orange { background: var(--orange); }
+        .btn-gold { background: var(--gold); color: #000; animation: gold-glow 2s infinite; }
 
-        #cList { height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
-        .msg { 
-            background: rgba(255,255,255,0.06); padding: 12px; border-radius: 18px; 
-            font-size: 14px; border-left: 4px solid var(--main); animation: pop 0.3s ease-out;
-            position: relative;
-        }
-        .msg-time { font-size: 9px; opacity: 0.4; float: right; margin-top: 5px; }
-        .msg-del { position: absolute; right: 10px; top: 10px; color: var(--red); cursor: pointer; font-weight: bold; font-size: 16px; }
-        @keyframes pop { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-
-        .top-list { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; }
-        .top-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 12px 16px; background: rgba(255,255,255,0.04); border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
+        /* ИГРОВЫЕ ЭЛЕМЕНТЫ */
+        #cList { height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; scroll-behavior: smooth; }
+        .msg { background: rgba(255,255,255,0.06); padding: 12px; border-radius: 18px; font-size: 14px; border-left: 4px solid var(--main); position: relative; }
+        .msg-system { border-left-color: var(--gold); background: rgba(255,215,0,0.1); font-weight: bold; }
+        .msg-time { font-size: 9px; opacity: 0.4; float: right; }
+        
+        .status-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; display: inline-block; margin-right: 5px; }
+        
+        .top-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(255,255,255,0.04); border-radius: 16px; margin-bottom: 5px; }
         .my-rank { border: 1.5px solid var(--main); background: rgba(10,132,255,0.15); }
 
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 240px; margin: 15px auto; }
-        .cell { background: rgba(255,255,255,0.1); border-radius: 12px; height: 75px; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; cursor: pointer; }
+        /* КЛИК-ЭФФЕКТ */
+        .click-particle { position: absolute; color: var(--gold); font-weight: 900; pointer-events: none; animation: float-up 0.8s forwards; z-index: 10000; }
 
-        .modal { 
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: var(--card); backdrop-filter: blur(50px); border-radius: 32px;
-            width: 88%; max-width: 380px; z-index: 9999; padding: 25px; border: 1px solid rgba(255,255,255,0.15);
-        }
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9998; }
-        .prefix { font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 6px; margin-right: 6px; text-transform: uppercase; background: #fff; color: #000; }
-        input { background: rgba(255,255,255,0.08); border: none; padding: 14px; border-radius: 14px; color: #fff; font-size: 16px; outline: none; }
-        .hidden { display: none; }
+        /* ГОРЯЧКА */
+        #fever-bar { display: none; background: linear-gradient(90deg, var(--red), var(--orange)); padding: 5px; text-align: center; border-radius: 10px; font-weight: 900; color: white; margin-bottom: 10px; animation: shake 0.5s infinite; }
+
+        input { background: rgba(255,255,255,0.08); border: none; padding: 14px; border-radius: 14px; color: #fff; width: 100%; box-sizing: border-box; }
+        
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card); backdrop-filter: blur(50px); border-radius: 32px; width: 90%; max-width: 400px; z-index: 9999; padding: 25px; border: 1px solid rgba(255,255,255,0.15); max-height: 80vh; overflow-y: auto; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9998; }
+        
+        .badge { font-size: 10px; padding: 2px 6px; border-radius: 5px; margin-right: 5px; text-transform: uppercase; font-weight: bold; }
+        
+        /* СЕТКА ГРИД */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     </style>
 </head>
 <body class="theme-ios-dark">
 
+    <div id="fever-bar">🔥 ГОРЯЧКА X3 КЛИК АКТИВНА! 🔥</div>
     <div class="overlay" id="overlay"></div>
 
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding: 0 5px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
         <div>
-            <h1 style="margin:0; font-size: 24px; font-weight: 800;">Kiru OS <span style="color:var(--main)">v30.4</span></h1>
-            <div style="font-size: 10px; opacity: 0.5;">● Система активна</div>
+            <h1 style="margin:0; font-size: 26px; font-weight: 900;">Kiru OS <span style="color:var(--main)">v31.0</span></h1>
+            <div id="online-info" style="font-size: 11px; color: var(--green); font-weight: bold;">● Подключение...</div>
         </div>
         <div style="display:flex; gap:8px;">
+            <button class="btn" onclick="openMod('clanWin')">🛡️</button>
+            <button class="btn btn-gold" onclick="openMod('dailyWin')">🎁</button>
             <button class="btn" onclick="openMod('shopWin')">🛒</button>
             <button class="btn" onclick="openMod('sMenu')">⚙️</button>
         </div>
     </div>
 
-    <div class="ios-card" style="text-align:center;">
-        <div style="opacity: 0.6; font-size: 14px; font-weight: 600;" id="l-bal">Баланс</div>
-        <div id="score" style="font-size: 56px; font-weight: 900; letter-spacing: -2px; margin: 5px 0;">0</div>
-        <button class="btn" id="l-tap" onclick="doClick()" style="width:100%; padding:20px; font-size:18px; border-radius:20px; box-shadow: 0 10px 20px rgba(10,132,255,0.3);">ТАП ТАП ТАП</button>
+    <div class="ios-card" style="text-align:center; position: relative;" id="tap-area">
+        <div id="jackpot-info" style="font-size: 12px; color: var(--gold); margin-bottom: 10px;">Джекпот: 0 💰</div>
+        <div style="opacity: 0.6; font-size: 14px;">Ваш капитал</div>
+        <div id="score" style="font-size: 60px; font-weight: 950; letter-spacing: -3px; margin: 5px 0;">0</div>
+        <div id="rebirth-level" style="color: var(--purple); font-weight: bold; margin-bottom: 10px;">Престиж: 0</div>
         
-        <div class="top-list" id="topContent"></div>
+        <button class="btn" id="mainTapBtn" onclick="doClick(event)" style="width:100%; padding:25px; font-size:22px; border-radius:24px; box-shadow: 0 10px 30px rgba(10,132,255,0.4);">ТАПАТЬ</button>
+        
+        <div class="top-list" id="topContent" style="margin-top:20px;"></div>
     </div>
 
     <div class="ios-card">
-        <h3 style="margin-top:0; font-size: 18px;" id="l-chat">iChat Global</h3>
+        <div style="display:flex; justify-content:space-between;">
+            <h3 style="margin:0;">iChat Global</h3>
+            <span id="typing-notify" style="font-size: 10px; opacity: 0.5;"></span>
+        </div>
         <div id="cList"></div>
-        <div style="display:flex; gap:10px;">
-            <input type="text" id="mInp" placeholder="Сообщение..." style="flex:1;">
-            <button class="btn" id="sendBtn" style="width:50px;">→</button>
-        </div>
-    </div>
-
-    <div class="ios-card">
-        <h3 id="l-games">Аркады</h3>
-        <div id="lobby" style="display:flex; gap:10px;">
-            <button class="btn" onclick="startMM('ttt')" style="flex:1;">Tic-Tac-Toe</button>
-            <button class="btn" onclick="startMM('chess')" style="flex:1;">Chess</button>
-        </div>
-        <div id="game-area" class="hidden">
-            <div id="g-info" style="text-align:center; font-weight: 700; color: var(--main); margin-bottom:10px;"></div>
-            <div id="board-container"></div>
-            <button class="btn btn-red" onclick="stopMM()" id="l-cancel" style="width:100%; margin-top:10px;">Отмена</button>
+        <div style="display:flex; gap:8px;">
+            <input type="text" id="mInp" placeholder="Написать в чат...">
+            <button class="btn" onclick="sendMsg()" style="width:60px;">→</button>
         </div>
     </div>
 
     <div id="shopWin" class="modal">
-        <h2 id="l-sh-title">Market</h2>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; max-height:50vh; overflow-y:auto;">
-            <div class="top-item" style="flex-direction:column;">🤖 Auto +1<button class="btn" onclick="buy('auto', 5000, 1)">5k</button></div>
-            <div class="top-item" style="flex-direction:column;">⚡ Mult +2<button class="btn" onclick="buy('multi', 2000, 2)">2k</button></div>
-            <div class="top-item" style="flex-direction:column;">🏭 Factory +50<button class="btn" onclick="buy('auto', 100000, 50)">100k</button></div>
-            <div class="top-item" style="flex-direction:column;">🚀 Turbo +10<button class="btn" onclick="buy('multi', 50000, 10)">50k</button></div>
-            <div class="top-item" style="flex-direction:column;">💎 [VIP]<button class="btn" onclick="buy('prefix', 1500, 'VIP')">1.5k</button></div>
-            <div class="top-item" style="flex-direction:column;">🔥 [HACKER]<button class="btn" onclick="buy('prefix', 50000, 'HACKER')">50k</button></div>
-            <div class="top-item" style="flex-direction:column;">🌙 Night Name<button class="btn" onclick="buy('color', 10000, '#A855F7')">10k</button></div>
-            <div class="top-item" style="flex-direction:column;">👑 [OWNER]<button class="btn" onclick="buy('prefix', 500000, 'OWNER')">500k</button></div>
+        <h2>Магазин Бустов</h2>
+        <div class="grid-2" id="shopItems">
+            <div class="top-item" style="flex-direction:column;">🤖 Авто +1<button class="btn" onclick="buy('auto', 5000, 1)">5k</button></div>
+            <div class="top-item" style="flex-direction:column;">🏭 Завод +50<button class="btn" onclick="buy('auto', 100000, 50)">100k</button></div>
+            <div class="top-item" style="flex-direction:column;">🚀 Турбо +10<button class="btn" onclick="buy('multi', 50000, 10)">50k</button></div>
+            <div class="top-item" style="flex-direction:column;">🌈 Цвет ника<button class="btn" onclick="buy('color', 25000, 'rainbow')">25k</button></div>
+            <div class="top-item" style="flex-direction:column;">🏆 [TITAN]<button class="btn" onclick="buy('prefix', 1000000, 'TITAN')">1M</button></div>
         </div>
-        <button class="btn" onclick="closeMod('shopWin')" style="width:100%; margin-top:15px;">Закрыть</button>
+        <hr>
+        <button class="btn btn-purple" style="width:100%" onclick="doRebirth()">Сделать ПРЕСТИЖ (Нужно 10М)</button>
+        <button class="btn" onclick="closeMod('shopWin')" style="width:100%; margin-top:10px;">Закрыть</button>
+    </div>
+
+    <div id="dailyWin" class="modal">
+        <h2>Ежедневная награда</h2>
+        <div id="daily-status" style="text-align:center; padding: 20px 0;"></div>
+        <button class="btn btn-gold" id="claimDailyBtn" onclick="claimDaily()" style="width:100%;">Забрать 5000 💰</button>
+        <button class="btn" onclick="closeMod('dailyWin')" style="width:100%; margin-top:10px;">Назад</button>
+    </div>
+
+    <div id="clanWin" class="modal">
+        <h2>Кланы</h2>
+        <div id="clan-info">
+            <input type="text" id="clanNameInp" placeholder="Название клана">
+            <button class="btn" onclick="createClan()" style="width:100%; margin-top:5px;">Создать клан (100к)</button>
+        </div>
+        <div id="clanList" style="margin-top:15px;"></div>
+        <button class="btn" onclick="closeMod('clanWin')" style="width:100%; margin-top:10px;">Закрыть</button>
     </div>
 
     <div id="sMenu" class="modal">
-        <h3 id="l-set">Настройки</h3>
-        <label>Тема:</label> <select id="tSel" onchange="changeTheme(this.value)"><option value="ios-dark">Dark</option><option value="ios-light">Light</option><option value="hacker">Hacker</option></select><br><br>
-        <label>Язык:</label> <select id="lSel" onchange="changeLang(this.value)"><option value="ru">Русский</option><option value="en">English</option></select>
-        <hr style="opacity:0.1; margin:15px 0;">
-        <button class="btn btn-orange" onclick="openMod('thanksWin')" style="width:100%;">🌟 Благодарности</button>
-        <button class="btn btn-red" onclick="resetItems()" style="width:100%; margin-top:8px;">🗑️ Сбросить улучшения</button>
-        <button class="btn btn-red" onclick="logout()" style="width:100%; margin-top:8px;">Выход</button>
+        <h3>Настройки TITAN</h3>
+        <button class="btn btn-orange" onclick="openMod('thanksWin')" style="width:100%;">🌟 Авторы и Муся</button>
+        <button class="btn btn-red" onclick="resetItems()" style="width:100%; margin-top:10px;">Сброс улучшений</button>
+        <button class="btn btn-red" onclick="logout()" style="width:100%; margin-top:10px;">Выйти из аккаунта</button>
         <button class="btn" onclick="closeMod('sMenu')" style="width:100%; margin-top:10px;">X</button>
     </div>
 
     <div id="thanksWin" class="modal">
-        <h3>Wall of Fame</h3>
-        <ul style="text-align:left; font-size:15px; line-height:1.8; list-style:none; padding:0;">
-            <li>Вадек</li>
-            <li id="musyaEaster" style="cursor:pointer; font-weight:bold;">Муся ❤️</li>
+        <h3>Легенды</h3>
+        <ul style="list-style:none; padding:0; line-height:2;">
+            <li>Вадек (Founder)</li>
+            <li id="musyaEaster" style="cursor:pointer; font-weight:900; color:var(--red);">Муся ❤️</li>
             <li>Анастасия Землеройка</li>
             <li>Саша</li>
             <li>Андрей😎</li>
             <li>Тепе</li>
-            <li>Gemini</li>
+            <li>Gemini AI</li>
         </ul>
         <button class="btn" onclick="closeMod('thanksWin')" style="width:100%;">Назад</button>
     </div>
 
     <div id="pCard" class="modal">
         <h2 id="pc-name">User</h2>
-        <div id="pc-stats" style="margin-bottom:15px; font-size:14px; opacity:0.8;"></div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <button class="btn" onclick="sendMoney()" id="l-send">💸 Донат</button>
+        <div id="pc-stats" style="margin-bottom:15px;"></div>
+        <div class="grid-2">
+            <button class="btn" onclick="sendMoney()">💸 Донат</button>
             <button class="btn btn-orange" onclick="adminMute()">Mute</button>
             <button class="btn btn-orange" onclick="adminUnmute()">Unmute</button>
-            <button class="btn btn-red" onclick="adminResetMoney()">Обнулить $</button>
-            <button class="btn" onclick="closeMod('pCard')">X</button>
+            <button class="btn btn-red" onclick="adminResetMoney()">Обнулить</button>
         </div>
+        <button class="btn" onclick="closeMod('pCard')" style="width:100%; margin-top:10px;">X</button>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, get, update, push, onValue, remove, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, set, get, update, push, onValue, remove, serverTimestamp, onDisconnect } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const conf = { apiKey: "AIzaSyChSk0gETRBQ391e4BjPqFsKc_dzjBmT58", databaseURL: "https://my-chat-52203-default-rtdb.firebaseio.com", projectId: "my-chat-52203" };
         const db = getDatabase(initializeApp(conf));
 
-        let user = JSON.parse(localStorage.getItem('k_user_v30'));
-        let gid, myRole, viewUser;
+        let user = JSON.parse(localStorage.getItem('k_user_v31'));
         let mClicks = 0;
-        let musyaClaimed = false; // ФИКС: Чтобы давала один раз
+        let isFever = false;
+        let viewUser = "";
 
-        const langData = {
-            ru: {bal:"Баланс", chat:"Чат", games:"Игры", tap:"ТАП ТАП ТАП", set:"Настройки", sh:"Магазин", send:"Перевести", del:"Удалить", cancel:"Отмена"},
-            en: {bal:"Balance", chat:"iChat", games:"Arcade", tap:"TAP TAP TAP", set:"Settings", sh:"Market", send:"Transfer", del:"Delete", cancel:"Cancel"}
-        };
-
-        window.changeLang = (l) => {
-            const d = langData[l];
-            document.getElementById('l-bal').innerText = d.bal; document.getElementById('l-chat').innerText = d.chat;
-            document.getElementById('l-games').innerText = d.games; document.getElementById('l-tap').innerText = d.tap;
-            document.getElementById('l-set').innerText = d.set; document.getElementById('l-sh-title').innerText = d.sh;
-            document.getElementById('l-send').innerText = d.send; document.getElementById('l-cancel').innerText = d.cancel;
-        };
-
+        // ИНИЦИАЛИЗАЦИЯ
         async function init() {
             if(!user) {
                 let n = prompt("Ник:"); let p = prompt("Пароль:");
                 if(!n || !p) return;
                 const s = await get(ref(db, 'users/'+n));
-                if(s.exists()){ if(s.val().password !== p) return location.reload(); user={name:n, ...s.val()}; }
-                else { user={name:n, password:p, score:0, mult:1, autoclicker:0, prefix:''}; await set(ref(db, 'users/'+n), user); }
-                localStorage.setItem('k_user_v30', JSON.stringify(user));
+                if(s.exists()){ 
+                    if(s.val().password !== p) return location.reload(); 
+                    user={name:n, ...s.val()}; 
+                } else { 
+                    user={name:n, password:p, score:0, mult:1, autoclicker:0, rebirth:0, prefix:'', lastDaily:0}; 
+                    await set(ref(db, 'users/'+n), user); 
+                }
+                localStorage.setItem('k_user_v31', JSON.stringify(user));
             }
-            onValue(ref(db, 'users/'+user.name), s => { if(s.exists()){ user = {name:user.name, ...s.val()}; document.getElementById('score').innerText = user.score; }});
-            loadChat(); loadTop();
-            setInterval(() => { if(user.autoclicker > 0) update(ref(db, 'users/'+user.name), {score: (Number(user.score) || 0) + user.autoclicker}); }, 1000);
+
+            // Статус онлайн
+            const statusRef = ref(db, 'status/' + user.name);
+            set(statusRef, true);
+            onDisconnect(statusRef).remove();
+
+            // Слушатель данных игрока
+            onValue(ref(db, 'users/'+user.name), s => {
+                if(s.exists()){
+                    user = {name:user.name, ...s.val()};
+                    document.getElementById('score').innerText = Math.floor(user.score).toLocaleString();
+                    document.getElementById('rebirth-level').innerText = "Престиж: " + (user.rebirth || 0);
+                }
+            });
+
+            // Слушатель глобальных событий (Горячка, Джекпот)
+            onValue(ref(db, 'global'), s => {
+                const data = s.val() || {};
+                isFever = data.fever || false;
+                document.getElementById('fever-bar').style.display = isFever ? 'block' : 'none';
+                document.getElementById('jackpot-info').innerText = `Джекпот: ${(data.jackpot || 0).toLocaleString()} 💰`;
+            });
+
+            loadChat(); loadTop(); loadClans(); checkOnlineCount();
+            
+            // Зацикленные процессы
+            setInterval(autoClick, 1000);
+            setInterval(onlineBonus, 60000); // Раз в минуту проверка на бонус
         }
 
-        window.doClick = () => update(ref(db, 'users/'+user.name), {score: (Number(user.score) || 0) + (user.mult || 1)});
+        // ТАП И ЭФФЕКТЫ
+        window.doClick = (e) => {
+            let power = (user.mult || 1) * (user.rebirth > 0 ? user.rebirth * 2 : 1);
+            if(isFever) power *= 3;
+            
+            update(ref(db, 'users/'+user.name), {score: Number(user.score) + power});
+            
+            // Частица клика
+            const p = document.createElement('div');
+            p.className = 'click-particle';
+            p.innerText = `+${power}`;
+            p.style.left = e.pageX + 'px';
+            p.style.top = e.pageY + 'px';
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 800);
+        };
 
-        // EASTER EGG FIXED (ONLY ONCE)
-        document.getElementById('musyaEaster').onclick = () => {
-            if(musyaClaimed) return alert("Муся уже дала тебе всё, что могла ❤️");
-            mClicks++;
-            if(mClicks === 5) {
-                const bonus = 10000;
-                update(ref(db, 'users/'+user.name), {score: Number(user.score) + bonus});
-                const oldBg = document.body.style.background;
-                document.body.style.background = '#ff69b4';
-                alert("💖 Муся дарит тебе 10,000 коинов! (Больше нельзя)");
-                setTimeout(() => { document.body.style.background = oldBg; }, 1000);
-                musyaClaimed = true; 
-                mClicks = 0;
+        function autoClick() {
+            if(user.autoclicker > 0) {
+                update(ref(db, 'users/'+user.name), {score: Number(user.score) + user.autoclicker});
+            }
+        }
+
+        // РЕБЁРТ
+        window.doRebirth = async () => {
+            if(user.score < 10000000) return alert("Нужно 10,000,000 коинов!");
+            if(confirm("Сбросить баланс и улучшения ради вечного x2 множителя?")){
+                await update(ref(db, 'users/'+user.name), {
+                    score: 0, mult: 1, autoclicker: 0, 
+                    rebirth: (user.rebirth || 0) + 1,
+                    prefix: 'PRESTIGE'
+                });
+                systemMsg(`👑 Игрок ${user.name} совершил ПРЕСТИЖ! Уровень: ${user.rebirth + 1}`);
             }
         };
 
+        // ЕЖЕДНЕВКА
+        window.claimDaily = async () => {
+            const now = Date.now();
+            if(now - (user.lastDaily || 0) < 86400000) return alert("Приходи завтра!");
+            await update(ref(db, 'users/'+user.name), {score: Number(user.score) + 5000, lastDaily: now});
+            alert("Забрал 5,000 💰!");
+        };
+
+        // ЧАТ
         window.sendMsg = async () => {
-            const i = document.getElementById('mInp'); if(!i.value.trim()) return;
+            const i = document.getElementById('mInp');
+            if(!i.value.trim()) return;
             const s = await get(ref(db, 'users/'+user.name));
             if(s.val().muteUntil > Date.now()) return alert("Вы замучены!");
-            await push(ref(db, 'msgs'), { n: user.name, t: i.value, time: serverTimestamp(), pref: s.val().prefix, col: s.val().color });
+            
+            await push(ref(db, 'msgs'), {
+                n: user.name, t: i.value, time: serverTimestamp(),
+                pref: s.val().prefix, col: s.val().color
+            });
+            
+            // Шанс на джекпот при сообщении (0.5%)
+            if(Math.random() < 0.005) winJackpot();
             i.value = "";
         };
-        document.getElementById('sendBtn').onclick = sendMsg;
-        document.getElementById('mInp').onkeydown = e => { if(e.key==='Enter') sendMsg(); };
 
         function loadChat() {
             onValue(ref(db, 'msgs'), s => {
                 const l = document.getElementById('cList'); l.innerHTML = "";
                 s.forEach(d => {
                     const m = d.val();
-                    const date = m.time ? new Date(m.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : "";
-                    l.innerHTML += `<div class="msg">
-                        <span class="msg-del" onclick="adminDelMsg('${d.key}')">×</span>
-                        <span class="prefix" style="background:${m.col||'#fff'}">${m.pref||'USER'}</span>
-                        <b onclick="showP('${m.n}')" style="color:${m.col||'inherit'}">${m.n}</b>: ${m.t}
-                        <div class="msg-time">${date}</div>
-                    </div>`;
+                    const isSys = m.n === 'SYSTEM';
+                    l.innerHTML += `
+                        <div class="msg ${isSys?'msg-system':''}">
+                            ${!isSys?'<span class="msg-del" onclick="adminDelMsg(\''+d.key+'\')">×</span>':''}
+                            <span class="prefix" style="background:${m.col==='rainbow'?'linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)':(m.col||'#fff')}">${m.pref||'USER'}</span>
+                            <b onclick="showP('${m.n}')" style="color:${m.col==='rainbow'?'#BF5AF2':(m.col||'inherit')}">${m.n}</b>: ${m.t}
+                        </div>
+                    `;
                 });
                 l.scrollTop = l.scrollHeight;
             });
         }
 
-        window.adminDelMsg = (id) => { if(prompt("Pass:")==="8070") remove(ref(db, 'msgs/'+id)); };
+        // КЛАНЫ
+        window.createClan = async () => {
+            const name = document.getElementById('clanNameInp').value;
+            if(!name || user.score < 100000) return alert("Нужно 100к и название");
+            await set(ref(db, 'clans/'+name), { owner: user.name, bank: 0 });
+            await update(ref(db, 'users/'+user.name), { score: user.score - 100000, clan: name });
+            systemMsg(`🛡️ Создан новый клан: [${name}]`);
+        };
+
+        function loadClans() {
+            onValue(ref(db, 'clans'), s => {
+                const l = document.getElementById('clanList'); l.innerHTML = "<h4>Топ Кланов:</h4>";
+                s.forEach(d => {
+                    l.innerHTML += `<div class="top-item"><span>${d.key}</span><b>${d.val().bank} 💰</b></div>`;
+                });
+            });
+        }
+
+        // СИСТЕМНЫЕ ФУНКЦИИ
+        function winJackpot() {
+            get(ref(db, 'global/jackpot')).then(s => {
+                const win = s.val() || 50000;
+                update(ref(db, 'users/'+user.name), {score: Number(user.score) + win});
+                set(ref(db, 'global/jackpot'), 1000);
+                systemMsg(`🎰 ДЖЕКПОТ! ${user.name} выиграл ${win.toLocaleString()} 💰 за активность в чате!`);
+            });
+        }
+
+        async function systemMsg(txt) {
+            await push(ref(db, 'msgs'), { n: 'SYSTEM', t: txt, time: serverTimestamp(), col: '#FFD700', pref: '📢' });
+        }
+
+        window.buy = async (t, p, v) => {
+            if(user.score < p) return alert("Мало денег!");
+            let up = {score: Number(user.score) - p};
+            if(t==='auto') up.autoclicker = (user.autoclicker||0)+v;
+            if(t==='multi') up.mult = (user.mult||1)+v;
+            if(t==='prefix') up.prefix = v;
+            if(t==='color') up.color = v;
+            await update(ref(db, 'users/'+user.name), up);
+            systemMsg(`🛒 ${user.name} приобрёл апгрейд: ${v}`);
+        };
 
         function loadTop() {
             onValue(ref(db, 'users'), s => {
                 const c = document.getElementById('topContent'); c.innerHTML = "";
-                let a = []; 
-                s.forEach(u => { a.push({n: u.key, s: Number(u.val().score) || 0}); });
+                let a = []; s.forEach(u => { a.push({n: u.key, s: Number(u.val().score) || 0, r: u.val().rebirth||0}); });
                 a.sort((x,y) => y.s - x.s).slice(0,5).forEach((u,i) => {
-                    c.innerHTML += `<div class="top-item ${u.n===user.name?'my-rank':''}"><span>#${i+1} ${u.n}</span><b>${u.s} 💰</b></div>`;
+                    c.innerHTML += `<div class="top-item ${u.n===user.name?'my-rank':''}"><span>#${i+1} ${u.n} ${u.r>0?'⭐'+u.r:''}</span><b>${Math.floor(u.s).toLocaleString()}</b></div>`;
                 });
             });
         }
 
-        window.showP = async n => {
-            viewUser = n; const s = await get(ref(db, 'users/'+n)); const d = s.val();
-            document.getElementById('pc-name').innerText = n;
-            document.getElementById('pc-stats').innerHTML = `💰: ${d.score} | 🤖: ${d.autoclicker} | ⚡: ${d.mult}`;
-            openMod('pCard');
-        };
-
-        window.sendMoney = async () => {
-            let amt = parseInt(prompt("Сумма:"));
-            if(amt > 0 && user.score >= amt) {
-                const t = await get(ref(db, 'users/'+viewUser));
-                await update(ref(db, 'users/'+user.name), {score: Number(user.score) - amt});
-                await update(ref(db, 'users/'+viewUser), {score: (Number(t.val().score)||0) + amt});
-                alert("Успешно!"); closeMod('pCard');
-            }
-        };
-
-        // ADMIN ACTIONS
+        // АДМИНКА
+        window.adminResetMoney = () => { if(prompt("Pass:")==="8070") update(ref(db, 'users/'+viewUser), {score: 0}); };
         window.adminMute = () => { if(prompt("Pass:")==="8070") update(ref(db, 'users/'+viewUser), {muteUntil: Date.now()+3600000}); };
         window.adminUnmute = () => { if(prompt("Pass:")==="8070") update(ref(db, 'users/'+viewUser), {muteUntil: 0}); };
-        window.adminResetMoney = () => { if(prompt("Pass:")==="8070") update(ref(db, 'users/'+viewUser), {score: 0}); };
+        window.adminDelMsg = (id) => { if(prompt("Pass:")==="8070") remove(ref(db, 'msgs/'+id)); };
 
-        window.resetItems = () => {
-            if(confirm("Вы уверены, что хотите сбросить все улучшения? Деньги останутся.")){
-                update(ref(db, 'users/'+user.name), {autoclicker: 0, mult: 1, prefix: '', color: ''});
-                alert("Сброшено!");
+        // МУСЯ ❤️
+        document.getElementById('musyaEaster').onclick = () => {
+            mClicks++;
+            if(mClicks === 5) {
+                update(ref(db, 'users/'+user.name), {score: Number(user.score) + 50000});
+                alert("💖 МУСЯ ЛЮБИТ ТЕБЯ! +50,000 💰");
+                mClicks = 0;
             }
         };
 
-        window.startMM = async type => {
-            const q = ref(db, 'queue_'+type); const s = await get(q);
-            if(s.exists() && s.val() !== user.name) {
-                gid = 'g_'+Date.now();
-                await set(ref(db, 'games/'+gid), {p1: s.val(), p2: user.name, type, turn: 'p1', board: Array(9).fill("")});
-                await remove(q); join(gid, 'p2');
-            } else { set(q, user.name); document.getElementById('g-info').innerText = "Поиск..."; document.getElementById('lobby').classList.add('hidden'); document.getElementById('game-area').classList.remove('hidden'); onValue(ref(db, 'games'), sn => { sn.forEach(g => { if(g.val().p1===user.name) join(g.key, 'p1'); })}); }
-        };
-
-        window.stopMM = async () => { await remove(ref(db, 'queue_ttt')); await remove(ref(db, 'queue_chess')); if(gid) await remove(ref(db, 'games/'+gid)); location.reload(); };
-
-        function join(id, role) {
-            gid = id; myRole = role; document.getElementById('lobby').classList.add('hidden'); document.getElementById('game-area').classList.remove('hidden');
-            onValue(ref(db, 'games/'+id), s => {
-                const d = s.val(); if(!d) return;
-                const cont = document.getElementById('board-container'); cont.innerHTML = "";
-                const board = document.createElement('div'); board.className = 'grid';
-                d.board.forEach((v, i) => {
-                    const c = document.createElement('div'); c.className = 'cell'; c.innerText = v;
-                    c.onclick = () => {
-                        if(d.turn===(myRole==='p1'?'p1':'p2') && v==="") {
-                            let nb = [...d.board]; nb[i] = myRole==='p1'?'X':'O';
-                            update(ref(db, 'games/'+gid), {board: nb, turn: d.turn==='p1'?'p2':'p1'});
-                        }
-                    };
-                    board.appendChild(c);
-                });
-                cont.appendChild(board);
-                document.getElementById('g-info').innerText = d.turn===(role==='p1'?'p1':'p2')?"ВАШ ХОД":"ОЖИДАНИЕ...";
-            });
-        }
-
-        window.buy = async (t, p, v) => {
-            if(user.score < p) return alert("Недостаточно 💰");
-            let up = {score: Number(user.score) - p};
-            if(t==='auto') up.autoclicker = (user.autoclicker||0)+v;
-            if(t==='multi') up.mult = (user.mult||1)+v;
-            if(t==='prefix') { up.prefix = v; if(v==='HACKER') up.color = '#32D74B'; }
-            if(t==='color') up.color = v;
-            await update(ref(db, 'users/'+user.name), up); alert("Куплено!");
-        };
-
+        window.showP = async n => { if(n==='SYSTEM')return; viewUser=n; const s=await get(ref(db, 'users/'+n)); const d=s.val(); document.getElementById('pc-name').innerText=n; document.getElementById('pc-stats').innerText=`Баллы: ${d.score} | Ребёрты: ${d.rebirth||0}`; openMod('pCard'); };
         window.openMod = id => { document.getElementById(id).style.display='block'; document.getElementById('overlay').style.display='block'; };
         window.closeMod = id => { document.getElementById(id).style.display='none'; document.getElementById('overlay').style.display='none'; };
-        window.changeTheme = v => document.body.className = 'theme-'+v;
         window.logout = () => { localStorage.clear(); location.reload(); };
+        function checkOnlineCount() { onValue(ref(db, 'status'), s => { document.getElementById('online-info').innerText = `● В СЕТИ: ${s.size || 0}`; }); }
 
         init();
     </script>
 </body>
 </html>
+
+
 
 
 
